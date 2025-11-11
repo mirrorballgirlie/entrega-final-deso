@@ -178,7 +178,7 @@ export default function AltaHuespedPage() {
         <h1 className={styles.title}>Dar de alta Huesped</h1>
 
         {/* Error list (2.A) */}
-        {errors.length > 0 && <ErrorBox errors={errors} />}
+        {errors.length > 0 && <ErrorBox messages={errors} />}
 
         <form className={styles.form} onSubmit={handleSiguiente}>
           {/* Primera fila */}
@@ -214,8 +214,8 @@ export default function AltaHuespedPage() {
 
           {/* ...agregá el resto de campos de la misma forma (fecha, direccion, telefono, email, ocupacion, nacionalidad, etc.) */}
           <div style={{ marginTop: 18 }}>
-            <Button type="submit">Siguiente</Button>
-            <Button type="button" variant="secondary" onClick={handleCancel}>Cancelar</Button>
+            <Button type="submit"> Siguiente </Button>
+            <Button type="button" /*variant="secondary" */ onClick={handleCancel}>Cancelar</Button>
           </div>
         </form>
       </main>

@@ -3,11 +3,16 @@ import React from "react";
 interface Props {
   title: string;
   message: string;
-  onAccept: () => void;
-  onCancel: () => void;
+  primaryText: string;    
+  secondaryText: string;
+  onPrimary: () => void;  
+  onSecondary: () => void;
+  
+  //onAccept: () => void;
+  //onCancel: () => void;
 }
 
-export default function PopupCritical({ title, message, onAccept, onCancel }: Props) {
+export default function PopupCritical({ title, message, primaryText, secondaryText, onPrimary, onSecondary }: Props) {
   return (
     <div style={{
       position: "fixed",
@@ -27,8 +32,8 @@ export default function PopupCritical({ title, message, onAccept, onCancel }: Pr
       }}>
         <h2>{title}</h2>
         <p>{message}</p>
-        <button onClick={onAccept} style={{ marginRight: "10px" }}>Aceptar</button>
-        <button onClick={onCancel}>Cancelar</button>
+        <button onClick={onPrimary} style={{ marginRight: "10px" }}>{primaryText}</button>
+        <button onClick={onSecondary}>{secondaryText}</button>
       </div>
     </div>
   );
