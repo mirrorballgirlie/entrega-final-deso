@@ -1,12 +1,14 @@
-import React from "react";
+import React, { type ReactNode } from "react"; 
 
 interface Props {
-  text: string;
+  //text: string;
+  children: ReactNode;
+  //variant: "primary" | "secondary" | "danger"
   onClick?: () => void;
   type?: "button" | "submit";
 }
 
-export default function Button({ text, onClick, type = "button" }: Props) {
+export default function Button({ children, onClick, type = "button" }: Props) {
   return (
     <button
       type={type}
@@ -22,7 +24,7 @@ export default function Button({ text, onClick, type = "button" }: Props) {
         marginRight: "10px"
       }}
     >
-      {text}
+      {children}
     </button>
   );
 }
