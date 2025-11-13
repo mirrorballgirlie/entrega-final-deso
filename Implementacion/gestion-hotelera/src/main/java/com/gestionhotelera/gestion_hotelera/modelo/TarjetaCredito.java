@@ -5,11 +5,14 @@ import lombok.*;
 
 //recordar hacer los getters y setters a mano
 @Entity
-@Table(name = "tarjetaCredito")
+//@Table(name = "tarjetaCredito")
 @SuperBuilder
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@DiscriminatorValue("TARJETA_CREDITO")
+
 
 
 public class TarjetaCredito extends MetodoDePago {

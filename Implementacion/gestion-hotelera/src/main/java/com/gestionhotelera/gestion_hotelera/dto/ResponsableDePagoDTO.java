@@ -1,14 +1,16 @@
 package com.gestionhotelera.gestion_hotelera.dto;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import jakarta.persistence.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "responsableDePago")
-@Entity
+
+
 @SuperBuilder
 
 public class ResponsableDePagoDTO {

@@ -11,11 +11,12 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@Table(name = "efectivo")
+//@Table(name = "efectivo")
 @Entity
 @Getter
 @Setter
 
+@DiscriminatorValue("EFECTIVO")
 
 public class Efectivo extends MetodoDePago {
 

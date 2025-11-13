@@ -9,7 +9,7 @@ import lombok.experimental.SuperBuilder;
 
 //@Data
 //hacer los getters y los setters manualmente
-@Table(name = "notaCredito")
+//@Table(name = "notaCredito")
 @AllArgsConstructor
 @SuperBuilder
 @Entity
@@ -17,9 +17,16 @@ import lombok.experimental.SuperBuilder;
 @Setter
 @NoArgsConstructor
 
+@DiscriminatorValue("NOTA_CREDITO")
 
 
 public class NotaCredito extends MetodoDePago{
+
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
 
     private int numero;
     private double monto;

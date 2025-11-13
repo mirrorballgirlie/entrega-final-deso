@@ -1,8 +1,21 @@
 package com.gestionhotelera.gestion_hotelera.modelo;
 import java.util.Date;
-import lombok.*;
+
+import jakarta.persistence.DiscriminatorColumn;
+import jakarta.persistence.DiscriminatorType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Inheritance;
+import jakarta.persistence.InheritanceType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
-import jakarta.persistence.*;
 
 @Entity
 @Table(name = "metodoDePago")
@@ -10,6 +23,11 @@ import jakarta.persistence.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
+
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "tipo_metodo_pago", discriminatorType = DiscriminatorType.STRING)
+
+
 public abstract class MetodoDePago {
 
     @Id

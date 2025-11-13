@@ -1,8 +1,20 @@
 package com.gestionhotelera.gestion_hotelera.modelo;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
-import lombok.*;
-import jakarta.persistence.*;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -22,7 +34,7 @@ public class Huesped {
     private String tipoDocumento;
     private String documento;
     private String posicionIVA;
-    private Date fechaNacimiento;
+    private LocalDate fechaNacimiento;
     private String telefono;
     private String email;
     private String ocupacion;

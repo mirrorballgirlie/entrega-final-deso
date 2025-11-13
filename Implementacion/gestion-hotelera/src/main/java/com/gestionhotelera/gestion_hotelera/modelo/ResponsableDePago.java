@@ -13,9 +13,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 
-public class ResponsableDePago {
+public abstract class ResponsableDePago {
 
     private String cuit;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @OneToMany(mappedBy = "responsableDePago")
     private List<Factura> facturas;

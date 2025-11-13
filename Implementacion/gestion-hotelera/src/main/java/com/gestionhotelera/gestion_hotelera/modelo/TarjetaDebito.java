@@ -4,13 +4,15 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "tarjetaDebito")
+//@Table(name = "tarjetaDebito")
 @SuperBuilder
 //recordar hacer los getters y setters a mano
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@DiscriminatorValue("TARJETA_DEBITO")
+
 
 //recordar hacer los getters y setters a mano
 public class TarjetaDebito extends MetodoDePago {

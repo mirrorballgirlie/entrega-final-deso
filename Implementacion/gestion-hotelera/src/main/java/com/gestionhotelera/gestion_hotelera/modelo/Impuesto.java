@@ -1,7 +1,16 @@
 package com.gestionhotelera.gestion_hotelera.modelo;
-import lombok.*;
-import jakarta.persistence.*;
 import java.util.List;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -19,7 +28,7 @@ public class Impuesto {
     private String nombre;
     private double porcentaje;
 
-    @ManyToMany(mappedBy = "impuestos")
+    @ManyToMany(mappedBy = "impuestos") // el otro lado (Factura) es el dueño de la relación
     private List<Factura> facturas;
 
 

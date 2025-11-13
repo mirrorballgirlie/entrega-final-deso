@@ -5,7 +5,7 @@ import lombok.experimental.SuperBuilder;
 
 
 
-@Table(name = "cheque")
+//@Table(name = "cheque")
 //@Data
 
 //recordar hacer los getters y setters manualmente
@@ -16,6 +16,8 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Getter
 @Setter
+
+@DiscriminatorValue("CHEQUE")
 
 public class Cheque extends MetodoDePago{
 

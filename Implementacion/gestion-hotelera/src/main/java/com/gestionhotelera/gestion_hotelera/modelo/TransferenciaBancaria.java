@@ -5,12 +5,13 @@ import jakarta.persistence.*;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "transferenciaBancaria")
+//@Table(name = "transferenciaBancaria")
 @SuperBuilder
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@DiscriminatorValue("TRANSFERENCIA_BANCARIA")
 
 public class TransferenciaBancaria extends MetodoDePago {
 
