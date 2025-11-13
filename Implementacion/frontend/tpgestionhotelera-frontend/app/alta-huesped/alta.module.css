@@ -1,0 +1,117 @@
+.title{
+   color: #000000;
+  text-align: left;
+  font-family: "LibreBaskerville-Regular", sans-serif;
+  font-size: 70px;
+  font-weight: 400;
+  position: relative;
+  height: 74px;
+  top: auto;
+  left: 595px;
+  right: 595px;
+  margin-bottom: 10px;
+    
+}
+
+
+.hotelpremier{
+    color: #FFFCF5;
+    font-family: "Mate SC";
+    font-size: 48px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    height: 69px;
+    width: 446px;
+    flex-shrink: 0;
+}
+
+
+.form{
+    width: 1920px;
+    height: auto;
+    flex-shrink: 0;
+    fill: #D9D9D9;
+    box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.25) inset;
+}
+
+.wrapper {
+  background: #FFFCF5;
+  min-height: 100vh;
+  padding: 30px 60px;
+  
+}
+
+.isCritical {
+  filter: grayscale(1); /* pantalla en gris */
+}
+.sectionTitle {
+    color: #000;
+    text-align: left;
+    font-family: "Open Sans";
+    font-size: 35px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    margin-bottom: 10px;
+    position: relative;
+    left: 95px;
+    margin-top: 10px;
+}
+
+.row {
+    display: flex;
+    gap: 409px; /* espacio entre columnas */
+    margin-bottom: 20px;
+    color: #000;
+    font-family: "Open Sans";
+    font-size: 28px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+    float: auto;
+    position: relative;
+    left: 250px;
+    right: 250px;
+    /* width: 219px;
+    height: 31px;
+    flex-shrink: 0; */
+}
+
+.mainContent {
+  /* flex: 1;
+  padding: 20px;
+  background: #FFFCF5; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 100vh;
+  margin-top: 20px;
+
+  
+}
+
+.buttonContainer {
+  display: flex;                  
+  justify-content: space-between;
+  align-items: center;            
+  width: 100%;                    
+  margin-top: 18px;               
+  padding: 0 20px;   
+}
+
+input::placeholder {
+  color: #000000;           /* Color gris claro */ 
+  letter-spacing: 0.5px;    /* Espaciado entre letras */
+  text-transform: uppercase;/* Si querés mantener el estilo en mayúsculas */
+  opacity: 0.4;             /* Asegura que el color del placeholder sea sólido */
+  
+  width: auto;
+  height: auto;
+  padding: 11px;
+  border: 2px solid #374375; /* Color del recuadro */
+  font-size: 15px;
+  background-color: #FFFCF5; /* Fondo claro */
+  
+}

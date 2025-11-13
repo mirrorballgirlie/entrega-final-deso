@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import styles from "./layout.module.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -23,12 +24,37 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+    // <html lang="en">
+    //   <body
+    //     className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+    //   >
+    //     {children}
+    //   </body>
+    // </html>
+
+    <html lang="es">
+      <body className={styles.body}>
+        <header className={styles.header}>
+          <h1 className={styles.hotelpremier}>Hotel Premier</h1>
+          
+        </header>
+
+          {/* <div className={styles.navbar}>
+            <nav>
+            <a href="/alta-huesped">Alta huésped</a>
+            <a href="/reservas">Reservas</a>
+          </nav>
+          </div> */}
+
+
+        <main className={styles.main}>{children}</main>
+
+        <footer className={styles.footer}>
+          © 2025 Hotel Premier - Todos los derechos reservados
+        </footer>
       </body>
     </html>
+  
+
   );
 }

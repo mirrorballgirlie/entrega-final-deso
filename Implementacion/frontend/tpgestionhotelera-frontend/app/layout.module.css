@@ -1,0 +1,31 @@
+.body{
+    width: 1920px;
+    height: 2160px;
+    flex-shrink: 0;
+    background: #FFFCF5;
+}
+.header{
+    display: flex;
+    width: 1920px;
+    height: 77px;
+    flex-shrink: 0;
+    background: #374375;
+    color: #FFFCF5;
+    font-family: "Mate SC";
+    font-size: 48px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal
+}
+.main{
+    width: 1920px;
+    height: 2006px;
+    flex-shrink: 0;
+    background: #FFFCF5;
+}
+.footer{
+    width: 1920px;
+    height: 77px;
+    flex-shrink: 0;
+    background: #374375;
+} 

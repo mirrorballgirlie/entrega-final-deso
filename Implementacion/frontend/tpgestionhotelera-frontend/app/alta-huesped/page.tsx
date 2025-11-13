@@ -29,9 +29,42 @@ type FormState = {
   pais: string;
   ivaCondicion: string;
 };
+const paisesAmerica = [
+  "Argentina",
+  "Bolivia",
+  "Brasil",
+  "Canadá",
+  "Chile",
+  "Colombia",
+  "Costa Rica",
+  "Cuba",
+  "Dominica",
+  "Ecuador",
+  "El Salvador",
+  "Estados Unidos",
+  "Granada",
+  "Guatemala",
+  "Guyana",
+  "Haití",
+  "Honduras",
+  "Jamaica",
+  "México",
+  "Nicaragua",
+  "Panamá",
+  "Paraguay",
+  "Perú",
+  "República Dominicana",
+  "San Cristóbal y Nieves",
+  "San Vicente y las Granadinas",
+  "Santa Lucía",
+  "Surinam",
+  "Trinidad y Tobago",
+  "Uruguay",
+  "Venezuela"
+];
 
 export default function AltaHuespedPage() {
-  const [form, setForm] = useState<FormState>({
+  const [form, setForm] = useState<FormState>({ //Estado del componente para los datos del formulario
     apellido: "",
     nombres: "",
     tipoDocumento: "DNI",
@@ -53,7 +86,7 @@ export default function AltaHuespedPage() {
     ivaCondicion: "CONSUMIDOR_FINAL"
   });
 
-  const [errors, setErrors] = useState<string[]>([]);
+  const [errors, setErrors] = useState<string[]>([]); // Estado para los errores de validación
   const [showCritical, setShowCritical] = useState(false); // para grayscale
   const [showDuplicatePopup, setShowDuplicatePopup] = useState(false);
   const [showCancelPopup, setShowCancelPopup] = useState(false);
@@ -87,7 +120,7 @@ export default function AltaHuespedPage() {
     return e;
   }
 
-  // submit inicial: valida + consulta duplicado
+  // submit inicial: valida + Consulta si el huesped es duplicado (2.B)
   async function handleSiguiente(e?: React.FormEvent) {
     e?.preventDefault();
     const v = validate();
@@ -100,7 +133,7 @@ export default function AltaHuespedPage() {
     // Consulta duplicado (2.B) -> ajustar endpoint real
     try {
       const base = process.env.NEXT_PUBLIC_API_BASE || "";
-      const res = await fetch(`${base}/api/huesped/existe?tipo=${encodeURIComponent(form.tipoDocumento)}&nro=${encodeURIComponent(form.nroDocumento)}`);
+      const res = await fetch(`${base}/api/huesped/existe?tipo=${encodeURIComponent(form.tipoDocumento)}&nro=${encodeURIComponent(form.nroDocumento)}`); //Llamada al backend con el fetch para verificar duplicado
       if (!res.ok) throw new Error("Error al verificar duplicado");
       const { existe } = await res.json(); // backend: { existe: true/false }
       if (existe) {
@@ -167,28 +200,35 @@ export default function AltaHuespedPage() {
   }
 
   return (
-    <div className={`${styles.wrapper} ${showCritical ? styles.isCritical : ""}`}>
+    <div className={`${styles.wrapper} ${showCritical ? styles.isCritical : ""}`}> {/*cambia la clase  entre wrapper e isCritical del div principal si hay un popup crítico activo */}
       {/* Si querés usar la imagen de fondo/rectángulo gris ponla en public y usá next/image */}
-      <div className={styles.header}>
+      {/* <div className={styles.header}>
         <div className={styles.headerChild} />
         <div className={styles.hotelPremier}>Hotel Premier</div>
-      </div>
+      </div> */}
+      <>
+        <h1 className={styles.title}>Dar de alta Huesped</h1>
+      </>
 
       <main className={styles.mainContent}>
-        <h1 className={styles.title}>Dar de alta Huesped</h1>
+        
 
         {/* Error list (2.A) */}
         {errors.length > 0 && <ErrorBox messages={errors} />}
-
+  
         <form className={styles.form} onSubmit={handleSiguiente}>
+          {/* {Datos Personales} */}
+
+          <h2 className={styles.sectionTitle}> Datos Personales</h2>
+
           {/* Primera fila */}
           <div className={styles.row}>
             <FormField label="Apellido *">
-              <input name="apellido" value={form.apellido} onChange={(ev)=> setField("apellido", ev.target.value.toUpperCase())} />
+              <input name="apellido" placeholder="INGRESE UN APELLIDO..." value={form.apellido} onChange={(ev)=> setField("apellido", ev.target.value.toUpperCase())} />
             </FormField>
 
             <FormField label="Nombres *">
-              <input name="nombres" value={form.nombres} onChange={(ev)=> setField("nombres", ev.target.value.toUpperCase())} />
+              <input name="nombres" placeholder="INGRESE UN NOMBRE..." value={form.nombres} onChange={(ev)=> setField("nombres", ev.target.value.toUpperCase())} />
             </FormField>
           </div>
 
@@ -204,21 +244,109 @@ export default function AltaHuespedPage() {
             </FormField>
 
             <FormField label="Número documento *">
-              <input name="nroDocumento" value={form.nroDocumento} onChange={(ev)=> setField("nroDocumento", ev.target.value.toUpperCase())} />
+              <input name="nroDocumento" placeholder="INGRESE UN NÚMERO DE DOCUMENTO..." value={form.nroDocumento} onChange={(ev)=> setField("nroDocumento", ev.target.value.toUpperCase())} />
             </FormField>
 
+            
+          </div>
+
+          <div className={styles.row}>
             <FormField label="CUIT">
-              <input name="cuit" value={form.cuit} onChange={(ev)=> setField("cuit", ev.target.value)} />
+              <input name="cuit" placeholder="INGRESE UN CUIT..." value={form.cuit} onChange={(ev)=> setField("cuit", ev.target.value)} />
+            </FormField>
+
+            <FormField label="Nacionalidad *">
+              <select name="nacionalidad"  value={form.nacionalidad} onChange={(ev)=> setField("nacionalidad", ev.target.value.toUpperCase())} >
+                {paisesAmerica.map((pais) => (
+                  <option key={pais} value={pais.toUpperCase()}>{pais}</option>
+                ))}
+              </select>  
+            </FormField>
+
+          </div>
+
+          <div className={styles.row}>
+            <FormField label="Fecha de Nacimiento *">
+              <input type="date" placeholder="--/--/----" name="fechaNacimiento" value={form.fechaNacimiento} onChange={(ev)=> setField("fechaNacimiento", ev.target.value)} />
+
             </FormField>
           </div>
 
-          {/* ...agregá el resto de campos de la misma forma (fecha, direccion, telefono, email, ocupacion, nacionalidad, etc.) */}
-          <div style={{ marginTop: 18 }}>
+          {/* {Datos de Direccion} */}
+          <h2 className={styles.sectionTitle}> Direccion </h2>
+
+          <div className={styles.row}>
+            <FormField label="Pais *">
+              <input name="pais" placeholder="INGRESE UN PAIS..." value={form.pais} onChange={(ev)=> setField("pais", ev.target.value)} />
+            </FormField>
+
+            <FormField label="Provincia *">
+              <input name="provincia" placeholder="INGRESE UNA PROVINCIA..." value={form.provincia} onChange={(ev)=> setField("provincia", ev.target.value.toUpperCase())} />
+            </FormField>
+          </div>
+
+           <div className={styles.row}>
+            <FormField label="Localidad *">
+              <input name="localidad" placeholder="INGRESE UNA LOCALIDAD..." value={form.localidad} onChange={(ev)=> setField("localidad", ev.target.value.toUpperCase())} />
+            </FormField>
+
+            <FormField label="Codigo Postal *">
+              <input name="codigoPostal" placeholder="INGRESE UN CODIGO POSTAL..." value={form.codigoPostal} onChange={(ev)=> setField("codigoPostal", ev.target.value.toUpperCase())} />
+            </FormField>
+          </div>
+
+          <div className={styles.row}>
+            <FormField label="Calle *">
+              <input name="calle"   placeholder="INGRESE UNA CALLE..." value={form.calle} onChange={(ev)=> setField("calle", ev.target.value.toUpperCase())} />
+            </FormField>
+
+            <FormField label="Numero *">
+              <input name="numero" placeholder="INGRESE UN NUMERO..." value={form.numero} onChange={(ev)=> setField("numero", ev.target.value.toUpperCase())} />
+            </FormField>
+          </div>
+
+          <div className={styles.row}>
+            <FormField label="Piso *">
+              <input name="piso"   placeholder="INGRESE UN PISO..." value={form.piso} onChange={(ev)=> setField("piso", ev.target.value.toUpperCase())} />
+            </FormField>
+
+            <FormField label="Departamento *">
+              <input name="depto" placeholder="INGRESE UN DEPARTAMENTO..." value={form.depto} onChange={(ev)=> setField("depto", ev.target.value.toUpperCase())} />
+            </FormField>
+          </div>
+
+          <h2 className={styles.sectionTitle}> Informacion Laboral</h2>
+
+          <div className={styles.row}>
+            <FormField label="Posición Frente al IVA *">
+              <input name="ivaCondicion"  placeholder="INGRESE UNA POSICIÓN..." value={form.ivaCondicion} onChange={(ev)=> setField("ivaCondicion", ev.target.value.toUpperCase())} />
+            </FormField>
+
+            <FormField label="Ocupación *">
+              <input name="ocupacion" placeholder="INGRESE UNA OCUPACIÓN..." value={form.ocupacion} onChange={(ev)=> setField("ocupacion", ev.target.value.toUpperCase())} />
+            </FormField>
+          </div>
+
+          {/* {Datos de Contacto} */}
+          <h2 className={styles.sectionTitle}> Contacto</h2>
+
+          <div className={styles.row}>
+            <FormField label="Telefono *">
+              <input name="telefono"  placeholder="INGRESE UN TELEFONO..." value={form.telefono} onChange={(ev)=> setField("telefono", ev.target.value.toUpperCase())} />
+            </FormField>
+
+            <FormField label="Email *">
+              <input name="email" placeholder="INGRESE UN EMAIL..." value={form.email} onChange={(ev)=> setField("email", ev.target.value.toUpperCase())} />
+            </FormField>
+          </div>
+        </form>
+
+         <div className={styles.buttonContainer}>
             <Button type="submit"> Siguiente </Button>
             <Button type="button" /*variant="secondary" */ onClick={handleCancel}>Cancelar</Button>
           </div>
-        </form>
       </main>
+      
 
       {/* Popups */}
       {showDuplicatePopup && (
