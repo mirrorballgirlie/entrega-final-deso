@@ -1,22 +1,19 @@
 package com.gestionhotelera.gestion_hotelera.dto;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 
-public class EstadiaDTO {
+public class EstadoHabitacionesResponse {
 
-    private String estado;
-    private LocalDate fechaIngreso;
-    private LocalDate fechaEgreso;
+    private List<HabitacionEstadoDTO> habitaciones; // filas
+    private List<LocalDate> dias;                   // columnas (fechas desde..hasta)
 
 }

@@ -1,7 +1,12 @@
 package com.gestionhotelera.gestion_hotelera.modelo;
 import java.util.Date;
-import lombok.*;
-import jakarta.persistence.*;
+
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Entity

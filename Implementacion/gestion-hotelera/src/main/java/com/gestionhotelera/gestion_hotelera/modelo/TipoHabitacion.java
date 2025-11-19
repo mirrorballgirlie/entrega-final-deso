@@ -2,10 +2,10 @@ package com.gestionhotelera.gestion_hotelera.modelo;
 
 public enum TipoHabitacion {
 
-    INDIVIDUAL_ESTANDAR, 
-    DOBLE_ESTANDAR,
-    DOBLE_SUPERIOR,
-    SUPERIOR_FAMILY_PLAN,
-    SUITE_DOBLE
+    INDIVIDUAL_ESTANDAR,   //0
+    DOBLE_ESTANDAR,        //1
+    DOBLE_SUPERIOR,        //2
+    SUPERIOR_FAMILY_PLAN,  //3
+    SUITE_DOBLE            //4
 
 }

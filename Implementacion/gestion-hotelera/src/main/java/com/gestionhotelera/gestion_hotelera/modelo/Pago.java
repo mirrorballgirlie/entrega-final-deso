@@ -1,5 +1,5 @@
 package com.gestionhotelera.gestion_hotelera.modelo;
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -29,7 +29,7 @@ public class Pago {
 
     private int numeroDePago;
     private double monto;
-    private Date fechaPago;
+    private LocalDate fechaPago;
 
     @ManyToOne
     @JoinColumn(name = "factura_id")

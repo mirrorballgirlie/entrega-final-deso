@@ -1,7 +1,18 @@
 package com.gestionhotelera.gestion_hotelera.modelo;
-import java.util.Date;
-import lombok.*;
-import jakarta.persistence.*;   
+import java.time.LocalDate;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.Builder;
+import lombok.Data;
 
 @Data
 @Entity
@@ -16,9 +27,12 @@ public class Reserva {
     private Long id;
         
     private int numero;
+
+    @Enumerated(EnumType.STRING)
     private EstadoReserva estado;
-    private Date fechaDesde;
-    private Date fechaHasta;
+    
+    private LocalDate fechaDesde;
+    private LocalDate fechaHasta;
     private String nombre;
     private String apellido;
     private String telefono;

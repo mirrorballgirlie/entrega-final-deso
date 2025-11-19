@@ -1,7 +1,12 @@
 package com.gestionhotelera.gestion_hotelera.dto;
-import java.util.Date;
+import java.time.LocalDate;
+
 import com.gestionhotelera.gestion_hotelera.modelo.EstadoReserva;
-import lombok.*;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -13,8 +18,8 @@ public class ReservaDTO {
 
     private int numero;
     private EstadoReserva estado;
-    private Date fechaDesde;
-    private Date fechaHasta;
+    private LocalDate fechaDesde;
+    private LocalDate fechaHasta;
     private String nombre;
     private String apellido;
     private String telefono;

@@ -3,20 +3,19 @@ package com.gestionhotelera.gestion_hotelera.dto;
 import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 
-public class EstadiaDTO {
+public class EstadoDiarioDTO {
 
+    private LocalDate fecha;
     private String estado;
-    private LocalDate fechaIngreso;
-    private LocalDate fechaEgreso;
+
+    //se agrega este dto para poder simplificar la respuesta en el front para el cu5, sino hay muchos atributos que quedarian en null
+
 
 }

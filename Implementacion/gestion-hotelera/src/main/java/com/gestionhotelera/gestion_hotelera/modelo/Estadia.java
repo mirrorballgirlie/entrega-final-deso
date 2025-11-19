@@ -1,9 +1,24 @@
 package com.gestionhotelera.gestion_hotelera.modelo;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Date;
-import lombok.*;
-import jakarta.persistence.*;
 import java.util.List;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
 
 @Data
 @NoArgsConstructor
@@ -19,8 +34,8 @@ public class Estadia {
     private Long id;
 
     private String estado;
-    private Date fechaIngreso;
-    private Date fechaEgreso;
+    private LocalDate fechaIngreso;
+    private LocalDate fechaEgreso;
 
     @OneToOne(optional = false)
     @JoinColumn(name = "habitacion_id", nullable = false)

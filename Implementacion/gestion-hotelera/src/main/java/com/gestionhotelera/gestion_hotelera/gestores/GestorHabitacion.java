@@ -1,20 +1,27 @@
 package com.gestionhotelera.gestion_hotelera.gestores;
 
-import com.gestionhotelera.gestion_hotelera.modelo.Habitacion;
-import com.gestionhotelera.gestion_hotelera.modelo.Reserva;
-import com.gestionhotelera.gestion_hotelera.modelo.Estadia;
-import com.gestionhotelera.gestion_hotelera.repository.HabitacionRepository;
-import com.gestionhotelera.gestion_hotelera.repository.ReservaRepository;
-import com.gestionhotelera.gestion_hotelera.repository.EstadiaRepository;
-import com.gestionhotelera.gestion_hotelera.exception.ResourceNotFoundException;
-
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.gestionhotelera.gestion_hotelera.dto.EstadoDiarioDTO;
+import com.gestionhotelera.gestion_hotelera.dto.EstadoHabitacionesResponse;
+import com.gestionhotelera.gestion_hotelera.dto.HabitacionEstadoDTO;
+import com.gestionhotelera.gestion_hotelera.exception.ResourceNotFoundException;
+import com.gestionhotelera.gestion_hotelera.modelo.Estadia;
+import com.gestionhotelera.gestion_hotelera.modelo.Habitacion;
+import com.gestionhotelera.gestion_hotelera.modelo.Reserva;
+import com.gestionhotelera.gestion_hotelera.repository.EstadiaRepository;
+import com.gestionhotelera.gestion_hotelera.repository.HabitacionRepository;
+import com.gestionhotelera.gestion_hotelera.repository.ReservaRepository;
+
+import lombok.RequiredArgsConstructor;
+
+
+
 
 @Service
 @RequiredArgsConstructor
@@ -74,5 +81,72 @@ public class GestorHabitacion {
         hab.setEstado(nuevoEstado);
         return habitacionRepository.save(hab);
     }
+
+    public EstadoHabitacionesResponse obtenerEstadoHabitaciones(LocalDate desde, LocalDate hasta) {
+
+        if (desde == null || hasta == null) {
+            throw new IllegalArgumentException("Las fechas no pueden ser nulas.");
+        }
+
+        if (hasta.isBefore(desde)) {
+            throw new IllegalArgumentException("La fecha 'hasta' no puede ser anterior a 'desde'.");
+        }
+
+        // ====== generar lista de días (columnas del front) ======
+        List<LocalDate> dias = desde.datesUntil(hasta.plusDays(1))
+                .collect(Collectors.toList());
+
+        // ====== obtener todas las habitaciones ======
+        List<Habitacion> habitaciones = habitacionRepository.findAll();
+
+        // ====== generar respuesta por habitación ======
+        List<HabitacionEstadoDTO> result = habitaciones.stream()
+                .map(h -> mapHabitacionConEstados(h, dias))
+                .collect(Collectors.toList());
+
+        return new EstadoHabitacionesResponse(result, dias);
+    }
+
+        // ================================================
+    // ==== Métodos auxiliares internos ===============
+    // ================================================
+
+    private HabitacionEstadoDTO mapHabitacionConEstados(Habitacion hab, List<LocalDate> dias) {
+
+        HabitacionEstadoDTO dto = new HabitacionEstadoDTO();
+        dto.setId(hab.getId());
+        dto.setNumero(hab.getNumero());
+        dto.setTipo(hab.getTipo().name());
+        dto.setCapacidad(hab.getCapacidad());
+        dto.setPrecio(hab.getPrecio());
+        dto.setDescripcion(hab.getDescripcion());
+
+        // Estado actual (no afecta grilla)
+        dto.setEstadoActual(hab.getEstado());
+
+        // Estados por día
+        List<EstadoDiarioDTO> estadoDiario = dias.stream()
+                .map(dia -> new EstadoDiarioDTO(dia, calcularEstadoEnDia(hab, dia)))
+                .collect(Collectors.toList());
+
+        dto.setEstadosPorDia(estadoDiario);
+
+        return dto;
+    }
+
+    /**
+     * Determina el estado de UNA habitación en UN día.
+     */
+    private String calcularEstadoEnDia(Habitacion hab, LocalDate dia) {
+
+        boolean ocupada = estadiaRepository.existeEstadiaEnDia(hab.getId(), dia);
+        if (ocupada) return "OCUPADA";
+
+        boolean reservada = reservaRepository.existeReservaEnDia(hab.getId(), dia);
+        if (reservada) return "RESERVADA";
+
+        return "DISPONIBLE";
+    }
+
 
 }

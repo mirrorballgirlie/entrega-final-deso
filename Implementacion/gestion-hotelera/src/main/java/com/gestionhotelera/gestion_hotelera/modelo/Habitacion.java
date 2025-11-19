@@ -1,10 +1,22 @@
 package com.gestionhotelera.gestion_hotelera.modelo;
 
-import lombok.*;
-import jakarta.persistence.*;
-
 import java.util.ArrayList;
 import java.util.List;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -20,7 +32,10 @@ public class Habitacion {
     private Long id;
 
     private int numero;
+
+    @Enumerated(EnumType.STRING)
     private TipoHabitacion tipo;
+    
     private int capacidad;
     private double precio;
     private String descripcion;

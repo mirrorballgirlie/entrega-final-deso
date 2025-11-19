@@ -1,6 +1,10 @@
 package com.gestionhotelera.gestion_hotelera.dto;
-import java.util.Date;
-import lombok.*;
+import java.time.LocalDate;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
@@ -11,6 +15,6 @@ public class PagoDTO {
 
     private int numeroDePago;
     private double monto;
-    private Date fechaPago;
+    private LocalDate fechaPago;
 
 }
