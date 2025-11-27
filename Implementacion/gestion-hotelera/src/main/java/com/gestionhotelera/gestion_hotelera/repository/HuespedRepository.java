@@ -32,5 +32,7 @@ public interface HuespedRepository extends JpaRepository<Huesped, Long> {
 
     boolean existsByTipoDocumentoAndDocumento(String tipoDocumento, String documento);
 
+    
+
 
 }
