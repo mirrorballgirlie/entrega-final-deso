@@ -16,6 +16,7 @@ public class EstadoDiarioDTO {
     private String estado;
 
     //se agrega este dto para poder simplificar la respuesta en el front para el cu5, sino hay muchos atributos que quedarian en null
+    //es para el estado diario de cada habitacion 
 
 
 }

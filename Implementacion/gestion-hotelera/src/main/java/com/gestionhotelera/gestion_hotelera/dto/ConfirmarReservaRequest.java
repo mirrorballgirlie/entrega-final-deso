@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 
+//modelar el request para la confirmacion de la reserva
+
 public class ConfirmarReservaRequest {
 
     private List<Long> habitacionIds;  //una o mas habitaciones

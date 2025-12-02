@@ -16,6 +16,8 @@ import lombok.Setter;
 @Getter
 @Setter
 
+//hay conflictos en la reserva?? aca se obtienen los detalles en caso de ser asi
+
 
 public class ConflictoReservaDTO {
 

@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 
+//si se logra hacer la ocupacion, se muestra el id de la estadia generada (el check in) y un mensaje detallando los aspectos necesarios
+
 
 public class OcuparResponse {
 

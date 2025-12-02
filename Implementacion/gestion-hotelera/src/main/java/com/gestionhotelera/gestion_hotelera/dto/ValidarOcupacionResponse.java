@@ -14,6 +14,9 @@ import lombok.Setter;
 @Getter
 @Setter
 
+//response para validar las ocupaciones (estadias)
+//si hay algun error (reservada, no disponible, ocupada) va a ser detallado en list errores
+//si hay reservas solapadas aparecen en conflictos
 
 public class ValidarOcupacionResponse {
 

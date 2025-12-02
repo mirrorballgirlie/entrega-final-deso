@@ -91,7 +91,7 @@ public class GestorReserva {
     }
 
     
-    //Confirma la(s) reserva(s): vuelve a validar creando una reserva por cada habitación solicitada. Transaccional para que todo se guarde o todo haga rollback por si algo falla
+    //confirma las reservas: vuelve a validar creando una reserva por cada habitación solicitada. es transaccional para que todo se guarde o todo haga rollback por si algo falla
     @Transactional
     public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
         validarFechas(req.getFechaDesde(), req.getFechaHasta());
@@ -105,7 +105,7 @@ public class GestorReserva {
             throw new BadRequestException("Faltan completar datos obligatorios del huésped (nombre/apellido/telefono).");
         }
 
-        // normalizar a mayúsculas (requerimiento)
+        //pasar a mayus
         String nombre = req.getNombre().toUpperCase();
         String apellido = req.getApellido().toUpperCase();
         String telefono = req.getTelefono();
@@ -116,18 +116,18 @@ public class GestorReserva {
             Habitacion h = habitacionRepository.findById(idHabitacion)
                     .orElseThrow(() -> new ResourceNotFoundException("Habitación no encontrada: " + idHabitacion));
 
-            // validar estado actual
+            //validar estado actual
             if (!"DISPONIBLE".equalsIgnoreCase(h.getEstado())) {
                 throw new BadRequestException("La habitación " + h.getNumero() + " ya no está DISPONIBLE (estado=" + h.getEstado() + ").");
             }
 
-            // revalidar solapamientos
+            //revalidar solapamientos
             List<Reserva> solapadas = reservaRepository.verificarDisponibilidad(idHabitacion, req.getFechaDesde(), req.getFechaHasta());
             if (!solapadas.isEmpty()) {
                 throw new BadRequestException("La habitación " + h.getNumero() + " tiene conflicto de reservas en el rango.");
             }
 
-            // crear reserva (una por habitación)
+            //crear reserva (una por habitación)
             Reserva r = Reserva.builder()
                     .numero(generarNumeroReserva())
                     .estado(EstadoReserva.ACTIVA)
@@ -142,7 +142,7 @@ public class GestorReserva {
             Reserva saved = reservaRepository.save(r);
             reservasCreadas.add(saved.getId());
 
-            // persistir cambio de estado a RESERVADA
+            //persistir cambio de estado a RESERVADA
             h.setEstado("RESERVADA");
             habitacionRepository.save(h);
         }

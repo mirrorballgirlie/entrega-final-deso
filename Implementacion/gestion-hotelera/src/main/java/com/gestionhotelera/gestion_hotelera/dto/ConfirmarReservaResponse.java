@@ -10,6 +10,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 
+//modelar el response de la confirmacion de reserva
+
 public class ConfirmarReservaResponse {
 
     private List<Long> reservasIds;

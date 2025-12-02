@@ -4,20 +4,20 @@ import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@Getter
+@Setter
+
+//request para obtener las habitaciones que quiero ocupar
+
 public class ValidarOcupacionRequest {
 
-    // make the field private and provide an explicit getter to avoid
-    // "cannot find symbol: method getHabitaciones()" when Lombok
-    // is not processed by the compiler/IDE
-    private List<HabitacionOcupacionDTO> habitaciones;
-
-    public List<HabitacionOcupacionDTO> getHabitaciones() {
-        return habitaciones;
-    }
+    public List<HabitacionOcupacionDTO> habitaciones;
 
 }

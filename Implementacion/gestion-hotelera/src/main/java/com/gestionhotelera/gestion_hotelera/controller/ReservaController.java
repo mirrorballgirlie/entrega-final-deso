@@ -21,20 +21,20 @@ public class ReservaController {
 
     private final GestorReserva gestorReserva;
 
-    /**
-     * Endpoint para validar la selección de habitaciones antes de confirmar.
-     * Simula el paso en el que el UI detecta habitaciones no DISPONIBLES.
-     */
+    
+      //seleccion de habitaciones antes de confirmar. chequear que la seleccion sea valida
+    
     @PostMapping("/validar-seleccion")
     public ResponseEntity<ValidarSeleccionResponse> validarSeleccion(@RequestBody ValidarSeleccionRequest req) {
         ValidarSeleccionResponse resp = gestorReserva.validarSeleccion(req);
         return ResponseEntity.ok(resp);
     }
 
-    /**
-     * Endpoint para confirmar la(s) reserva(s). Recibe un request con varias habitaciones
-     * (misma fecha de ingreso/egreso y mismo huésped) y crea una reserva por habitación.
-     */
+    
+    
+     //confirmar la reserva. si quiero reservar mas de una habitacion, se "replica" la reserva en cada habitacion seleccionada
+     //se replica manteniendo los datos del huesped y las fecahas de ingreso y egreso
+
     @PostMapping("/confirmar")
     public ResponseEntity<ConfirmarReservaResponse> confirmarReservas(@RequestBody ConfirmarReservaRequest req) {
         ConfirmarReservaResponse resp = gestorReserva.confirmarReservas(req);

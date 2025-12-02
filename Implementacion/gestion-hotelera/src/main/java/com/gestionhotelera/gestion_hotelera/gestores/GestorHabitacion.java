@@ -42,14 +42,14 @@ public class GestorHabitacion {
             throw new IllegalArgumentException("La fecha 'hasta' no puede ser anterior a 'desde'");
         }
 
-        // Obtener todas las habitaciones
+        //obtener todas las habitaciones
         List<Habitacion> habitaciones = habitacionRepository.findAll();
 
-        // Obtener reservas y estadías que se solapen con el rango
+        //obtener reservas y estadias que se solapen con el rango
         List<Reserva> reservas = reservaRepository.findByFechaDesdeBetween(hasta, desde);
         List<Estadia> estadias = estadiaRepository.findByFechaIngresoLessThanEqualAndFechaEgresoGreaterThanEqual(hasta, desde);
 
-        // Determinar estado de cada habitación dentro del rango
+        //determinar estado de cada habitacion dentro del rango
         return habitaciones.stream().peek(h -> {
             boolean ocupada = estadias.stream()
                     .anyMatch(e -> e.getHabitacion().getId().equals(h.getId()));
@@ -92,14 +92,14 @@ public class GestorHabitacion {
             throw new IllegalArgumentException("La fecha 'hasta' no puede ser anterior a 'desde'.");
         }
 
-        // ====== generar lista de días (columnas del front) ======
+        //generar lista de días (columnas del front)
         List<LocalDate> dias = desde.datesUntil(hasta.plusDays(1))
                 .collect(Collectors.toList());
 
-        // ====== obtener todas las habitaciones ======
+        //obtener todas las habitaciones
         List<Habitacion> habitaciones = habitacionRepository.findAll();
 
-        // ====== generar respuesta por habitación ======
+        //generar respuesta por habitación
         List<HabitacionEstadoDTO> result = habitaciones.stream()
                 .map(h -> mapHabitacionConEstados(h, dias))
                 .collect(Collectors.toList());
@@ -107,9 +107,7 @@ public class GestorHabitacion {
         return new EstadoHabitacionesResponse(result, dias);
     }
 
-        // ================================================
-    // ==== Métodos auxiliares internos ===============
-    // ================================================
+    //metodos auxiliares internos
 
     private HabitacionEstadoDTO mapHabitacionConEstados(Habitacion hab, List<LocalDate> dias) {
 
@@ -121,10 +119,10 @@ public class GestorHabitacion {
         dto.setPrecio(hab.getPrecio());
         dto.setDescripcion(hab.getDescripcion());
 
-        // Estado actual (no afecta grilla)
+        //estado actual
         dto.setEstadoActual(hab.getEstado());
 
-        // Estados por día
+        //estados por día
         List<EstadoDiarioDTO> estadoDiario = dias.stream()
                 .map(dia -> new EstadoDiarioDTO(dia, calcularEstadoEnDia(hab, dia)))
                 .collect(Collectors.toList());
@@ -134,9 +132,7 @@ public class GestorHabitacion {
         return dto;
     }
 
-    /**
-     * Determina el estado de UNA habitación en UN día.
-     */
+    //determinar el estado de una habitacion en particular en un dia en particular
     private String calcularEstadoEnDia(Habitacion hab, LocalDate dia) {
 
         boolean ocupada = estadiaRepository.existeEstadiaEnDia(hab.getId(), dia);

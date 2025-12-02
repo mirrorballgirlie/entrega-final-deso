@@ -11,6 +11,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
@@ -37,9 +38,10 @@ public class Estadia {
     private LocalDate fechaIngreso;
     private LocalDate fechaEgreso;
 
-    @OneToOne(optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "habitacion_id", nullable = false)
     private Habitacion habitacion;
+
 
 
     @OneToOne
@@ -50,8 +52,8 @@ public class Estadia {
     @JoinTable(
     name = "estadia_huesped",
     joinColumns = @JoinColumn(name = "estadia_id"),
-    inverseJoinColumns = @JoinColumn(name = "huesped_id")
-)
+    inverseJoinColumns = @JoinColumn(name = "huesped_id"))
+
     @Builder.Default
     private List<Huesped> huespedes = new ArrayList<>();
 
