@@ -1,0 +1,97 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+Myanmar:wght@400;700&display=swap');
+.main {
+    min-height: 100vh; 
+    background-color: #FFFCF5; 
+    padding: 2rem; 
+}
+
+
+.card {
+    
+    margin-bottom: 1.5rem; 
+    padding: 1rem; 
+    background: FFFCF5; 
+    border-radius: 0.5rem; 
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1); 
+}
+
+
+.title {
+    display: flex;
+    justify-content: center;
+    /* width: 240px;
+    height: 39px; */
+    color: #000;
+    font-family: "Noto Sans Myanmar", sans-serif;
+    font-size: 35px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+.subtitle {
+    /* width: 578.224px; */
+    margin-bottom: 40px;
+    color: #000;
+    font-family: "Open Sans";
+    font-size: 35px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+.row {
+    display: flex; 
+    justify-content: flex-start;
+    
+    gap: 1rem; 
+    align-items: end; 
+    margin-bottom: 30px;
+    margin-left: 250px;
+}
+
+
+/* .field {} */
+
+
+.label {
+    display: block; /* block */
+    /* font-size: 0.875rem; text-sm */
+    /* font-weight: 500; font-medium */
+    margin-bottom: 0.25rem; /* mb-1 */
+    /* width: 131.987px;
+    height: 38px; */
+    color: #000;
+    font-family: "Open Sans";
+    font-size: 28px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+
+.input {
+    padding: 0.5rem 0.75rem; 
+    border: 1px solid #d1d5db; 
+    border-radius: 0.375rem; 
+    color: rgba(0, 0, 0, 0.40);
+    font-family: "Open Sans";
+    font-size: 23px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: normal;
+}
+
+
+.buttonContainer {
+    display: flex;
+    justify-content:flex-end;
+}
+
+
+.button:hover {
+    background-color: #1d4ed8; 
+}
+
+.rojo{
+    color: red;
+}

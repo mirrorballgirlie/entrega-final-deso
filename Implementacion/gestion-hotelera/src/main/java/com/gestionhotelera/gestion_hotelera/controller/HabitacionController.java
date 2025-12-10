@@ -1,7 +1,7 @@
 package com.gestionhotelera.gestion_hotelera.controller;
 
 import java.time.LocalDate;
-
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,6 +14,7 @@ import com.gestionhotelera.gestion_hotelera.gestores.GestorHabitacion;
 
 import lombok.RequiredArgsConstructor;
 
+@CrossOrigin(origins = "http://localhost:3000") 
 @RestController
 @RequestMapping("/habitaciones")
 @RequiredArgsConstructor

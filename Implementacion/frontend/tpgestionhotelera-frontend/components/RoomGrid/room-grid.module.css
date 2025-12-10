@@ -1,0 +1,390 @@
+.grid-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background-color: #FFFCF5;
+  padding: 24px;
+  border-radius: 8px;
+  max-width: 100%;
+  min-height: 100vh;
+}
+
+.grid-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.btn-back {
+  background-color: #3d4a7a;
+  color: #FFFCF5;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: background-color 0.2s;
+}
+
+.btn-back:hover {
+  background-color: #2d3a6a;
+}
+
+.grid-title {
+  font-size: 24px;
+  font-weight: 600;
+  color: #000;
+  flex: 1;
+  text-align: center;
+}
+
+.room-type-select {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: white;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  min-width: 150px;
+}
+
+.room-type-select:hover {
+  border-color: #999;
+}
+
+/* Room controls styling for horizontal scroll */
+.room-controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  background-color: white;
+  padding: 12px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.room-controls.horizontal {
+  margin-bottom: 8px;
+}
+
+/* Date controls styling for vertical scroll */
+.date-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background-color: white;
+  padding: 12px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.date-controls.vertical {
+  width: auto;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.scroll-info {
+  font-size: 13px;
+  color: #666;
+  min-width: 150px;
+  text-align: center;
+}
+
+.scroll-info.vertical {
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  min-width: auto;
+  min-height: 80px;
+  font-size: 11px;
+}
+
+/* Room and date scroll buttons */
+.scroll-btn {
+  background-color: #3d4a7a;
+  color: white;
+  border: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scroll-btn:hover:not(:disabled) {
+  background-color: #2d3a6a;
+}
+
+.scroll-btn:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.scroll-btn.vertical {
+  width: 32px;
+  height: 32px;
+}
+
+/* Grid main layout: flex with room controls on top, table in center, date controls on right */
+.grid-main {
+  display: flex;
+  flex-direction: row;
+  gap: 12px;
+  background-color: #D9D9D9;
+  border-radius: 6px;
+  padding: 12px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.grid-main > div:first-child {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.grid-main > div:last-child {
+  align-self: flex-end;
+}
+
+.grid-container {
+  overflow: auto;
+  flex: 1;
+  background-color: white;
+}
+
+.room-grid-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.room-grid-table thead {
+  background-color: #f9f9f9;
+  border-bottom: 2px solid #ddd;
+  position: sticky;
+  top: 0;
+}
+
+.room-grid-table th {
+  padding: 12px 8px;
+  text-align: center;
+  font-weight: 600;
+  font-size: 12px;
+  color: #333;
+  border-right: 1px solid #e0e0e0;
+  min-width: 80px;
+}
+
+.room-grid-table th:first-child {
+  min-width: 100px;
+  border-right: 2px solid #999;
+}
+
+.header-cell {
+  position: sticky;
+  left: 0;
+  background-color: #f9f9f9;
+  z-index: 10;
+}
+
+.room-header {
+  min-width: 80px;
+}
+
+.room-grid-table tbody tr {
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.room-grid-table tbody tr:hover {
+  background-color: #f5f5f5;
+}
+
+/* Date cell styling with sticky positioning */
+.date-cell {
+  padding: 12px 8px;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: #333;
+  border-right: 2px solid #999;
+  background-color: #f9f9f9;
+  min-width: 100px;
+  position: sticky;
+  left: 0;
+  z-index: 9;
+}
+
+.status-cell {
+  padding: 8px;
+  text-align: center;
+  vertical-align: middle;
+  min-width: 80px;
+}
+
+.status-box {
+  width: 48px;
+  height: 48px;
+  margin: 0 auto;
+  border-radius: 6px;
+  border: 2px solid #666;
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.status-box:hover {
+  transform: scale(1.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Add styles for selectable cells and selected state */
+.status-box.selectable {
+  cursor: pointer;
+}
+
+.status-box.selectable:hover {
+  transform: scale(1.08);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.status-box.selected {
+  outline: 3px solid #0066ff;
+  outline-offset: 2px;
+  box-shadow: 0 0 10px rgba(0, 102, 255, 0.5);
+}
+
+/* Status colors */
+.status-available {
+  background-color: #22c55e;
+}
+
+.status-reserved {
+  background-color: #eab308;
+}
+
+.status-occupied {
+  background-color: #ef4444;
+}
+
+.status-maintenance {
+  background-color: #404040;
+}
+
+/* Add error popup styling */
+.error-popup {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #ef4444;
+  color: FFFCF5;
+  padding: 16px 24px;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 1000;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.grid-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #FFFCF5;
+  padding: 12px;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Add next button styling */
+.btn-next {
+  background-color: #3d4a7a;
+  color: FFFCF5;
+  border: none;
+  padding: 10px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background-color 0.2s;
+  margin-left: auto;
+}
+
+.btn-next:hover:not(:disabled) {
+  background-color: #2d3a6a;
+}
+
+.btn-next:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.total-info {
+  font-size: 13px;
+  color: #666;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .grid-wrapper {
+    padding: 16px;
+    gap: 12px;
+  }
+
+  .grid-header {
+    flex-wrap: wrap;
+  }
+
+  .grid-title {
+    width: 100%;
+    order: -1;
+  }
+
+  .status-box {
+    width: 40px;
+    height: 40px;
+  }
+
+  .room-grid-table th,
+  .date-cell,
+  .status-cell {
+    padding: 8px 4px;
+  }
+
+  .scroll-info.vertical {
+    min-height: 60px;
+  }
+
+  /* Responsive layout returns to column for mobile */
+  .grid-main {
+    flex-direction: column;
+  }
+
+  .grid-main > div:last-child {
+    align-self: center;
+  }
+}

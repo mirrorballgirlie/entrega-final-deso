@@ -7,6 +7,10 @@ import com.gestionhotelera.gestion_hotelera.dto.*;
 import com.gestionhotelera.gestion_hotelera.gestores.GestorEstadia;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.CrossOrigin;
+
+@CrossOrigin(origins = "http://localhost:3000")
+
 
 @RestController
 @RequestMapping("/api/estadias")

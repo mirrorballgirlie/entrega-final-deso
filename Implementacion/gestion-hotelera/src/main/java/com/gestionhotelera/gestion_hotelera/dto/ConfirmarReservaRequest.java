@@ -3,6 +3,8 @@ package com.gestionhotelera.gestion_hotelera.dto;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +18,9 @@ import lombok.NoArgsConstructor;
 public class ConfirmarReservaRequest {
 
     private List<Long> habitacionIds;  //una o mas habitaciones
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaDesde;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaHasta;
     //8. El sistema muestra el campo “Reserva a nombre de:  
     //apellido 

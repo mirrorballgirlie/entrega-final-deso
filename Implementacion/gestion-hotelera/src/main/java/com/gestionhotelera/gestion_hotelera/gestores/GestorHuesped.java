@@ -26,6 +26,11 @@ public class GestorHuesped {
 
     //para el cu2, se buscan los huespedes por combinaciones de filtros o por ningun filtro. en ese caso, se retornan todos los huespedes
     public List<Huesped> buscarFiltrado(String apellido, String nombre, String tipoDocumento, String documento){
+        apellido = (apellido != null && !apellido.isBlank()) ? apellido : null;
+        nombre = (nombre != null && !nombre.isBlank()) ? nombre : null;
+        tipoDocumento = (tipoDocumento != null && !tipoDocumento.isBlank()) ? tipoDocumento : null;
+        documento = (documento != null && !documento.isBlank()) ? documento : null;
+
         boolean sinFiltros = ((apellido == null || apellido.isEmpty()) &&
                              (nombre == null || nombre.isEmpty()) &&
                              (tipoDocumento == null || tipoDocumento.isEmpty()) &&
@@ -77,6 +82,7 @@ public class GestorHuesped {
         .numero(dirDto.getNumero())
         .codigoPostal(dirDto.getCodigoPostal())
         .build();
+        //setear piso y depto
 
         //guardar la direccion
 
@@ -114,6 +120,7 @@ public class GestorHuesped {
         return huespedRepository.existsByTipoDocumentoAndDocumento(tipoDocumento, documento);
     }
 
+    
 
 
 }

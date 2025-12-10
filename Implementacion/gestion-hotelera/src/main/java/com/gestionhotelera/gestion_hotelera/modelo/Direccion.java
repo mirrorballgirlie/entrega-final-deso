@@ -1,4 +1,6 @@
 package com.gestionhotelera.gestion_hotelera.modelo;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,6 +34,7 @@ public class Direccion {
     private PersonaJuridica personaJuridica;
 
     @OneToOne(mappedBy = "direccion")
+    @JsonIgnore
     private Huesped huesped;
 
 

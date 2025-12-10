@@ -60,25 +60,29 @@ public class HuespedController {
     }
 
     @GetMapping("/buscar")
-    public ResponseEntity<?> buscarHuesped(
+public ResponseEntity<?> buscarHuesped(
         @RequestParam(required = false) String apellido,
         @RequestParam(required = false) String nombre,
         @RequestParam(required = false) String tipoDocumento,
         @RequestParam(required = false) String documento) {
 
+    // Normalización de filtros
+    apellido = (apellido == null || apellido.isBlank()) ? null : apellido.trim();
+    nombre = (nombre == null || nombre.isBlank()) ? null : nombre.trim();
+    tipoDocumento = (tipoDocumento == null || tipoDocumento.isBlank()) ? null : tipoDocumento.trim();
+    documento = (documento == null || documento.isBlank()) ? null : documento.trim();
+
     try {
         var resultados = gestorHuesped.buscarFiltrado(apellido, nombre, tipoDocumento, documento);
 
-        // Siempre devolver JSON Importante para entender mari
         if (resultados.isEmpty()) {
             Map<String, Object> response = new HashMap<>();
             response.put("existe", false);
-            response.put("resultados", List.of()); // lista vacía
+            response.put("resultados", List.of());
             response.put("mensaje", "No se encontraron huéspedes con los filtros aplicados.");
             return ResponseEntity.ok(response);
         }
 
-        // Si hay resultados
         Map<String, Object> response = new HashMap<>();
         response.put("existe", true);
         response.put("resultados", resultados);
@@ -92,6 +96,7 @@ public class HuespedController {
         return ResponseEntity.internalServerError().body(error);
     }
 }
+
 
 }
 

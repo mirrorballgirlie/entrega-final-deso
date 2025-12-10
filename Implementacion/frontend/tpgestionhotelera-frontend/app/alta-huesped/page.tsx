@@ -4,7 +4,8 @@ import Image from "next/image";
 import styles from "./alta.module.css";
 import FormField from "@/components/FormField";
 import PopupCritical from "@/components/PopupCritical";
-import ErrorBox from "@/components/ErrorBox";
+import Title from "@/components/Title";
+// import ErrorBox from "@/components/ErrorBox";
 import Button from "@/components/Button";
 
 type FormState = {
@@ -114,7 +115,21 @@ export default function AltaHuespedPage() {
   }));
 }
 
-
+const validateField = (fieldName: string, value: string) => {
+    if (!value || value.trim() === "") {
+      // SI HAY ERROR: Agregamos el nombre del campo al array
+      setErrors(prev => {
+        // Si ya existe el error en la lista, no hacemos nada (para evitar duplicados)
+        if (prev.includes(fieldName)) return prev;
+        // Si no existe, copiamos lo anterior y agregamos el nuevo
+        return [...prev, fieldName];
+      });
+    } else {
+      // NO HAY ERROR: Sacamos el nombre del campo del array
+      setErrors(prev => prev.filter(field => field !== fieldName));
+    }
+  };
+  
   // Validación local (2.A)
   function validate(): string[] {
     const e: string[] = [];
@@ -148,55 +163,6 @@ export default function AltaHuespedPage() {
       return;
     }
 
-    // Consulta duplicado (2.B) -> ajustar endpoint real
-    // try {
-    //   const base = process.env.NEXT_PUBLIC_API_BASE || "";
-    //   const res = await fetch(`${base}/api/huesped/existe?tipo=${encodeURIComponent(form.tipoDocumento)}&nro=${encodeURIComponent(form.documento)}`); //Llamada al backend con el fetch para verificar duplicado
-    //   if (!res.ok) throw new Error("Error al verificar duplicado");
-    //   const { existe } = await res.json(); // backend: { existe: true/false }
-    //   if (existe) {
-    //     setShowDuplicatePopup(true);
-    //     setShowCritical(true);
-    //     return;
-    //   }
-    //   // si no existe -> guardar directamente
-    //   await guardarHuesped();
-    // } catch (err) {
-    //   console.error(err);
-    //   // en caso de error de red mostramos popup crítico genérico
-    //   setShowDuplicatePopup(true); // reusar popup con texto distinto si querés
-    //   setShowCritical(true);
-    // }
-
-    // try {
-    //   const base = process.env.NEXT_PUBLIC_API_BASE;
-  
-    //   const url = `${base}/api/huespedes/buscar?` +
-    //   `tipoDocumento=${encodeURIComponent(form.tipoDocumento)}&` +
-    //   `documento=${encodeURIComponent(form.documento)}`;
-
-    //   const res = await fetch(url);
-    //   if (!res.ok) throw new Error("Error al consultar huésped");
-
-    //   const data = await res.json();
-
-    //   console.log("Resultado del backend:", data);
-
-    //   // si el backend devuelve un texto "No se encontraron huéspedes..." entonces:
-    //   if (typeof data === "string") {
-    //     console.log("No existe el huésped");
-    //     return;
-    //   }
-
-    //   // si devuelve una lista de huéspedes, entonces existe
-    //   if (Array.isArray(data) && data.length > 0) {
-    //     console.log("El huésped existe:", data[0]);
-    //     return;
-    //   }
-
-    //   } catch (e) {
-    //     console.error("Error de red:", e);
-    //   }
 
     try {
       const base = process.env.NEXT_PUBLIC_API_BASE;
@@ -332,21 +298,19 @@ export default function AltaHuespedPage() {
   }
 
   return (
-    <div className={`${styles.wrapper} ${showCritical ? styles.isCritical : ""}`}> {/*cambia la clase  entre wrapper e isCritical del div principal si hay un popup crítico activo */}
-      {/* Si querés usar la imagen de fondo/rectángulo gris ponla en public y usá next/image */}
-      {/* <div className={styles.header}>
-        <div className={styles.headerChild} />
-        <div className={styles.hotelPremier}>Hotel Premier</div>
-      </div> */}
-      <>
-        <h1 className={styles.title}>Dar de alta Huesped</h1>
-      </>
+    <div className={styles.wrapper}> {/*cambia la clase  entre wrapper e isCritical del div principal si hay un popup crítico activo */}
+      
+      
+      <header className={styles.header}>
+        <Title>Dar de alta Huesped</Title>
+      </header>
 
       <main className={styles.mainContent}>
         
 
         {/* Error list (2.A) */}
-        {errors.length > 0 && <ErrorBox messages={errors} />}
+        {/* {errors.length > 0 && <ErrorBox messages={errors} />} */}
+        {errors.length > 0 }
   
         <form id="formHuesped" className={styles.form} onSubmit={handleSiguiente}>
           {/* {Datos Personales} */}
@@ -355,31 +319,79 @@ export default function AltaHuespedPage() {
 
           {/* Primera fila */}
           <div className={styles.row}>
+
             <FormField label="Apellido *">
-              <input name="apellido" placeholder="INGRESE UN APELLIDO..." value={form.apellido} onChange={(ev)=> setField("apellido", ev.target.value.toUpperCase())} />
+              <input name="apellido" placeholder="INGRESE UN APELLIDO..." value={form.apellido} onChange={(ev) => {
+                const val = ev.target.value.toUpperCase(); 
+                setField("apellido", val);
+                    // Validamos al escribir para que se borre el error si ya corrigió, esto tiene sentido si antes hubo un error. Sino el if no trigerea
+                    if (errors.includes("apellido")) validateField("apellido", val);
+                }}
+                onBlur={(ev) => validateField("apellido", ev.target.value)} />
+              {errors.includes("apellido") && (
+                <span className={styles.errorMessage}>
+                  Este campo es obligatorio
+                </span>
+              )}
             </FormField>
 
+
             <FormField label="Nombres *">
-              <input name="nombres" placeholder="INGRESE UN NOMBRE..." value={form.nombres} onChange={(ev)=> setField("nombres", ev.target.value.toUpperCase())} />
+              <input name="nombres" placeholder="INGRESE UN NOMBRE..." value={form.nombres} onChange={(ev)=> {
+                const val = ev.target.value.toUpperCase(); 
+                setField("nombres", val);
+                    // Validamos al escribir para que se borre el error si ya corrigió, esto tiene sentido si antes hubo un error. Sino el if no trigerea
+                    if (errors.includes("nombres")) validateField("nombres", val);
+              }} 
+              onBlur={(ev) => validateField("nombres", ev.target.value)}/>
+              {errors.includes("nombres") && (
+                <span className={styles.errorMessage}>
+                  Este campo es obligatorio
+                </span>
+              )}
+
             </FormField>
           </div>
 
           <div className={styles.row}>
+           
+            <FormField label="Nro. documento *">
+              <input 
+                name="documento" 
+                placeholder="INGRESE UN NÚMERO DE DOCUMENTO..." 
+                value={form.documento} 
+                onChange={(ev) => {
+                  setField("documento", ev.target.value.toUpperCase());
+                  if (errors.includes("documento")) validateField("documento", ev.target.value);
+                }}
+                onBlur={(ev) => validateField("documento", ev.target.value)}
+                style={{ borderColor: errors.includes("documento") ? "red" : undefined }}
+              />
+              {errors.includes("documento") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
+            </FormField>
+
             <FormField label="Tipo de Documento *">
-              <select name="tipoDocumento" ref={tipoDocRef} value={form.tipoDocumento} onChange={(ev)=> setField("tipoDocumento", ev.target.value)}>
+              <select 
+                name="tipoDocumento" 
+                ref={tipoDocRef} 
+                value={form.tipoDocumento} 
+                onChange={(ev) => {
+                  setField("tipoDocumento", ev.target.value);
+                  if (errors.includes("tipoDocumento")) validateField("tipoDocumento", ev.target.value);
+                }}
+                onBlur={(ev) => validateField("tipoDocumento", ev.target.value)}
+                style={{ borderColor: errors.includes("tipoDocumento") ? "red" : undefined }}
+              >
+                <option value="">SELECCIONE...</option> {/* Opción vacía recomendada para validar */}
                 <option>DNI</option>
                 <option>LE</option>
                 <option>LC</option>
                 <option>PASAPORTE</option>
                 <option>OTRO</option>
               </select>
+              {errors.includes("tipoDocumento") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
             </FormField>
 
-            <FormField label="Número documento *">
-              <input name="documento" placeholder="INGRESE UN NÚMERO DE DOCUMENTO..." value={form.documento} onChange={(ev)=> setField("documento", ev.target.value.toUpperCase())} />
-            </FormField>
-
-            
           </div>
 
           <div className={styles.row}>
@@ -388,19 +400,41 @@ export default function AltaHuespedPage() {
             </FormField>
 
             <FormField label="Nacionalidad *">
-              <select name="nacionalidad"  value={form.nacionalidad} onChange={(ev)=> setField("nacionalidad", ev.target.value.toUpperCase())} >
+              <select 
+                name="nacionalidad" 
+                value={form.nacionalidad} 
+                onChange={(ev) => {
+                  setField("nacionalidad", ev.target.value.toUpperCase());
+                  if (errors.includes("nacionalidad")) validateField("nacionalidad", ev.target.value);
+                }}
+                onBlur={(ev) => validateField("nacionalidad", ev.target.value)}
+                style={{ borderColor: errors.includes("nacionalidad") ? "red" : undefined }}
+              >
+                <option value="">SELECCIONE...</option>
                 {paisesAmerica.map((pais) => (
                   <option key={pais} value={pais.toUpperCase()}>{pais}</option>
                 ))}
-              </select>  
+              </select>
+              {errors.includes("nacionalidad") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
             </FormField>
 
           </div>
 
           <div className={styles.row}>
             <FormField label="Fecha de Nacimiento *">
-              <input type="date" placeholder="--/--/----" name="fechaNacimiento" value={form.fechaNacimiento} onChange={(ev)=> setField("fechaNacimiento", ev.target.value)} />
-
+              <input 
+                type="date" 
+                placeholder="--/--/----" 
+                name="fechaNacimiento" 
+                value={form.fechaNacimiento} 
+                onChange={(ev) => {
+                  setField("fechaNacimiento", ev.target.value);
+                  if (errors.includes("fechaNacimiento")) validateField("fechaNacimiento", ev.target.value);
+                }}
+                onBlur={(ev) => validateField("fechaNacimiento", ev.target.value)}
+                style={{ borderColor: errors.includes("fechaNacimiento") ? "red" : undefined }}
+              />
+              {errors.includes("fechaNacimiento") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
             </FormField>
           </div>
 
@@ -409,41 +443,129 @@ export default function AltaHuespedPage() {
 
           <div className={styles.row}>
             <FormField label="Pais *">
-              <input name="pais" placeholder="INGRESE UN PAIS..." value={form.direccion.pais} onChange={(ev)=> setDireccionField("pais", ev.target.value)} />
+              <input 
+                name="pais" 
+                placeholder="INGRESE UN PAIS..." 
+                value={form.direccion.pais} 
+                onChange={(ev) => {
+                  setDireccionField("pais", ev.target.value);
+                  if (errors.includes("pais")) validateField("pais", ev.target.value);
+                }}
+                onBlur={(ev) => validateField("pais", ev.target.value)}
+                style={{ borderColor: errors.includes("pais") ? "red" : undefined }}
+              />
+              {errors.includes("pais") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
             </FormField>
 
             <FormField label="Provincia *">
-              <input name="provincia" placeholder="INGRESE UNA PROVINCIA..." value={form.direccion.provincia} onChange={(ev)=> setDireccionField("provincia", ev.target.value.toUpperCase())} />
+              <input 
+                name="provincia" 
+                placeholder="INGRESE UNA PROVINCIA..." 
+                value={form.direccion.provincia} 
+                onChange={(ev) => {
+                  setDireccionField("provincia", ev.target.value.toUpperCase());
+                  if (errors.includes("provincia")) validateField("provincia", ev.target.value);
+                }}
+                onBlur={(ev) => validateField("provincia", ev.target.value)}
+                style={{ borderColor: errors.includes("provincia") ? "red" : undefined }}
+              />
+              {errors.includes("provincia") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
             </FormField>
           </div>
 
            <div className={styles.row}>
-            <FormField label="ciudad *">
-              <input name="ciudad" placeholder="INGRESE UNA ciudad..." value={form.direccion.ciudad} onChange={(ev)=> setDireccionField("ciudad", ev.target.value.toUpperCase())} />
+            <FormField label="Ciudad *">
+              <input 
+                name="ciudad" 
+                placeholder="INGRESE UNA CIUDAD..." 
+                value={form.direccion.ciudad} 
+                onChange={(ev) => {
+                  setDireccionField("ciudad", ev.target.value.toUpperCase());
+                  if (errors.includes("ciudad")) validateField("ciudad", ev.target.value);
+                }}
+                onBlur={(ev) => validateField("ciudad", ev.target.value)}
+                style={{ borderColor: errors.includes("ciudad") ? "red" : undefined }}
+              />
+              {errors.includes("ciudad") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
             </FormField>
 
             <FormField label="Codigo Postal *">
-              <input name="codigoPostal" placeholder="INGRESE UN CODIGO POSTAL..." value={form.direccion.codigoPostal} onChange={(ev)=> setDireccionField("codigoPostal", ev.target.value.toUpperCase())} />
+              <input 
+                name="codigoPostal" 
+                placeholder="INGRESE UN CODIGO POSTAL..." 
+                value={form.direccion.codigoPostal} 
+                onChange={(ev) => {
+                  setDireccionField("codigoPostal", ev.target.value.toUpperCase());
+                  if (errors.includes("codigoPostal")) validateField("codigoPostal", ev.target.value);
+                }}
+                onBlur={(ev) => validateField("codigoPostal", ev.target.value)}
+                style={{ borderColor: errors.includes("codigoPostal") ? "red" : undefined }}
+              />
+              {errors.includes("codigoPostal") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
             </FormField>
           </div>
 
           <div className={styles.row}>
             <FormField label="Calle *">
-              <input name="calle"   placeholder="INGRESE UNA CALLE..." value={form.direccion.calle} onChange={(ev)=> setDireccionField("calle", ev.target.value.toUpperCase())} />
+              <input 
+                name="calle" 
+                placeholder="INGRESE UNA CALLE..." 
+                value={form.direccion.calle} 
+                onChange={(ev) => {
+                  setDireccionField("calle", ev.target.value.toUpperCase());
+                  if (errors.includes("calle")) validateField("calle", ev.target.value);
+                }}
+                onBlur={(ev) => validateField("calle", ev.target.value)}
+                style={{ borderColor: errors.includes("calle") ? "red" : undefined }}
+              />
+              {errors.includes("calle") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
             </FormField>
 
             <FormField label="Numero *">
-              <input name="numero" placeholder="INGRESE UN NUMERO..." value={form.direccion.numero} onChange={(ev)=> setDireccionField("numero", ev.target.value)} />
+              <input 
+                name="numero" 
+                placeholder="INGRESE UN NUMERO..." 
+                value={form.direccion.numero} 
+                onChange={(ev) => {
+                  setDireccionField("numero", ev.target.value);
+                  if (errors.includes("numero")) validateField("numero", ev.target.value);
+                }}
+                onBlur={(ev) => validateField("numero", ev.target.value)}
+                style={{ borderColor: errors.includes("numero") ? "red" : undefined }}
+              />
+              {errors.includes("numero") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
             </FormField>
           </div>
 
           <div className={styles.row}>
             <FormField label="Piso *">
-              <input name="piso"   placeholder="INGRESE UN PISO..." value={form.direccion.piso} onChange={(ev)=> setDireccionField("piso", ev.target.value)} />
+              <input 
+                name="piso" 
+                placeholder="INGRESE UN PISO..." 
+                value={form.direccion.piso} 
+                onChange={(ev) => {
+                  setDireccionField("piso", ev.target.value);
+                  if (errors.includes("piso")) validateField("piso", ev.target.value);
+                }}
+                onBlur={(ev) => validateField("piso", ev.target.value)}
+                style={{ borderColor: errors.includes("piso") ? "red" : undefined }}
+              />
+              {errors.includes("piso") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
             </FormField>
 
             <FormField label="Departamento *">
-              <input name="departamento" placeholder="INGRESE UN DEPARTAMENTO..." value={form.direccion.departamento} onChange={(ev)=> setDireccionField("departamento", ev.target.value.toUpperCase())} />
+              <input 
+                name="departamento" 
+                placeholder="INGRESE UN DEPARTAMENTO..." 
+                value={form.direccion.departamento} 
+                onChange={(ev) => {
+                  setDireccionField("departamento", ev.target.value.toUpperCase());
+                  if (errors.includes("departamento")) validateField("departamento", ev.target.value);
+                }}
+                onBlur={(ev) => validateField("departamento", ev.target.value)}
+                style={{ borderColor: errors.includes("departamento") ? "red" : undefined }}
+              />
+              {errors.includes("departamento") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
             </FormField>
           </div>
 
@@ -451,11 +573,33 @@ export default function AltaHuespedPage() {
 
           <div className={styles.row}>
             <FormField label="Posición Frente al IVA *">
-              <input name="posicionIVA"  placeholder="INGRESE UNA POSICIÓN..." value={form.posicionIVA} onChange={(ev)=> setField("posicionIVA", ev.target.value.toUpperCase())} />
+              <input 
+                name="posicionIVA" 
+                placeholder="INGRESE UNA POSICIÓN..." 
+                value={form.posicionIVA} 
+                onChange={(ev) => {
+                  setField("posicionIVA", ev.target.value.toUpperCase());
+                  if (errors.includes("posicionIVA")) validateField("posicionIVA", ev.target.value);
+                }}
+                onBlur={(ev) => validateField("posicionIVA", ev.target.value)}
+                style={{ borderColor: errors.includes("posicionIVA") ? "red" : undefined }}
+              />
+              {errors.includes("posicionIVA") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
             </FormField>
 
             <FormField label="Ocupación *">
-              <input name="ocupacion" placeholder="INGRESE UNA OCUPACIÓN..." value={form.ocupacion} onChange={(ev)=> setField("ocupacion", ev.target.value.toUpperCase())} />
+              <input 
+                name="ocupacion" 
+                placeholder="INGRESE UNA OCUPACIÓN..." 
+                value={form.ocupacion} 
+                onChange={(ev) => {
+                  setField("ocupacion", ev.target.value.toUpperCase());
+                  if (errors.includes("ocupacion")) validateField("ocupacion", ev.target.value);
+                }}
+                onBlur={(ev) => validateField("ocupacion", ev.target.value)}
+                style={{ borderColor: errors.includes("ocupacion") ? "red" : undefined }}
+              />
+              {errors.includes("ocupacion") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
             </FormField>
           </div>
 
@@ -464,8 +608,19 @@ export default function AltaHuespedPage() {
 
           <div className={styles.row}>
             <FormField label="Telefono *">
-              <input name="telefono"  placeholder="INGRESE UN TELEFONO..." value={form.telefono} onChange={(ev)=> setField("telefono", ev.target.value.toUpperCase())} />
-            </FormField>
+              <input 
+              name="telefono" 
+              placeholder="INGRESE UN TELEFONO..." 
+              value={form.telefono} 
+              onChange={(ev) => {
+                setField("telefono", ev.target.value.toUpperCase());
+                if (errors.includes("telefono")) validateField("telefono", ev.target.value);
+              }}
+              onBlur={(ev) => validateField("telefono", ev.target.value)}
+              style={{ borderColor: errors.includes("telefono") ? "red" : undefined }}
+            />
+            {errors.includes("telefono") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
+          </FormField>
 
             <FormField label="Email *">
               <input name="email" placeholder="INGRESE UN EMAIL..." value={form.email} onChange={(ev)=> setField("email", ev.target.value.toUpperCase())} />
@@ -480,10 +635,9 @@ export default function AltaHuespedPage() {
           </div>
       </main>
       
-
       {/* Popups */}
       {showDuplicatePopup && (
-        <PopupCritical title="¡CUIDADO!"
+        <PopupCritical 
           message="El tipo y número de documento ya existen en el sistema"
           primaryText="ACEPTAR IGUALMENTE"
           secondaryText="CORREGIR"
@@ -494,7 +648,6 @@ export default function AltaHuespedPage() {
 
       {showCancelPopup && (
         <PopupCritical
-          title="Cancelar"
           message="¿Desea cancelar el alta del huésped?"
           primaryText="SI"
           secondaryText="NO"
@@ -505,7 +658,6 @@ export default function AltaHuespedPage() {
 
       {showSuccessPopup && (
         <PopupCritical
-          title="¡Alta exitosa!"
           message={`El huésped ${form.nombres} ${form.apellido} ha sido cargado. ¿Desea cargar otro?`}
           primaryText="SI"
           secondaryText="NO"

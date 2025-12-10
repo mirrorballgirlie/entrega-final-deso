@@ -33,7 +33,8 @@ public class Habitacion {
 
     private int numero;
 
-    @Enumerated(EnumType.STRING)
+    // @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private TipoHabitacion tipo;
     
     private int capacidad;

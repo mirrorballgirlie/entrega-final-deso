@@ -4,9 +4,6 @@ type Rounded = "small" | "medium" | "pill";
 
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
-  /**
-   * Tamaño del radio de borde. `pill` hace el botón completamente redondeado.
-   */
   rounded?: Rounded;
 }
 
@@ -18,21 +15,25 @@ export default function Button({ children, rounded = "medium", style, ...rest }:
   };
 
   const mergedStyle: React.CSSProperties = {
-    padding: "10px 20px",
+    padding: "12px 20px",
     background: "#2a4b8d",
     border: "none",
     color: "#FFFCF5",
     borderRadius: radiusMap[rounded],
-    // Tipografía solicitada
     textAlign: "center",
     fontFamily: '"Myanmar Khyay", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial',
-    fontSize: "24px",
-    fontStyle: "normal",
+    fontSize: "22px",
     fontWeight: 400,
-    lineHeight: "normal",
     cursor: "pointer",
-    width: "179px",
-    height: "50px",
+
+    
+    whiteSpace: "normal",
+
+    
+    minWidth: "150px",
+
+  
+
     ...style,
   };
 

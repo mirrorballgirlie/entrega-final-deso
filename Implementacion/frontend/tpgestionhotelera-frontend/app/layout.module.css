@@ -1,13 +1,21 @@
+/* *{
+    margin: 0;
+    padding: 0;
+} */
+
 .body{
-    width: 1920px;
-    height: 2160px;
+    width: auto;
+    height: auto;
     flex-shrink: 0;
     background: #FFFCF5;
+    /* margin: 0;
+    padding: 0; */
+    
 }
 .header{
     display: flex;
-    width: 1920px;
-    height: 77px;
+    width: auto;
+    height: auto;
     flex-shrink: 0;
     background: #374375;
     color: #FFFCF5;
@@ -18,14 +26,24 @@
     line-height: normal
 }
 .main{
-    width: 1920px;
-    height: 2006px;
+    width: auto;
+    height: auto;
     flex-shrink: 0;
     background: #FFFCF5;
 }
 .footer{
-    width: 1920px;
+    width: auto;
     height: 77px;
     flex-shrink: 0;
     background: #374375;
 } 
+
+.hotelpremier {
+  color: #FFFCF5;
+  font-family: "Mate SC", serif;
+  font-size: 36px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+  
+}

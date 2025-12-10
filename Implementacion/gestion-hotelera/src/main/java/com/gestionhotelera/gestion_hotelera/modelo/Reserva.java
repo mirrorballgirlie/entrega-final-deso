@@ -32,7 +32,8 @@ public class Reserva {
         
     private int numero;
 
-    @Enumerated(EnumType.STRING)
+    // @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.ORDINAL)
     private EstadoReserva estado;
     
     private LocalDate fechaDesde;

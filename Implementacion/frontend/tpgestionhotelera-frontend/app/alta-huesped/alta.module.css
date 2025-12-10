@@ -1,4 +1,7 @@
 .title{
+  display: flex;
+  align-items: center;
+  justify-content: center;
    color: #000000;
   text-align: left;
   font-family: "LibreBaskerville-Regular", sans-serif;
@@ -7,8 +10,8 @@
   position: relative;
   height: 74px;
   top: auto;
-  left: 595px;
-  right: 595px;
+  /* left: 595px;
+  right: 595px; */
   margin-bottom: 10px;
     
 }
@@ -42,9 +45,7 @@
   
 }
 
-.isCritical {
-  filter: grayscale(1); /* pantalla en gris */
-}
+
 .sectionTitle {
     color: #000;
     text-align: left;
@@ -89,23 +90,22 @@
   min-height: 100vh;
   margin-top: 20px;
 
-  
 }
 
 .buttonContainer {
   display: flex;                  
   justify-content: space-between;
   align-items: center;            
-  width: 100%;                    
+  width: 1920px;                    
   margin-top: 18px;               
   padding: 0 20px;   
 }
 
 input::placeholder {
-  color: #000000;           /* Color gris claro */ 
-  letter-spacing: 0.5px;    /* Espaciado entre letras */
-  text-transform: uppercase;/* Si querés mantener el estilo en mayúsculas */
-  opacity: 0.4;             /* Asegura que el color del placeholder sea sólido */
+  color: #000000;           
+  letter-spacing: 0.5px;   
+  text-transform: uppercase;
+  opacity: 0.4;             
   
   width: auto;
   height: auto;
@@ -114,4 +114,18 @@ input::placeholder {
   font-size: 15px;
   background-color: #FFFCF5; /* Fondo claro */
   
+}
+
+.errorMessage {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.header {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 1rem;
+  background-color: #FFFCF5;
 }

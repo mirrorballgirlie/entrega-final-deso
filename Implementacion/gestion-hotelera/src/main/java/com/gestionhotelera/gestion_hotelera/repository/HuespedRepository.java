@@ -20,15 +20,47 @@ public interface HuespedRepository extends JpaRepository<Huesped, Long> {
     List <Huesped> findByApellidoContainingIgnoreCaseAndNombreContainingIgnoreCase(String apellido, String nombre);
 
     // Consulta personalizada para filtros combinados
-    @Query("""
-    SELECT h FROM Huesped h
-    WHERE (:apellido IS NULL OR LOWER(h.apellido) LIKE LOWER(CAST(CONCAT(:apellido, '%') AS string)))
-    AND (:nombre IS NULL OR LOWER(h.nombre) LIKE LOWER(CAST(CONCAT(:nombre, '%') AS string)))
-    AND (:tipoDocumento IS NULL OR h.tipoDocumento = CAST(:tipoDocumento AS string))
-    AND (:documento IS NULL OR h.documento = CAST(:documento AS string))
-""")
+//     @Query("""
+//     SELECT h FROM Huesped h
+//     WHERE (:apellido IS NULL OR LOWER(h.apellido) LIKE LOWER(CAST(CONCAT(:apellido, '%') AS string)))
+//     AND (:nombre IS NULL OR LOWER(h.nombre) LIKE LOWER(CAST(CONCAT(:nombre, '%') AS string)))
+//     AND (:tipoDocumento IS NULL OR h.tipoDocumento = CAST(:tipoDocumento AS string))
+//     AND (:documento IS NULL OR h.documento = CAST(:documento AS string))
+// """)
 
-    List <Huesped> buscarFiltrado(String apellido, String nombre, String tipoDocumento, String documento);
+//     List <Huesped> buscarFiltrado(String apellido, String nombre, String tipoDocumento, String documento);
+
+        // @Query("""
+        //     SELECT h FROM Huesped h
+        //     WHERE (:apellido IS NULL OR LOWER(h.apellido) LIKE LOWER(CONCAT('%', :apellido, '%')))
+        //     AND (:nombre IS NULL OR LOWER(h.nombre) LIKE LOWER(CONCAT('%', :nombre, '%')))
+        //     AND (:tipoDocumento IS NULL OR h.tipoDocumento = :tipoDocumento)
+        //     AND (:documento IS NULL OR h.documento = :documento)
+        // """)
+        // List<Huesped> buscarFiltrado(
+        //         String apellido,
+        //         String nombre,
+        //         String tipoDocumento,
+        //         String documento
+        // );
+       
+        @Query("""
+            SELECT h FROM Huesped h
+            WHERE (:apellido IS NULL OR LOWER(h.apellido) LIKE LOWER(CONCAT(CAST(:apellido AS string), '%')))
+            AND (:nombre IS NULL OR LOWER(h.nombre) LIKE LOWER(CONCAT(CAST(:nombre AS string), '%')))
+            AND (:tipoDocumento IS NULL OR h.tipoDocumento = CAST(:tipoDocumento AS string))
+            AND (:documento IS NULL OR h.documento = CAST(:documento AS string))
+        """)
+List<Huesped> buscarFiltrado(
+        String apellido,
+        String nombre,
+        String tipoDocumento,
+        String documento
+);
+
+
+
+
 
     boolean existsByTipoDocumentoAndDocumento(String tipoDocumento, String documento);
 
