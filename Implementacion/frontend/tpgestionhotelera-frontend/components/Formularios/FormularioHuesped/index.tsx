@@ -17,64 +17,7 @@ export default function FormularioHuesped({ mode }: Props) {
   const [tipoDocumento, setTipoDocumento] = useState("");
   const [documento, setDocumento] = useState("");
 
-  // const handleSearch = async (e: React.FormEvent) => {
-  //   e.preventDefault();
-
-  //   // Validación: al menos un campo
-  //   if (!apellido && !nombres && !tipoDocumento && !documento) {
-  //     alert("Debe completar al menos un campo.");
-  //     return;
-  //   }
-
-  //   try {
-  //     const base = process.env.NEXT_PUBLIC_API_BASE || "";
-
-  //     const queryParams = new URLSearchParams({
-  //       apellido,
-  //       nombres,
-  //       tipoDocumento,
-  //       documento,
-  //     });
-
-  //     const response = await fetch(
-  //       `${base}/api/huespedes/buscar?${queryParams.toString()}`,
-  //       {
-  //         method: "GET",
-  //         headers: {
-  //           "Content-Type": "application/json"
-  //         }
-  //       }
-  //     );
-
-  //     if (!response.ok) {
-  //       const errorText = await response.text();
-  //       alert("Error: " + errorText);
-  //       return;
-  //     }
-
-  //     const data = await response.json();
-
-  //     if (!data.existe) {
-  //       alert(data.mensaje || "No se encontraron huéspedes.");
-  //       return;
-  //     }
-
-  //     // Redirigir a la lista con los filtros y el modo
-  //     const query = new URLSearchParams({
-  //       apellido,
-  //       nombres,
-  //       tipoDocumento,
-  //       documento,
-  //       mode,
-  //     }).toString();
-
-  //     router.push(`/buscar-huesped/Lista-huesped?${query}`);
-
-  //   } catch (error) {
-  //     console.error(error);
-  //     alert("Error al buscar huéspedes");
-  //   }
-  // };
+  
   const handleSearch = (e: React.FormEvent) => {
   e.preventDefault();
 

@@ -1,3 +1,163 @@
+// // package com.gestionhotelera.gestion_hotelera.gestores;
+
+// // import java.time.LocalDate;
+// // import java.util.ArrayList;
+// // import java.util.List;
+
+// // import org.springframework.stereotype.Service;
+// // import org.springframework.transaction.annotation.Transactional;
+
+// // import com.gestionhotelera.gestion_hotelera.dto.ConfirmarReservaRequest;
+// // import com.gestionhotelera.gestion_hotelera.dto.ConfirmarReservaResponse;
+// // import com.gestionhotelera.gestion_hotelera.dto.ValidarSeleccionRequest;
+// // import com.gestionhotelera.gestion_hotelera.dto.ValidarSeleccionResponse;
+// // import com.gestionhotelera.gestion_hotelera.exception.BadRequestException;
+// // import com.gestionhotelera.gestion_hotelera.exception.ResourceNotFoundException;
+// // import com.gestionhotelera.gestion_hotelera.modelo.EstadoReserva;
+// // import com.gestionhotelera.gestion_hotelera.modelo.Habitacion;
+// // import com.gestionhotelera.gestion_hotelera.modelo.Reserva;
+// // import com.gestionhotelera.gestion_hotelera.repository.HabitacionRepository;
+// // import com.gestionhotelera.gestion_hotelera.repository.ReservaRepository;
+
+// // import lombok.RequiredArgsConstructor;
+
+// // @Service
+// // @RequiredArgsConstructor
+
+// // public class GestorReserva {
+
+// //     private final HabitacionRepository habitacionRepository;
+// //     private final ReservaRepository reservaRepository;
+
+// //     se validan que las fechas tengan un formato correcto (que no sean nulas y que desde sea anterior a hasta)
+// //     private void validarFechas(LocalDate desde, LocalDate hasta) {
+// //         if (desde == null || hasta == null) {
+// //             throw new BadRequestException("Las fechas 'desde' y 'hasta' no pueden ser nulas.");
+// //         }
+// //         if (hasta.isBefore(desde)) {
+// //             throw new BadRequestException("La fecha 'hasta' no puede ser anterior a 'desde'.");
+// //         }
+// //     }
+
+// //     se validan las habitaciones solicitadas para un cierto rango de fechas dado
+
+// //     public ValidarSeleccionResponse validarSeleccion(ValidarSeleccionRequest req){
+// //         validarFechas(req.getFechaDesde(), req.getFechaHasta());
+
+// //         if (req.getHabitacionIds() == null || req.getHabitacionIds().isEmpty()) {
+// //             throw new BadRequestException("Debe indicar al menos una habitación a seleccionar.");
+// //         }
+
+// //         List<Long>validas = new ArrayList<>();
+// //         List<String>errores = new ArrayList<>();
+
+// //         for (long idHabitacion : req.getHabitacionIds()){
+// //             Habitacion h = habitacionRepository.findById(idHabitacion).orElse(null);
+// //             ---------- FIX 1: habitación inexistente ----------
+        
+// //             if (h == null) {
+// //             errores.add("Habitación con id = " + idHabitacion + " no existe.");
+// //             continue; // <-- evita NullPointerException
+// //         }
+
+// //         ---------- FIX 2: estado null o no DISPONIBLE ----------
+// //         String estado = h.getEstado();
+        
+// //         if (estado == null || !estado.equalsIgnoreCase("DISPONIBLE")) {
+// //             errores.add("Habitación " + h.getNumero() +
+// //                         " no está DISPONIBLE (estado actual = " + estado + ").");
+// //             continue;
+// //         }
+
+// //         ---------- FIX 3: evitar NPE si verificarDisponibilidad retorna null ----------
+// //         List<Reserva> solapadas =
+// //                 reservaRepository.verificarDisponibilidad(idHabitacion,
+// //                         req.getFechaDesde(), req.getFechaHasta());
+
+// //         if (solapadas != null && !solapadas.isEmpty()) {
+// //             errores.add("Habitación " + h.getNumero() +
+// //                         " tiene reservas solapadas en el rango indicado.");
+// //             continue;
+// //         }
+
+// //         validas.add(idHabitacion);
+// //         }
+            
+
+// //         return new ValidarSeleccionResponse(validas, errores);
+
+       
+
+// //     }
+
+    
+// //     confirma las reservas: vuelve a validar creando una reserva por cada habitación solicitada. es transaccional para que todo se guarde o todo haga rollback por si algo falla
+// //     @Transactional
+// //     public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
+// //         validarFechas(req.getFechaDesde(), req.getFechaHasta());
+
+// //         if (req.getHabitacionIds() == null || req.getHabitacionIds().isEmpty()) {
+// //             throw new BadRequestException("No se recibieron habitaciones para reservar.");
+// //         }
+// //         if (req.getNombre() == null || req.getNombre().isBlank()
+// //                 || req.getApellido() == null || req.getApellido().isBlank()
+// //                 || req.getTelefono() == null || req.getTelefono().isBlank()) {
+// //             throw new BadRequestException("Faltan completar datos obligatorios del huésped (nombre/apellido/telefono).");
+// //         }
+
+// //         pasar a mayus
+// //         String nombre = req.getNombre().toUpperCase();
+// //         String apellido = req.getApellido().toUpperCase();
+// //         String telefono = req.getTelefono();
+
+// //         List<Long> reservasCreadas = new ArrayList<>();
+
+// //         for (Long idHabitacion : req.getHabitacionIds()) {
+// //             Habitacion h = habitacionRepository.findById(idHabitacion)
+// //                     .orElseThrow(() -> new ResourceNotFoundException("Habitación no encontrada: " + idHabitacion));
+
+// //             validar estado actual
+// //             if (!"DISPONIBLE".equalsIgnoreCase(h.getEstado())) {
+// //                 throw new BadRequestException("La habitación " + h.getNumero() + " ya no está DISPONIBLE (estado=" + h.getEstado() + ").");
+// //             }
+
+// //             revalidar solapamientos
+// //             List<Reserva> solapadas = reservaRepository.verificarDisponibilidad(idHabitacion, req.getFechaDesde(), req.getFechaHasta());
+// //             if (!solapadas.isEmpty()) {
+// //                 throw new BadRequestException("La habitación " + h.getNumero() + " tiene conflicto de reservas en el rango.");
+// //             }
+
+// //             crear reserva (una por habitación)
+// //             Reserva r = Reserva.builder()
+// //                     .numero(generarNumeroReserva())
+// //                     .estado(EstadoReserva.ACTIVA)
+// //                     .fechaDesde(req.getFechaDesde())
+// //                     .fechaHasta(req.getFechaHasta())
+// //                     .nombre(nombre)
+// //                     .apellido(apellido)
+// //                     .telefono(telefono)
+// //                     .habitacion(h)
+// //                     .build();
+
+// //             Reserva saved = reservaRepository.save(r);
+// //             reservasCreadas.add(saved.getId());
+
+// //             persistir cambio de estado a RESERVADA
+// //             h.setEstado("RESERVADA");
+// //             habitacionRepository.save(h);
+// //         }
+
+// //         return new ConfirmarReservaResponse(reservasCreadas, "Reservas creadas con éxito");
+// //     }
+
+
+// //     generar nro de reserva
+// //     private int generarNumeroReserva() {
+// //         long count = reservaRepository.count();
+// //         return (int) (count + 1);
+// //     }
+
+// // }
 // package com.gestionhotelera.gestion_hotelera.gestores;
 
 // import java.time.LocalDate;
@@ -23,13 +183,11 @@
 
 // @Service
 // @RequiredArgsConstructor
-
 // public class GestorReserva {
 
 //     private final HabitacionRepository habitacionRepository;
 //     private final ReservaRepository reservaRepository;
 
-//     //se validan que las fechas tengan un formato correcto (que no sean nulas y que desde sea anterior a hasta)
 //     private void validarFechas(LocalDate desde, LocalDate hasta) {
 //         if (desde == null || hasta == null) {
 //             throw new BadRequestException("Las fechas 'desde' y 'hasta' no pueden ser nulas.");
@@ -39,8 +197,6 @@
 //         }
 //     }
 
-//     //se validan las habitaciones solicitadas para un cierto rango de fechas dado
-
 //     public ValidarSeleccionResponse validarSeleccion(ValidarSeleccionRequest req){
 //         validarFechas(req.getFechaDesde(), req.getFechaHasta());
 
@@ -48,52 +204,98 @@
 //             throw new BadRequestException("Debe indicar al menos una habitación a seleccionar.");
 //         }
 
-//         List<Long>validas = new ArrayList<>();
-//         List<String>errores = new ArrayList<>();
+//         List<Long> validas = new ArrayList<>();
+//         List<String> errores = new ArrayList<>();
 
 //         for (long idHabitacion : req.getHabitacionIds()){
 //             Habitacion h = habitacionRepository.findById(idHabitacion).orElse(null);
-//             // ---------- FIX 1: habitación inexistente ----------
-        
+
 //             if (h == null) {
-//             errores.add("Habitación con id = " + idHabitacion + " no existe.");
-//             continue; // <-- evita NullPointerException
-//         }
+//                 errores.add("Habitación con id = " + idHabitacion + " no existe.");
+//                 continue;
+//             }
 
-//         // ---------- FIX 2: estado null o no DISPONIBLE ----------
-//         String estado = h.getEstado();
-        
-//         if (estado == null || !estado.equalsIgnoreCase("DISPONIBLE")) {
-//             errores.add("Habitación " + h.getNumero() +
+//             String estado = h.getEstado();
+//             if (estado == null || !estado.equalsIgnoreCase("DISPONIBLE")) {
+//                 errores.add("Habitación " + h.getNumero() +
 //                         " no está DISPONIBLE (estado actual = " + estado + ").");
-//             continue;
-//         }
+//                 continue;
+//             }
 
-//         // ---------- FIX 3: evitar NPE si verificarDisponibilidad retorna null ----------
-//         List<Reserva> solapadas =
-//                 reservaRepository.verificarDisponibilidad(idHabitacion,
-//                         req.getFechaDesde(), req.getFechaHasta());
+//             List<Reserva> solapadas = reservaRepository.verificarDisponibilidad(idHabitacion,
+//                     req.getFechaDesde(), req.getFechaHasta());
 
-//         if (solapadas != null && !solapadas.isEmpty()) {
-//             errores.add("Habitación " + h.getNumero() +
+//             if (solapadas != null && !solapadas.isEmpty()) {
+//                 errores.add("Habitación " + h.getNumero() +
 //                         " tiene reservas solapadas en el rango indicado.");
-//             continue;
-//         }
+//                 continue;
+//             }
 
-//         validas.add(idHabitacion);
+//             validas.add(idHabitacion);
 //         }
-            
 
 //         return new ValidarSeleccionResponse(validas, errores);
-
-       
-
 //     }
 
-    
-//     //confirma las reservas: vuelve a validar creando una reserva por cada habitación solicitada. es transaccional para que todo se guarde o todo haga rollback por si algo falla
+//     //CONFIRMAR RESERVAS SECCION
+
+//     // @Transactional
+//     // public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
+//     //     validarFechas(req.getFechaDesde(), req.getFechaHasta());
+
+//     //     if (req.getHabitacionIds() == null || req.getHabitacionIds().isEmpty()) {
+//     //         throw new BadRequestException("No se recibieron habitaciones para reservar.");
+//     //     }
+//     //     if (req.getNombre() == null || req.getNombre().isBlank()
+//     //             || req.getApellido() == null || req.getApellido().isBlank()
+//     //             || req.getTelefono() == null || req.getTelefono().isBlank()) {
+//     //         throw new BadRequestException("Faltan completar datos obligatorios del huésped (nombre/apellido/telefono).");
+//     //     }
+
+//     //     String nombre = req.getNombre().toUpperCase();
+//     //     String apellido = req.getApellido().toUpperCase();
+//     //     String telefono = req.getTelefono();
+
+//     //     List<Long> reservasCreadas = new ArrayList<>();
+
+//     //     for (Long idHabitacion : req.getHabitacionIds()) {
+//     //         Habitacion h = habitacionRepository.findById(idHabitacion)
+//     //                 .orElseThrow(() -> new ResourceNotFoundException("Habitación no encontrada: " + idHabitacion));
+
+//     //         if (!"DISPONIBLE".equalsIgnoreCase(h.getEstado())) {
+//     //             throw new BadRequestException("La habitación " + h.getNumero() + " ya no está DISPONIBLE (estado=" + h.getEstado() + ").");
+//     //         }
+
+//     //         List<Reserva> solapadas = reservaRepository.verificarDisponibilidad(idHabitacion, req.getFechaDesde(), req.getFechaHasta());
+//     //         if (solapadas != null && !solapadas.isEmpty()) {
+//     //             throw new BadRequestException("La habitación " + h.getNumero() + " tiene conflicto de reservas en el rango.");
+//     //         }
+
+//     //         Reserva r = Reserva.builder()
+//     //                 .numero(generarNumeroReserva())
+//     //                 .estado(EstadoReserva.ACTIVA)
+//     //                 .fechaDesde(req.getFechaDesde())
+//     //                 .fechaHasta(req.getFechaHasta())
+//     //                 .nombre(nombre)
+//     //                 .apellido(apellido)
+//     //                 .telefono(telefono)
+//     //                 .habitacion(h)
+//     //                 .build();
+
+//     //         Reserva saved = reservaRepository.save(r);
+//     //         reservasCreadas.add(saved.getId());
+
+//     //         // actualizar estado de la habitación a RESERVADA
+//     //         h.setEstado("RESERVADA");
+//     //         habitacionRepository.save(h);
+//     //     }
+
+//     //     return new ConfirmarReservaResponse(reservasCreadas, "Reservas creadas con éxito");
+//     // }
+//                                     //GUIADO 
 //     @Transactional
 //     public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
+//         // 1. Validaciones básicas de entrada
 //         validarFechas(req.getFechaDesde(), req.getFechaHasta());
 
 //         if (req.getHabitacionIds() == null || req.getHabitacionIds().isEmpty()) {
@@ -102,10 +304,9 @@
 //         if (req.getNombre() == null || req.getNombre().isBlank()
 //                 || req.getApellido() == null || req.getApellido().isBlank()
 //                 || req.getTelefono() == null || req.getTelefono().isBlank()) {
-//             throw new BadRequestException("Faltan completar datos obligatorios del huésped (nombre/apellido/telefono).");
+//             throw new BadRequestException("Faltan completar datos obligatorios del huésped.");
 //         }
 
-//         //pasar a mayus
 //         String nombre = req.getNombre().toUpperCase();
 //         String apellido = req.getApellido().toUpperCase();
 //         String telefono = req.getTelefono();
@@ -116,20 +317,21 @@
 //             Habitacion h = habitacionRepository.findById(idHabitacion)
 //                     .orElseThrow(() -> new ResourceNotFoundException("Habitación no encontrada: " + idHabitacion));
 
-//             //validar estado actual
-//             if (!"DISPONIBLE".equalsIgnoreCase(h.getEstado())) {
-//                 throw new BadRequestException("La habitación " + h.getNumero() + " ya no está DISPONIBLE (estado=" + h.getEstado() + ").");
+//             String estadoActual = h.getEstado();
+//             if ("MANTENIMIENTO".equalsIgnoreCase(estadoActual) || "FUERA_SERVICIO".equalsIgnoreCase(estadoActual)) {
+//                 throw new BadRequestException("La habitación " + h.getNumero() + " está en " + estadoActual + " y no se puede reservar.");
 //             }
 
-//             //revalidar solapamientos
 //             List<Reserva> solapadas = reservaRepository.verificarDisponibilidad(idHabitacion, req.getFechaDesde(), req.getFechaHasta());
-//             if (!solapadas.isEmpty()) {
-//                 throw new BadRequestException("La habitación " + h.getNumero() + " tiene conflicto de reservas en el rango.");
+            
+//             if (solapadas != null && !solapadas.isEmpty()) {
+//                 throw new BadRequestException("La habitación " + h.getNumero() + " ya está ocupada para las fechas seleccionadas.");
 //             }
 
-//             //crear reserva (una por habitación)
+//             int nuevoNumero = generarNumeroReserva();
+
 //             Reserva r = Reserva.builder()
-//                     .numero(generarNumeroReserva())
+//                     .numero(nuevoNumero)
 //                     .estado(EstadoReserva.ACTIVA)
 //                     .fechaDesde(req.getFechaDesde())
 //                     .fechaHasta(req.getFechaHasta())
@@ -142,7 +344,6 @@
 //             Reserva saved = reservaRepository.save(r);
 //             reservasCreadas.add(saved.getId());
 
-//             //persistir cambio de estado a RESERVADA
 //             h.setEstado("RESERVADA");
 //             habitacionRepository.save(h);
 //         }
@@ -150,35 +351,35 @@
 //         return new ConfirmarReservaResponse(reservasCreadas, "Reservas creadas con éxito");
 //     }
 
-
-//     //generar nro de reserva
+//     // private int generarNumeroReserva() {
+//     //     long count = reservaRepository.count();
+//     //     return (int) (count + 1);
+//     // }
 //     private int generarNumeroReserva() {
-//         long count = reservaRepository.count();
-//         return (int) (count + 1);
+//     // Buscamos el número más alto que exista en la tabla
+//     Integer maxNumero = reservaRepository.obtenerMaximoNumero();
+//     if (maxNumero == null) {
+//         return 1; // Si no hay reservas, empezamos por el 1
 //     }
-
+//     return maxNumero + 1;
 // }
+// }
+
+
+//nuevo gestor--------------------------------------------------------------------------------------
+
+
 package com.gestionhotelera.gestion_hotelera.gestores;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import com.gestionhotelera.gestion_hotelera.dto.ConfirmarReservaRequest;
-import com.gestionhotelera.gestion_hotelera.dto.ConfirmarReservaResponse;
-import com.gestionhotelera.gestion_hotelera.dto.ValidarSeleccionRequest;
-import com.gestionhotelera.gestion_hotelera.dto.ValidarSeleccionResponse;
-import com.gestionhotelera.gestion_hotelera.exception.BadRequestException;
-import com.gestionhotelera.gestion_hotelera.exception.ResourceNotFoundException;
-import com.gestionhotelera.gestion_hotelera.modelo.EstadoReserva;
-import com.gestionhotelera.gestion_hotelera.modelo.Habitacion;
-import com.gestionhotelera.gestion_hotelera.modelo.Reserva;
-import com.gestionhotelera.gestion_hotelera.repository.HabitacionRepository;
-import com.gestionhotelera.gestion_hotelera.repository.ReservaRepository;
-
+import com.gestionhotelera.gestion_hotelera.dto.*;
+import com.gestionhotelera.gestion_hotelera.exception.*;
+import com.gestionhotelera.gestion_hotelera.modelo.*;
+import com.gestionhotelera.gestion_hotelera.repository.*;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -189,110 +390,93 @@ public class GestorReserva {
     private final ReservaRepository reservaRepository;
 
     private void validarFechas(LocalDate desde, LocalDate hasta) {
-        if (desde == null || hasta == null) {
-            throw new BadRequestException("Las fechas 'desde' y 'hasta' no pueden ser nulas.");
-        }
-        if (hasta.isBefore(desde)) {
-            throw new BadRequestException("La fecha 'hasta' no puede ser anterior a 'desde'.");
-        }
+        if (desde == null || hasta == null) throw new BadRequestException("Fechas nulas.");
+        if (hasta.isBefore(desde)) throw new BadRequestException("Fecha hasta anterior a desde.");
     }
 
+    // --- MÉTODO 1: VALIDAR SELECCIÓN (Para el Wizard) ---
     public ValidarSeleccionResponse validarSeleccion(ValidarSeleccionRequest req){
         validarFechas(req.getFechaDesde(), req.getFechaHasta());
-
-        if (req.getHabitacionIds() == null || req.getHabitacionIds().isEmpty()) {
-            throw new BadRequestException("Debe indicar al menos una habitación a seleccionar.");
-        }
+        if (req.getHabitacionIds() == null || req.getHabitacionIds().isEmpty()) throw new BadRequestException("Sin habitaciones.");
 
         List<Long> validas = new ArrayList<>();
         List<String> errores = new ArrayList<>();
 
         for (long idHabitacion : req.getHabitacionIds()){
             Habitacion h = habitacionRepository.findById(idHabitacion).orElse(null);
+            if (h == null) { errores.add("ID " + idHabitacion + " no existe."); continue; }
 
-            if (h == null) {
-                errores.add("Habitación con id = " + idHabitacion + " no existe.");
-                continue;
-            }
-
+            // 1. SOLO IMPORTA SI ESTÁ ROTA
             String estado = h.getEstado();
-            if (estado == null || !estado.equalsIgnoreCase("DISPONIBLE")) {
-                errores.add("Habitación " + h.getNumero() +
-                        " no está DISPONIBLE (estado actual = " + estado + ").");
+            if ("MANTENIMIENTO".equalsIgnoreCase(estado) || "FUERA_SERVICIO".equalsIgnoreCase(estado)) {
+                errores.add("Habitación " + h.getNumero() + " en " + estado);
                 continue;
             }
 
-            List<Reserva> solapadas = reservaRepository.verificarDisponibilidad(idHabitacion,
-                    req.getFechaDesde(), req.getFechaHasta());
-
-            if (solapadas != null && !solapadas.isEmpty()) {
-                errores.add("Habitación " + h.getNumero() +
-                        " tiene reservas solapadas en el rango indicado.");
+            // 2. EL CALENDARIO MANDA (Si hay reserva, da error)
+            List<Reserva> solapadas = reservaRepository.verificarDisponibilidad(idHabitacion, req.getFechaDesde(), req.getFechaHasta());
+            if (!solapadas.isEmpty()) {
+                errores.add("Habitación " + h.getNumero() + " ocupada en esas fechas.");
                 continue;
             }
-
             validas.add(idHabitacion);
         }
-
         return new ValidarSeleccionResponse(validas, errores);
     }
 
+    // --- MÉTODO 2: CONFIRMAR (Guardar) ---
     @Transactional
     public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
         validarFechas(req.getFechaDesde(), req.getFechaHasta());
-
-        if (req.getHabitacionIds() == null || req.getHabitacionIds().isEmpty()) {
-            throw new BadRequestException("No se recibieron habitaciones para reservar.");
-        }
-        if (req.getNombre() == null || req.getNombre().isBlank()
-                || req.getApellido() == null || req.getApellido().isBlank()
-                || req.getTelefono() == null || req.getTelefono().isBlank()) {
-            throw new BadRequestException("Faltan completar datos obligatorios del huésped (nombre/apellido/telefono).");
-        }
-
-        String nombre = req.getNombre().toUpperCase();
-        String apellido = req.getApellido().toUpperCase();
-        String telefono = req.getTelefono();
+        // ... (validaciones de nombre/apellido omitidas por brevedad, mantenlas) ...
 
         List<Long> reservasCreadas = new ArrayList<>();
 
         for (Long idHabitacion : req.getHabitacionIds()) {
             Habitacion h = habitacionRepository.findById(idHabitacion)
-                    .orElseThrow(() -> new ResourceNotFoundException("Habitación no encontrada: " + idHabitacion));
+                    .orElseThrow(() -> new ResourceNotFoundException("Habitación no encontrada"));
 
-            if (!"DISPONIBLE".equalsIgnoreCase(h.getEstado())) {
-                throw new BadRequestException("La habitación " + h.getNumero() + " ya no está DISPONIBLE (estado=" + h.getEstado() + ").");
+            // 1. VALIDACIÓN: Solo mantenimiento bloquea
+            if ("MANTENIMIENTO".equalsIgnoreCase(h.getEstado())) {
+                throw new BadRequestException("Habitación en mantenimiento.");
             }
 
+            // 2. VALIDACIÓN: Calendario estricto
             List<Reserva> solapadas = reservaRepository.verificarDisponibilidad(idHabitacion, req.getFechaDesde(), req.getFechaHasta());
-            if (solapadas != null && !solapadas.isEmpty()) {
-                throw new BadRequestException("La habitación " + h.getNumero() + " tiene conflicto de reservas en el rango.");
+            if (!solapadas.isEmpty()) {
+                throw new BadRequestException("Habitación " + h.getNumero() + " ya ocupada en esas fechas.");
             }
+
+            // 3. ID SEGURO
+            int nuevoNumero = generarNumeroReserva();
 
             Reserva r = Reserva.builder()
-                    .numero(generarNumeroReserva())
+                    .numero(nuevoNumero)
                     .estado(EstadoReserva.ACTIVA)
                     .fechaDesde(req.getFechaDesde())
                     .fechaHasta(req.getFechaHasta())
-                    .nombre(nombre)
-                    .apellido(apellido)
-                    .telefono(telefono)
+                    .nombre(req.getNombre().toUpperCase())
+                    .apellido(req.getApellido().toUpperCase())
+                    .telefono(req.getTelefono())
                     .habitacion(h)
                     .build();
 
             Reserva saved = reservaRepository.save(r);
             reservasCreadas.add(saved.getId());
 
-            // actualizar estado de la habitación a RESERVADA
-            h.setEstado("RESERVADA");
-            habitacionRepository.save(h);
+            // -----------------------------------------------------------
+            // ❌ IMPORTANTE: NO CAMBIAMOS EL ESTADO A "RESERVADA" ❌
+            // Al dejar esto comentado, la habitación sigue "DISPONIBLE" 
+            // visualmente para otros días, pero protegida por fechas.
+            // -----------------------------------------------------------
+            // h.setEstado("RESERVADA");
+            // habitacionRepository.save(h);
         }
-
-        return new ConfirmarReservaResponse(reservasCreadas, "Reservas creadas con éxito");
+        return new ConfirmarReservaResponse(reservasCreadas, "Éxito");
     }
 
     private int generarNumeroReserva() {
-        long count = reservaRepository.count();
-        return (int) (count + 1);
+        Integer max = reservaRepository.obtenerMaximoNumero();
+        return (max == null) ? 1 : max + 1;
     }
 }

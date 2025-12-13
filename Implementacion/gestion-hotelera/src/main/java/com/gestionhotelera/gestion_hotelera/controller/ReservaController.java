@@ -44,20 +44,42 @@ public class ReservaController {
     //     ConfirmarReservaResponse resp = gestorReserva.confirmarReservas(req);
     //     return ResponseEntity.ok(resp);
     // }
-    @PostMapping("/confirmar")
+
+    //ULTIMA VERSION CON DEBUGGING
+    // @PostMapping("/confirmar")
+    // public ResponseEntity<?> confirmarReservas(@RequestBody ConfirmarReservaRequest req) {
+    //     try {
+    //      // Imprimimos qué llegó para estar seguros
+    //          System.out.println("JAVA RECIBIÓ: " + req.toString());
+
+    //         ConfirmarReservaResponse resp = gestorReserva.confirmarReservas(req);
+    //         return ResponseEntity.ok(resp);
+
+    //     } catch (Exception e) {
+    //         // ESTO ES LO QUE NECESITAMOS VER
+    //         e.printStackTrace(); // Imprime el error rojo en la consola de Java
+    //         return ResponseEntity.internalServerError().body("ERROR EN JAVA: " + e.getMessage());
+    //     }
+    // }
+
+
+@PostMapping("/confirmar")
 public ResponseEntity<?> confirmarReservas(@RequestBody ConfirmarReservaRequest req) {
     try {
-        // Imprimimos qué llegó para estar seguros
-        System.out.println("JAVA RECIBIÓ: " + req.toString());
-
-        ConfirmarReservaResponse resp = gestorReserva.confirmarReservas(req);
-        return ResponseEntity.ok(resp);
-
+        System.out.println("JAVA RECIBIÓ: " + req); // Verificamos datos
+        return ResponseEntity.ok(gestorReserva.confirmarReservas(req));
+        
     } catch (Exception e) {
-        // ESTO ES LO QUE NECESITAMOS VER
-        e.printStackTrace(); // Imprime el error rojo en la consola de Java
-        return ResponseEntity.internalServerError().body("ERROR EN JAVA: " + e.getMessage());
+        // IMPRIMIR ERROR EN CONSOLA (Rojo)
+        e.printStackTrace(); 
+        
+        // DEVOLVER ERROR AL FRONTEND (Para que lo leas en el alert)
+        String causa = (e.getCause() != null) ? e.getCause().getMessage() : "Desconocida";
+        String mensaje = "ERROR JAVA: " + e.getMessage() + " | CAUSA: " + causa;
+        
+        return ResponseEntity.status(500).body("{\"message\": \"" + mensaje + "\"}");
     }
 }
-}
 
+
+}

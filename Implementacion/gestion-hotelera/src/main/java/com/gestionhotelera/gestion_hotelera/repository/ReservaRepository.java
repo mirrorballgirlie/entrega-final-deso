@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.gestionhotelera.gestion_hotelera.modelo.Reserva;
@@ -23,12 +24,15 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     List<Reserva> findByFechaDesdeBetween(LocalDate fechaDesde, LocalDate fechaHasta);
 
     // Verificar si hay reservas en conflicto (CU4)
-    @Query("""
-        SELECT r FROM Reserva r
-        WHERE r.habitacion.id = :idHabitacion
-        AND (r.fechaDesde <= :fechaHasta AND r.fechaHasta >= :fechaDesde)
-    """)
-    List<Reserva> verificarDisponibilidad(Long idHabitacion, LocalDate fechaDesde, LocalDate fechaHasta);
+    // @Query("""
+    //     SELECT r FROM Reserva r
+    //     WHERE r.habitacion.id = :idHabitacion
+    //     AND (r.fechaDesde <= :fechaHasta AND r.fechaHasta >= :fechaDesde)
+    // """)
+    // List<Reserva> verificarDisponibilidad(Long idHabitacion, LocalDate fechaDesde, LocalDate fechaHasta);
+
+    @Query("SELECT r FROM Reserva r WHERE r.habitacion.id = :idHabitacion AND (r.fechaDesde <= :fechaHasta AND r.fechaHasta >= :fechaDesde)")
+    List<Reserva> verificarDisponibilidad(@Param("idHabitacion") Long idHabitacion, @Param("fechaDesde") LocalDate fechaDesde, @Param("fechaHasta") LocalDate fechaHasta);
 
     @Query("""
     SELECT COUNT(r) > 0 FROM Reserva r
@@ -37,6 +41,9 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     AND r.fechaHasta >= :dia
     """)
     boolean existeReservaEnDia(Long idHabitacion, LocalDate dia);
+
+    @Query("SELECT MAX(r.numero) FROM Reserva r")
+    Integer obtenerMaximoNumero();
 
 
     

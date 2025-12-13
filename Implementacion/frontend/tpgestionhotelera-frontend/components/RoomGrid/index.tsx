@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { useRouter, useSearchParams } from "next/navigation"
+// Eliminamos router y searchParams
 import styles from "./room-grid.module.css"
 import Button from "@/components/Button"
 
@@ -15,7 +15,6 @@ interface GridData {
   dates: string[]
   rooms: string[]
   statuses: RoomStatus[]
-  // CAMBIO 1: Agregamos el mapa para traducir de Número a ID
   idMap: { [key: string]: number }
 }
 
@@ -36,10 +35,15 @@ interface BackendResponse {
 }
 
 interface RoomGridProps {
-  mode: "reservar" | "ocupar"
+  mode: "reservar" | "ocupar";
+  // Props nuevas para el Wizard
+  startDate: string;
+  endDate: string;
+  onBack: () => void;
+  // onNext devuelve: { rooms: string[] (IDs), selectedData: objetoComplejo }
+  onNext: (data: { rooms: string[]; selectedData: { [key: string]: string[] } }) => void;
 }
 
-// Map de roomType a tipos del enum del backend
 const roomTypeMap: { [key: string]: string[] } = {
   "individual-estandar": ["INDIVIDUAL_ESTANDAR"],
   "doble": ["DOBLE_ESTANDAR", "DOBLE_SUPERIOR"],
@@ -47,11 +51,8 @@ const roomTypeMap: { [key: string]: string[] } = {
   "suite": ["SUITE_DOBLE"]
 }
 
-export default function RoomGrid({ mode }: RoomGridProps) {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const startDateParam = searchParams.get("desde")
-  const endDateParam = searchParams.get("hasta")
+export default function RoomGrid({ mode, startDate, endDate, onBack, onNext }: RoomGridProps) {
+  // Ya no hay hooks de navegación
 
   const [gridData, setGridData] = useState<GridData | null>(null)
   const [loading, setLoading] = useState(false)
@@ -90,11 +91,9 @@ export default function RoomGrid({ mode }: RoomGridProps) {
     const rooms = habitacionesFiltradas.map(h => String(h.numero))
     const statuses: RoomStatus[] = []
     
-    // CAMBIO 2: Llenar el mapa de IDs
     const idMap: { [key: string]: number } = {}
 
     habitacionesFiltradas.forEach(h => {
-      // Guardamos la relación: "101" -> 5 (ID Real)
       idMap[String(h.numero)] = h.id
 
       h.estadosPorDia.forEach(est => {
@@ -132,18 +131,16 @@ export default function RoomGrid({ mode }: RoomGridProps) {
       const data: BackendResponse = await response.json()
       const mapped = mapBackendToGrid(data, roomType)
 
+      // ... Lógica de Fallback/Mock igual que antes ...
       if (mapped.rooms.length === 0) {
         const defaultRooms = ["101", "102", "103", "104", "105"]
         const statuses: RoomStatus[] = []
-        // Mock ID map para fallback
         const mockIdMap: { [key: string]: number } = {}
-        
         const dateList = mapped.dates.length > 0 ? mapped.dates : generateDateRange(start, end);
-        
         dateList.forEach(date => {
           defaultRooms.forEach(room => {
             statuses.push({ roomNumber: room, date, status: "available" })
-            mockIdMap[room] = Number(room) // Fallback simple
+            mockIdMap[room] = Number(room)
           })
         })
         mapped.dates = dateList;
@@ -160,7 +157,6 @@ export default function RoomGrid({ mode }: RoomGridProps) {
       const rooms = ["101", "102", "103", "104", "105"]
       const statuses: RoomStatus[] = []
       const mockIdMap: { [key: string]: number } = {}
-
       dates.forEach(date => {
         rooms.forEach(room => {
           const statusOptions: RoomStatus["status"][] = ["available", "reserved", "occupied", "maintenance"]
@@ -175,22 +171,16 @@ export default function RoomGrid({ mode }: RoomGridProps) {
     }
   }
 
-  const formatDateForApi = (date: Date) => {
-    const year = date.getFullYear()
-    const month = String(date.getMonth() + 1).padStart(2, "0")
-    const day = String(date.getDate()).padStart(2, "0")
-    return `${year}-${month}-${day}`
-  }
-
+  // Hook que reacciona a los cambios en las PROPS (startDate, endDate)
   useEffect(() => {
-    if (!startDateParam || !endDateParam) {
-      console.error("Faltan parámetros startDate o endDate en la URL")
+    if (!startDate || !endDate) {
+      console.error("Faltan fechas en RoomGrid")
       return
     }
-    fetchRoomData(startDateParam, endDateParam)
+    fetchRoomData(startDate, endDate)
     setDateScrollIndex(0)
     setRoomScrollIndex(0)
-  }, [roomType, startDateParam, endDateParam])
+  }, [roomType, startDate, endDate]) // Dependencias actualizadas
 
   const getStatusColor = (status: string): string => {
     switch (status) {
@@ -235,21 +225,15 @@ export default function RoomGrid({ mode }: RoomGridProps) {
       const room = parts[1]
 
       const status = gridData?.statuses.find((s) => s.roomNumber === room && s.date === dateDisplay)
-      
-      if (status?.status !== "available") {
-        allValid = false
-      }
+      if (status?.status !== "available") allValid = false
 
       const dateISO = convertToISO(dateDisplay)
-
-      if (!roomDates[room]) {
-        roomDates[room] = []
-      }
+      if (!roomDates[room]) roomDates[room] = []
       roomDates[room].push(dateISO)
       allSelectedDatesISO.push(dateISO)
     })
 
-    // Validación de única habitación
+    // Validación de única habitación (Si el modo lo requiere)
     const uniqueRooms = Object.keys(roomDates);
     if (uniqueRooms.length > 1) {
       setErrorMessage("Solo puedes reservar una habitación por operación.")
@@ -265,31 +249,16 @@ export default function RoomGrid({ mode }: RoomGridProps) {
       return
     }
 
-    allSelectedDatesISO.sort()
-
-    const minDate = allSelectedDatesISO[0]
-    const maxDate = allSelectedDatesISO[allSelectedDatesISO.length - 1]
-
-    
+    // Traducción de Números a IDs
     const selectedRoomNumbers = Object.keys(roomDates);
-    
     const selectedRoomIds = selectedRoomNumbers.map(num => String(gridData!.idMap[num]));
 
-    sessionStorage.setItem("reservationData", JSON.stringify({
-      startDate: minDate, 
-      endDate: maxDate,   
-      rooms: selectedRoomIds, 
-      roomType,
-      selectedData: roomDates,
-    }))
-
-    if (mode === "reservar") {
-      router.push("/estado-habitaciones2/ListadoReserva")
-    } else {
-      router.push("/ocupar-habitacion/formulario-huesped")
-    }
+    // --- CAMBIO PRINCIPAL: No guardamos, solo avisamos al padre ---
+    onNext({
+      rooms: selectedRoomIds, // IDs para el backend
+      selectedData: roomDates // Datos visuales
+    });
   }
-
 
   if (!gridData) return <div className={styles["grid-container"]}>Cargando...</div>
 
@@ -308,7 +277,8 @@ export default function RoomGrid({ mode }: RoomGridProps) {
   return (
     <div className={styles["grid-wrapper"]}>
       <div className={styles["grid-header"]}>
-        <Button className={styles["btn-back"]}>Volver</Button>
+        {/* Usamos onBack en lugar de router.back */}
+        <Button className={styles["btn-back"]} onClick={onBack}>Volver</Button>
         <select
           className={styles["room-type-select"]}
           value={roomType}
