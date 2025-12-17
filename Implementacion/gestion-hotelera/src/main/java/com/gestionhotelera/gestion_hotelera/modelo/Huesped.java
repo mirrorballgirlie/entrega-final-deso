@@ -16,6 +16,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -25,7 +27,7 @@ import lombok.NoArgsConstructor;
 
 public class Huesped {
 
-    @Id
+@Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -40,16 +42,18 @@ public class Huesped {
     private String ocupacion;
     private String nacionalidad;
 
+    // --- 2. AQUÍ ESTÁ LA CORRECCIÓN ---
     @ManyToMany(mappedBy = "huespedes")
+    @JsonIgnore // <--- ESTO EVITA EL ERROR DE REFERENCIA CIRCULAR
     private List<Estadia> estadias;
 
     @OneToOne(mappedBy = "huesped")
-    private PersonaFisica personaFisica; // opcional
+    @JsonIgnore // <--- RECOMENDADO: Para evitar bucles si PersonaFisica tiene link al Huesped
+    private PersonaFisica personaFisica; 
 
     @OneToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "direccion_id", nullable = false)
     private Direccion direccion;
-
 
 
 

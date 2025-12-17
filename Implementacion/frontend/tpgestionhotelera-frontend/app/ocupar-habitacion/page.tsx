@@ -1,5 +1,7 @@
-import FormularioFechas from "@/components/Formularios/FormularioFechas"
+"use client";
 
-export default function OcuparHabitacion() {
-  // return <FormularioFechas mode="ocupar" />
+import OcuparHabitacionManager from "@/components/Manager/OcuparHabitacionManager";
+
+export default function OcuparHabitacionPage() {
+  return <OcuparHabitacionManager />;
 }

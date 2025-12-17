@@ -271,6 +271,7 @@ import com.gestionhotelera.gestion_hotelera.dto.ValidarOcupacionResponse;
 import com.gestionhotelera.gestion_hotelera.exception.BadRequestException;
 import com.gestionhotelera.gestion_hotelera.exception.ResourceNotFoundException;
 import com.gestionhotelera.gestion_hotelera.modelo.Estadia;
+import com.gestionhotelera.gestion_hotelera.modelo.EstadoReserva;
 import com.gestionhotelera.gestion_hotelera.modelo.Habitacion;
 import com.gestionhotelera.gestion_hotelera.modelo.Huesped;
 import com.gestionhotelera.gestion_hotelera.modelo.Reserva;
@@ -350,7 +351,30 @@ public class GestorEstadia {
                     continue;
                 }
 
-                List<Reserva> reservas = safeList(reservaRepository.verificarDisponibilidad(idHabitacion, desde, hasta));
+                // List<Reserva> reservas = safeList(reservaRepository.verificarDisponibilidad(idHabitacion, desde, hasta));
+                // if (reservas != null && !reservas.isEmpty()) {
+                //     for (Reserva r : reservas) {
+                //         ConflictoReservaDTO c = new ConflictoReservaDTO();
+                //         c.setHabitacionId(idHabitacion);
+                //         c.setReservaId(r.getId());
+                //         c.setNombreReserva((r.getNombre() == null ? "" : r.getNombre()) + " " + (r.getApellido() == null ? "" : r.getApellido()));
+                //         c.setFechaDesde(r.getFechaDesde());
+                //         c.setFechaHasta(r.getFechaHasta());
+                //         conflictos.add(c);
+                //     }
+                //     continue;
+                // }
+
+                // ... imports necesarios (EstadoReserva)
+
+                // Llamada modificada: Se agrega EstadoReserva.ACTIVA
+                List<Reserva> reservas = safeList(reservaRepository.verificarDisponibilidad(
+                    idHabitacion, 
+                    desde, 
+                    hasta, 
+                    EstadoReserva.ACTIVA
+                ));
+
                 if (reservas != null && !reservas.isEmpty()) {
                     for (Reserva r : reservas) {
                         ConflictoReservaDTO c = new ConflictoReservaDTO();
@@ -426,10 +450,21 @@ public class GestorEstadia {
                     throw new BadRequestException("La habitación " + h.getNumero() + " ya está ocupada en el rango solicitado.");
                 }
 
-                List<Reserva> reservas = safeList(reservaRepository.verificarDisponibilidad(idHabitacion, desde, hasta));
-                if (reservas != null && !reservas.isEmpty() && !req.isOpcionOcuparIgual()) {
-                    throw new BadRequestException("La habitación " + h.getNumero() + " tiene reservas solapadas. Use opcionOcuparIgual=true para forzar.");
-                }
+                // List<Reserva> reservas = safeList(reservaRepository.verificarDisponibilidad(idHabitacion, desde, hasta));
+                // if (reservas != null && !reservas.isEmpty() && !req.isOpcionOcuparIgual()) {
+                //     throw new BadRequestException("La habitación " + h.getNumero() + " tiene reservas solapadas. Use opcionOcuparIgual=true para forzar.");
+                // }
+                // Llamada modificada: Se agrega EstadoReserva.ACTIVA
+                    List<Reserva> reservas = safeList(reservaRepository.verificarDisponibilidad(
+                        idHabitacion, 
+                        desde, 
+                        hasta, 
+                        EstadoReserva.ACTIVA
+                    ));
+
+                    if (reservas != null && !reservas.isEmpty() && !req.isOpcionOcuparIgual()) {
+                        throw new BadRequestException("La habitación " + h.getNumero() + " tiene reservas solapadas. Use opcionOcuparIgual=true para forzar.");
+                    }
 
                 Estadia est = Estadia.builder()
                         .estado("ACTIVA")

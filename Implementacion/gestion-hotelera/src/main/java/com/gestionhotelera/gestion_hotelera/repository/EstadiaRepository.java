@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.gestionhotelera.gestion_hotelera.modelo.Estadia;
@@ -12,8 +13,6 @@ import com.gestionhotelera.gestion_hotelera.modelo.Estadia;
 @Repository
 public interface EstadiaRepository extends JpaRepository<Estadia, Long> {
 
-
-     // buscar estadías que intersecten el rango
     @Query("""
         SELECT e FROM Estadia e
         WHERE e.fechaIngreso <= :fechaHasta AND e.fechaEgreso >= :fechaDesde
@@ -28,9 +27,16 @@ public interface EstadiaRepository extends JpaRepository<Estadia, Long> {
     """)
     boolean existeEstadiaEnDia(Long idHabitacion, LocalDate dia);
 
-
-    //recordar que aca se puede llegar a implemntar alg para el cu15
-
     List<Estadia> findByFechaIngresoLessThanEqualAndFechaEgresoGreaterThanEqual(LocalDate hasta, LocalDate desde);
-}
 
+    // --- CORRECCIÓN AQUÍ ---
+    // Quitamos el "= 0" y ponemos "= :estado" para comparar String con String
+    @Query("""
+        SELECT e FROM Estadia e 
+        WHERE e.habitacion.id = :habitacionId 
+        AND :dia BETWEEN e.fechaIngreso AND e.fechaEgreso 
+        AND e.estado = :estado
+        """)
+    List<Estadia> encontrarEstadiasEnDia(@Param("habitacionId") Long habitacionId, @Param("dia") LocalDate dia, @Param("estado") String estado);
+
+}

@@ -388,13 +388,15 @@ public class GestorReserva {
 
     private final HabitacionRepository habitacionRepository;
     private final ReservaRepository reservaRepository;
+    // --- 1. NUEVA DEPENDENCIA ---
+    private final HuespedRepository huespedRepository; 
 
     private void validarFechas(LocalDate desde, LocalDate hasta) {
         if (desde == null || hasta == null) throw new BadRequestException("Fechas nulas.");
         if (hasta.isBefore(desde)) throw new BadRequestException("Fecha hasta anterior a desde.");
     }
 
-    // --- MÉTODO 1: VALIDAR SELECCIÓN (Para el Wizard) ---
+    // --- MÉTODO 1: VALIDAR SELECCIÓN ---
     public ValidarSeleccionResponse validarSeleccion(ValidarSeleccionRequest req){
         validarFechas(req.getFechaDesde(), req.getFechaHasta());
         if (req.getHabitacionIds() == null || req.getHabitacionIds().isEmpty()) throw new BadRequestException("Sin habitaciones.");
@@ -406,15 +408,19 @@ public class GestorReserva {
             Habitacion h = habitacionRepository.findById(idHabitacion).orElse(null);
             if (h == null) { errores.add("ID " + idHabitacion + " no existe."); continue; }
 
-            // 1. SOLO IMPORTA SI ESTÁ ROTA
             String estado = h.getEstado();
             if ("MANTENIMIENTO".equalsIgnoreCase(estado) || "FUERA_SERVICIO".equalsIgnoreCase(estado)) {
                 errores.add("Habitación " + h.getNumero() + " en " + estado);
                 continue;
             }
 
-            // 2. EL CALENDARIO MANDA (Si hay reserva, da error)
-            List<Reserva> solapadas = reservaRepository.verificarDisponibilidad(idHabitacion, req.getFechaDesde(), req.getFechaHasta());
+            List<Reserva> solapadas = reservaRepository.verificarDisponibilidad(
+                idHabitacion, 
+                req.getFechaDesde(), 
+                req.getFechaHasta(), 
+                EstadoReserva.ACTIVA
+            );
+
             if (!solapadas.isEmpty()) {
                 errores.add("Habitación " + h.getNumero() + " ocupada en esas fechas.");
                 continue;
@@ -428,7 +434,13 @@ public class GestorReserva {
     @Transactional
     public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
         validarFechas(req.getFechaDesde(), req.getFechaHasta());
-        // ... (validaciones de nombre/apellido omitidas por brevedad, mantenlas) ...
+
+        // --- 2. LÓGICA DE VINCULACIÓN CON CLIENTE ---
+        Huesped clienteEncontrado = null;
+        if (req.getClienteId() != null) {
+            // Buscamos el cliente por ID. Si no existe, lo dejamos null (o podrias lanzar error)
+            clienteEncontrado = huespedRepository.findById(req.getClienteId()).orElse(null);
+        }
 
         List<Long> reservasCreadas = new ArrayList<>();
 
@@ -436,18 +448,21 @@ public class GestorReserva {
             Habitacion h = habitacionRepository.findById(idHabitacion)
                     .orElseThrow(() -> new ResourceNotFoundException("Habitación no encontrada"));
 
-            // 1. VALIDACIÓN: Solo mantenimiento bloquea
             if ("MANTENIMIENTO".equalsIgnoreCase(h.getEstado())) {
                 throw new BadRequestException("Habitación en mantenimiento.");
             }
 
-            // 2. VALIDACIÓN: Calendario estricto
-            List<Reserva> solapadas = reservaRepository.verificarDisponibilidad(idHabitacion, req.getFechaDesde(), req.getFechaHasta());
+            List<Reserva> solapadas = reservaRepository.verificarDisponibilidad(
+                idHabitacion, 
+                req.getFechaDesde(), 
+                req.getFechaHasta(), 
+                EstadoReserva.ACTIVA
+            );
+
             if (!solapadas.isEmpty()) {
                 throw new BadRequestException("Habitación " + h.getNumero() + " ya ocupada en esas fechas.");
             }
 
-            // 3. ID SEGURO
             int nuevoNumero = generarNumeroReserva();
 
             Reserva r = Reserva.builder()
@@ -459,18 +474,12 @@ public class GestorReserva {
                     .apellido(req.getApellido().toUpperCase())
                     .telefono(req.getTelefono())
                     .habitacion(h)
+                    // --- 3. ASIGNAMOS EL CLIENTE ---
+                    .cliente(clienteEncontrado) // Será un objeto Huesped o null
                     .build();
 
             Reserva saved = reservaRepository.save(r);
             reservasCreadas.add(saved.getId());
-
-            // -----------------------------------------------------------
-            // ❌ IMPORTANTE: NO CAMBIAMOS EL ESTADO A "RESERVADA" ❌
-            // Al dejar esto comentado, la habitación sigue "DISPONIBLE" 
-            // visualmente para otros días, pero protegida por fechas.
-            // -----------------------------------------------------------
-            // h.setEstado("RESERVADA");
-            // habitacionRepository.save(h);
         }
         return new ConfirmarReservaResponse(reservasCreadas, "Éxito");
     }

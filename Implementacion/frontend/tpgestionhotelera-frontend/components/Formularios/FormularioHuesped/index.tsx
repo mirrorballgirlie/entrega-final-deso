@@ -1,43 +1,136 @@
+// "use client";
+
+// import { useState } from "react";
+// import { useRouter } from "next/navigation";
+// import style from "./formulariohuesped.module.css";
+// import Button from "@/components/Button";
+
+// interface Props {
+//   mode: "reservar" | "ocupar" | "buscar";
+// }
+
+// export default function FormularioHuesped({ mode }: Props) {
+//   const router = useRouter();
+
+//   const [apellido, setApellido] = useState("");
+//   const [nombre, setNombres] = useState("");
+//   const [tipoDocumento, setTipoDocumento] = useState("");
+//   const [documento, setDocumento] = useState("");
+
+  
+//   const handleSearch = (e: React.FormEvent) => {
+//   e.preventDefault();
+
+//   if (!apellido && !nombre && !tipoDocumento && !documento) {
+//     alert("Debe completar al menos un campo.");
+//     return;
+//   }
+
+//   const query = new URLSearchParams({
+//     apellido,
+//     nombre: nombre,
+//     tipoDocumento,
+//     documento,
+//     mode,
+//   }).toString();
+
+//   router.push(`/buscar-huesped/Lista-huesped?${query}`);
+// };
+
+
+//   return (
+//     <main className={style.container}>
+//       <div className={style.formWrapper}>
+
+//         <div className={style.contentWrapper}>
+//           <h1 className={style.title}>Buscar Huésped</h1>
+
+//           <p className={style.instructions}>
+//             Complete al menos un campo para realizar la búsqueda.
+//           </p>
+
+//           <form className={style.form} onSubmit={handleSearch}>
+//             <div className={style.formGroup}>
+//               <label className={style.label}>Apellido</label>
+//               <input
+//                 className={style.input}
+//                 value={apellido}
+//                 onChange={(e) => setApellido(e.target.value)}
+//               />
+//             </div>
+
+//             <div className={style.formGroup}>
+//               <label className={style.label}>Nombres</label>
+//               <input
+//                 className={style.input}
+//                 value={nombre}
+//                 onChange={(e) => setNombres(e.target.value)}
+//               />
+//             </div>
+
+//             <div className={style.formGroup}>
+//               <label className={style.label}>Tipo Documento</label>
+//               <select
+//                 className={style.select}
+//                 value={tipoDocumento}
+//                 onChange={(e) => setTipoDocumento(e.target.value)}
+//               >
+//                 <option value="">Seleccionar</option>
+//                 <option value="DNI">DNI</option>
+//                 <option value="Pasaporte">Pasaporte</option>
+//               </select>
+//             </div>
+
+//             <div className={style.formGroup}>
+//               <label className={style.label}>Documento</label>
+//               <input
+//                 className={style.input}
+//                 value={documento}
+//                 onChange={(e) => setDocumento(e.target.value)}
+//               />
+//             </div>
+
+//             <div className={style.buttonGroup}>
+//               <Button type="submit" className={style.buttonSearch}>
+//                 Buscar
+//               </Button>
+//               <Button
+//                 className={style.buttonCancel}
+//                 onClick={() => router.back()}
+//               >
+//                 Cancelar
+//               </Button>
+//             </div>
+//           </form>
+//         </div>
+
+//         <div className={style.footer}></div>
+//       </div>
+//     </main>
+//   );
+// }
+
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
-import style from "./formulariohuesped.module.css";
+import style from "./formulariohuesped.module.css"; 
 import Button from "@/components/Button";
 
 interface Props {
-  mode: "reservar" | "ocupar" | "buscar";
+  // Recibe el estado completo del padre
+  form: {
+    apellido: string;
+    nombre: string;
+    tipoDocumento: string;
+    documento: string;
+  };
+  // Recibe las funciones de control
+  onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
+  onSubmit: (e: React.FormEvent) => void;
+  onCancel: () => void;
 }
 
-export default function FormularioHuesped({ mode }: Props) {
-  const router = useRouter();
-
-  const [apellido, setApellido] = useState("");
-  const [nombre, setNombres] = useState("");
-  const [tipoDocumento, setTipoDocumento] = useState("");
-  const [documento, setDocumento] = useState("");
-
+export default function FormularioHuesped({ form, onChange, onSubmit, onCancel }: Props) {
   
-  const handleSearch = (e: React.FormEvent) => {
-  e.preventDefault();
-
-  if (!apellido && !nombre && !tipoDocumento && !documento) {
-    alert("Debe completar al menos un campo.");
-    return;
-  }
-
-  const query = new URLSearchParams({
-    apellido,
-    nombre: nombre,
-    tipoDocumento,
-    documento,
-    mode,
-  }).toString();
-
-  router.push(`/buscar-huesped/Lista-huesped?${query}`);
-};
-
-
   return (
     <main className={style.container}>
       <div className={style.formWrapper}>
@@ -45,35 +138,38 @@ export default function FormularioHuesped({ mode }: Props) {
         <div className={style.contentWrapper}>
           <h1 className={style.title}>Buscar Huésped</h1>
 
-          <p className={style.instructions}>
+          {/* <p className={style.instructions}>
             Complete al menos un campo para realizar la búsqueda.
-          </p>
+          </p> */}
 
-          <form className={style.form} onSubmit={handleSearch}>
+          <form className={style.form} onSubmit={onSubmit}>
             <div className={style.formGroup}>
               <label className={style.label}>Apellido</label>
               <input
+                name="apellido" // Importante: name para identificar el campo
                 className={style.input}
-                value={apellido}
-                onChange={(e) => setApellido(e.target.value)}
+                value={form.apellido}
+                onChange={onChange}
               />
             </div>
 
             <div className={style.formGroup}>
               <label className={style.label}>Nombres</label>
               <input
+                name="nombre"
                 className={style.input}
-                value={nombre}
-                onChange={(e) => setNombres(e.target.value)}
+                value={form.nombre}
+                onChange={onChange}
               />
             </div>
 
             <div className={style.formGroup}>
               <label className={style.label}>Tipo Documento</label>
               <select
+                name="tipoDocumento"
                 className={style.select}
-                value={tipoDocumento}
-                onChange={(e) => setTipoDocumento(e.target.value)}
+                value={form.tipoDocumento}
+                onChange={onChange}
               >
                 <option value="">Seleccionar</option>
                 <option value="DNI">DNI</option>
@@ -84,9 +180,10 @@ export default function FormularioHuesped({ mode }: Props) {
             <div className={style.formGroup}>
               <label className={style.label}>Documento</label>
               <input
+                name="documento"
                 className={style.input}
-                value={documento}
-                onChange={(e) => setDocumento(e.target.value)}
+                value={form.documento}
+                onChange={onChange}
               />
             </div>
 
@@ -95,8 +192,9 @@ export default function FormularioHuesped({ mode }: Props) {
                 Buscar
               </Button>
               <Button
+                type="button"
                 className={style.buttonCancel}
-                onClick={() => router.back()}
+                onClick={onCancel}
               >
                 Cancelar
               </Button>

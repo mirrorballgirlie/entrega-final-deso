@@ -23,6 +23,11 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+
+import org.springframework.web.bind.annotation.PathVariable;
+
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
 @RequestMapping("/api/huespedes")
@@ -59,31 +64,84 @@ public class HuespedController {
         }
     }
 
-    @GetMapping("/buscar")
+//     @GetMapping("/buscar")
+// public ResponseEntity<?> buscarHuesped(
+//         @RequestParam(required = false) String apellido,
+//         @RequestParam(required = false) String nombre,
+//         @RequestParam(required = false) String tipoDocumento,
+//         @RequestParam(required = false) String documento) {
+
+//     // Normalización de filtros
+//     apellido = (apellido == null || apellido.isBlank()) ? null : apellido.trim();
+//     nombre = (nombre == null || nombre.isBlank()) ? null : nombre.trim();
+//     tipoDocumento = (tipoDocumento == null || tipoDocumento.isBlank()) ? null : tipoDocumento.trim();
+//     documento = (documento == null || documento.isBlank()) ? null : documento.trim();
+
+//     try {
+//         var resultados = gestorHuesped.buscarFiltrado(apellido, nombre, tipoDocumento, documento);
+
+//         if (resultados.isEmpty()) {
+//             Map<String, Object> response = new HashMap<>();
+//             response.put("existe", false);
+//             response.put("resultados", List.of());
+//             response.put("mensaje", "No se encontraron huéspedes con los filtros aplicados.");
+//             return ResponseEntity.ok(response);
+//         }
+
+//         Map<String, Object> response = new HashMap<>();
+//         response.put("existe", true);
+//         response.put("resultados", resultados);
+
+//         return ResponseEntity.ok(response);
+
+//     } catch (Exception e) {
+//         Map<String, Object> error = new HashMap<>();
+//         error.put("error", "Error al buscar huéspedes");
+//         error.put("detalle", e.getMessage());
+//         return ResponseEntity.internalServerError().body(error);
+//     }
+// }
+
+
+@GetMapping("/buscar")
 public ResponseEntity<?> buscarHuesped(
         @RequestParam(required = false) String apellido,
         @RequestParam(required = false) String nombre,
         @RequestParam(required = false) String tipoDocumento,
         @RequestParam(required = false) String documento) {
 
-    // Normalización de filtros
+    // 1. Normalización de filtros (Igual que antes)
+    // Convertimos vacíos a NULL para verificar fácil después
     apellido = (apellido == null || apellido.isBlank()) ? null : apellido.trim();
     nombre = (nombre == null || nombre.isBlank()) ? null : nombre.trim();
     tipoDocumento = (tipoDocumento == null || tipoDocumento.isBlank()) ? null : tipoDocumento.trim();
     documento = (documento == null || documento.isBlank()) ? null : documento.trim();
 
     try {
-        var resultados = gestorHuesped.buscarFiltrado(apellido, nombre, tipoDocumento, documento);
+        List<Huesped> resultados;
+
+        //Verificar si hay filtros
+        boolean hayFiltros = (apellido != null || nombre != null || tipoDocumento != null || documento != null);
+
+        if (hayFiltros) {
+            resultados = gestorHuesped.buscarFiltrado(apellido, nombre, tipoDocumento, documento);
+        } else {
+            resultados = gestorHuesped.obtenerTodos();
+        }
+
+        //Armado de respuesta 
+        Map<String, Object> response = new HashMap<>();
 
         if (resultados.isEmpty()) {
-            Map<String, Object> response = new HashMap<>();
             response.put("existe", false);
             response.put("resultados", List.of());
-            response.put("mensaje", "No se encontraron huéspedes con los filtros aplicados.");
+            // Mensaje opcional: cambia según si filtró o si la base está vacía
+            response.put("mensaje", hayFiltros ? 
+                "No se encontraron huéspedes con los filtros aplicados." : 
+                "No hay huéspedes registrados en el sistema.");
             return ResponseEntity.ok(response);
         }
 
-        Map<String, Object> response = new HashMap<>();
         response.put("existe", true);
         response.put("resultados", resultados);
 
@@ -96,6 +154,29 @@ public ResponseEntity<?> buscarHuesped(
         return ResponseEntity.internalServerError().body(error);
     }
 }
+
+@GetMapping("/{id}")
+    public ResponseEntity<?> obtenerHuespedPorId(@PathVariable Long id) {
+        try {
+            // Asumo que tienes este método en tu Gestor. Si no, mira el paso 2.
+            Huesped huesped = gestorHuesped.buscarPorId(id); 
+            return ResponseEntity.ok(huesped);
+        } catch (Exception e) {
+            // Si no existe o hay error, devolvemos 404 para que el front lo maneje
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PutMapping("/actualizar/{id}")
+    public ResponseEntity<?> actualizarHuesped(@PathVariable Long id, @Valid @RequestBody HuespedDTO huespedDTO) {
+        try {
+            // Llamamos al gestor para actualizar
+            Huesped actualizado = gestorHuesped.actualizarHuesped(id, huespedDTO);
+            return ResponseEntity.ok(actualizado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
 
 
 }

@@ -121,6 +121,48 @@ public class GestorHuesped {
     }
 
     
+    public Huesped buscarPorId(Long id) {
+        return huespedRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Huésped no encontrado con id: " + id));
+    }
 
+    public Huesped actualizarHuesped(Long id, HuespedDTO dto) {
+        // 1. Buscamos el huésped existente
+        Huesped existente = huespedRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Huésped no encontrado con id: " + id));
+
+        // 2. Actualizamos Datos Personales
+        existente.setApellido(dto.getApellido());
+        existente.setNombre(dto.getNombre()); 
+        existente.setFechaNacimiento(dto.getFechaNacimiento());
+        existente.setNacionalidad(dto.getNacionalidad());
+        existente.setTelefono(dto.getTelefono());
+        existente.setEmail(dto.getEmail());
+        existente.setOcupacion(dto.getOcupacion());
+        existente.setPosicionIVA(dto.getPosicionIVA());
+        
+        // 3. Actualizamos Dirección (Usando el sub-DTO)
+        DireccionDTO dirDto = dto.getDireccion(); 
+        
+        if (dirDto != null) {
+            // Accedemos a la entidad Direccion dentro del Huesped
+            existente.getDireccion().setCalle(dirDto.getCalle());
+            
+            // Como en tu DTO 'numero' es int, pasa directo (sin parseInt)
+            existente.getDireccion().setNumero(dirDto.getNumero());
+            
+            existente.getDireccion().setCiudad(dirDto.getCiudad());
+            existente.getDireccion().setProvincia(dirDto.getProvincia());
+            existente.getDireccion().setPais(dirDto.getPais());
+            existente.getDireccion().setCodigoPostal(dirDto.getCodigoPostal());
+            
+            // Campos opcionales
+            existente.getDireccion().setPiso(dirDto.getPiso());
+            existente.getDireccion().setDepartamento(dirDto.getDepartamento());
+        }
+
+        // 4. Guardamos los cambios
+        return huespedRepository.save(existente);
+    }
 
 }

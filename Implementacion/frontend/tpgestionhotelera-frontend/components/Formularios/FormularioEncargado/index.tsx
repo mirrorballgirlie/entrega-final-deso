@@ -3,47 +3,121 @@
 import { useState } from "react";
 import styles from "./formulario.module.css";
 import Button from "@/components/Button";
-import Toast from "@/components/Toast"; 
+import Toast from "@/components/Toast";
+import ListadoHuesped from "@/components/Listados/ListadoHuesped"; 
 
-
-// Estructura de datos que viene del Padre (ReservarManager)
 interface WizardData {
   startDate: string;
   endDate: string;
-  rooms: string[]; // IDs
+  rooms: string[]; 
 }
 
 interface Props {
-  data: WizardData; // Recibe los datos acumulados
+  data: WizardData; 
   onBack: () => void;
-  onSuccess: () => void; // Avisa al padre que terminó
-
+  onSuccess: () => void; 
 }
 
 export default function FormularioEncargado({ data, onBack, onSuccess }: Props) {
-  // Estado local del formulario
+  
   const [formData, setFormData] = useState({
     apellido: "",
     nombre: "",
     telefono: "",
   });
+  const [clienteId, setClienteId] = useState<number | null>(null);
+
+  const [searchParams, setSearchParams] = useState({
+    apellido: "",
+    nombre: "",
+    tipoDocumento: "",
+    documento: ""
+  });
+
+  const [showModal, setShowModal] = useState(false);
+  const [resultados, setResultados] = useState<any[]>([]);
+  const [searching, setSearching] = useState(false);
+  const [searchError, setSearchError] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  
-  // 1. NUEVO ESTADO PARA EL TOAST
   const [showToast, setShowToast] = useState(false);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
+    // Si editan a mano, quitamos el vínculo para evitar inconsistencias
+    if (name === "nombre" || name === "apellido") {
+        setClienteId(null);
+    }
     setFormData((prev) => ({ ...prev, [name]: value }));
-    setError(""); // Limpiamos error al escribir
+    setError(""); 
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setSearchParams((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // --- LÓGICA DE BÚSQUEDA CORREGIDA (Permite vacíos) ---
+  const buscarHuespedes = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+
+    // 1. Eliminamos la restricción de campos obligatorios. 
+    // Ahora permite buscar sin filtros.
+    
+    setSearching(true);
+    setSearchError("");
+    setResultados([]); 
+
+    try {
+      const base = process.env.NEXT_PUBLIC_API_BASE || "";
+      const { apellido, nombre, documento, tipoDocumento } = searchParams;
+      
+      const queryParams = new URLSearchParams();
+      if (apellido) queryParams.append("apellido", apellido);
+      if (nombre) queryParams.append("nombre", nombre);
+      if (tipoDocumento) queryParams.append("tipoDocumento", tipoDocumento);
+      if (documento) queryParams.append("documento", documento);
+
+      const res = await fetch(`${base}/api/huespedes/buscar?${queryParams.toString()}`);
+      
+      if (!res.ok) throw new Error("Error en la búsqueda");
+      
+      const data = await res.json();
+      const encontrados = data.existe ? data.resultados : [];
+      
+      setResultados(encontrados);
+      setShowModal(true); 
+
+    } catch (err) {
+      console.error(err);
+      setSearchError("Error de conexión al buscar.");
+    } finally {
+      setSearching(false);
+    }
+  };
+
+  const handleSeleccionCompleta = (huespedes: any[]) => {
+    if (huespedes && huespedes.length > 0) {
+        const huesped = huespedes[0];
+
+        setFormData({
+            nombre: huesped.nombre,
+            apellido: huesped.apellido,
+            telefono: huesped.telefono || "" 
+        });
+
+        // Guardamos el ID en memoria (Estado temporal).
+        // La relación REAL en base de datos se crea recién en handleSubmit.
+        setClienteId(huesped.id);
+        
+        setShowModal(false);
+        setSearchError("");
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Validaciones
     if (!formData.apellido || !formData.nombre || !formData.telefono) {
       setError("Por favor completa todos los campos obligatorios.");
       return;
@@ -52,26 +126,23 @@ export default function FormularioEncargado({ data, onBack, onSuccess }: Props) 
     setLoading(true);
 
     try {
-      // Construcción del Payload
+      // AQUÍ es donde se confirma la relación enviando el clienteId al backend
       const payload = {
         habitacionIds: data.rooms.map((r) => Number(r)), 
         fechaDesde: data.startDate,
         fechaHasta: data.endDate,
         nombre: formData.nombre.toUpperCase(),
         apellido: formData.apellido.toUpperCase(),
-        telefono: formData.telefono
+        telefono: formData.telefono,
+        clienteId: clienteId 
       };
-
-      console.log("🚀 Enviando Reserva:", payload);
 
       const base = process.env.NEXT_PUBLIC_API_BASE || "";
       const url = `${base}/api/reservas/confirmar`; 
 
       const response = await fetch(url, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
 
@@ -82,92 +153,117 @@ export default function FormularioEncargado({ data, onBack, onSuccess }: Props) 
         throw new Error(msg);
       }
 
-      // 2. LÓGICA DE ÉXITO CON TOAST
-      setShowToast(true); // Mostramos el cartelito verde
-
-      // Esperamos 2 segundos para que el usuario lo vea antes de salir
-      setTimeout(() => {
-         onSuccess(); 
-      }, 2000);
+      setShowToast(true); 
+      setTimeout(() => { onSuccess(); }, 2000);
 
     } catch (err: any) {
-      console.error("Error al confirmar reserva:", err);
-      setError(err.message || "Ocurrió un error al procesar la reserva.");
-      setLoading(false); // Solo quitamos loading si falla. Si es éxito, dejamos loading visualmente.
+      console.error("Error:", err);
+      setError(err.message || "Error al procesar reserva.");
+      setLoading(false); 
     } 
-    // Nota: Quite el 'finally' para que el loading siga activo durante los 2 seg del Toast
-    // y el usuario no toque nada más.
   };
 
   return (
     <div className={styles["form-wrapper"]}>
-      {/* 3. AGREGAMOS EL COMPONENTE TOAST AQUÍ */}
-      <Toast 
-        message="¡Reserva realizada exitosamente!" 
-        isVisible={showToast} 
-      />
+      <Toast message="¡Reserva exitosa!" isVisible={showToast} type={"success"} />
 
       <div className={styles["form-header"]}>
-        <Button className={styles["btn-back"]} onClick={onBack}>
-          Volver
-        </Button>
+        <Button className={styles["btn-back"]} onClick={onBack}>Volver</Button>
         <h2 className={styles["form-title"]}>Datos del Responsable</h2>
       </div>
 
       <div className={styles["form-container"]}>
-        {/* Mensaje de error visual */}
+        
+        <div className={styles["search-section"]}>
+            <div className={styles["search-header-row"]}>
+                <p className={styles["search-label"]}>Buscar cliente existente para autocompletar:</p>
+                {clienteId && (
+                    <div className={styles["linked-badge"]}>
+                        ✓ Seleccionado (ID: {clienteId})
+                    </div>
+                )}
+            </div>
+
+            <div className={styles["search-grid"]}>
+                <div className={styles["search-field"]}>
+                    <label>Apellido</label>
+                    <input 
+                        name="apellido"
+                        value={searchParams.apellido}
+                        onChange={handleSearchChange}
+                        className={styles["search-input"]}
+                        onKeyDown={(e) => e.key === 'Enter' && buscarHuespedes(e)}
+                    />
+                </div>
+
+                <div className={styles["search-field"]}>
+                    <label>Nombre</label>
+                    <input 
+                        name="nombre"
+                        value={searchParams.nombre}
+                        onChange={handleSearchChange}
+                        className={styles["search-input"]}
+                        onKeyDown={(e) => e.key === 'Enter' && buscarHuespedes(e)}
+                    />
+                </div>
+
+                <div className={styles["search-field"]}>
+                    <label>Tipo Doc</label>
+                    <select 
+                        name="tipoDocumento"
+                        value={searchParams.tipoDocumento}
+                        onChange={handleSearchChange}
+                        className={styles["search-input"]}
+                    >
+                        <option className={styles["search-input"]} value="DNI">DNI</option>
+                        <option className={styles["search-input"]} value="Pasaporte">Pasaporte</option>
+                    </select>
+                </div>
+
+                <div className={styles["search-field"]}>
+                    <label>Documento</label>
+                    <input 
+                        name="documento"
+                        value={searchParams.documento}
+                        onChange={handleSearchChange}
+                        className={styles["search-input"]}
+                        onKeyDown={(e) => e.key === 'Enter' && buscarHuespedes(e)}
+                    />
+                </div>
+            </div>
+
+            <div className={styles["search-actions"]}>
+                <button 
+                    type="button" 
+                    className={styles["btn-search"]} 
+                    onClick={(e) => buscarHuespedes(e)}
+                    disabled={searching}
+                >
+                    {searching ? "Buscando..." : "Buscar Cliente"}
+                </button>
+            </div>
+            
+            {searchError && <span className={styles["search-error"]}>{searchError}</span>}
+        </div>
+        
+        <hr className={styles["divider"]} />
+
         {error && <div className={styles["error-banner"]} style={{color: 'red', marginBottom: '15px'}}>⚠️ {error}</div>}
 
         <form onSubmit={handleSubmit}>
           <div className={styles["form-group"]}>
             <div className={styles["form-inputs"]}>
-              
-              {/* Apellido */}
               <div className={styles["input-field"]}>
-                <label htmlFor="apellido" className={styles["field-label"]}>
-                  Apellido <span className={styles["required"]}>(*)</span>
-                </label>
-                <input
-                  type="text"
-                  id="apellido"
-                  name="apellido"
-                  placeholder="Ej: PEREZ"
-                  value={formData.apellido}
-                  onChange={handleInputChange}
-                  className={styles["form-input"]}
-                />
+                <label className={styles["field-label"]}>Apellido <span className={styles["required"]}>(*)</span></label>
+                <input className={styles["form-input"]} type="text" name="apellido" value={formData.apellido} onChange={handleInputChange} />
               </div>
-
-              {/* Nombre */}
               <div className={styles["input-field"]}>
-                <label htmlFor="nombre" className={styles["field-label"]}>
-                  Nombre <span className={styles["required"]}>(*)</span>
-                </label>
-                <input
-                  type="text"
-                  id="nombre"
-                  name="nombre"
-                  placeholder="Ej: JUAN"
-                  value={formData.nombre}
-                  onChange={handleInputChange}
-                  className={styles["form-input"]}
-                />
+                <label className={styles["field-label"]}>Nombre <span className={styles["required"]}>(*)</span></label>
+                <input className={styles["form-input"]} type="text" name="nombre" value={formData.nombre} onChange={handleInputChange} />
               </div>
-
-              {/* Teléfono */}
               <div className={styles["input-field"]}>
-                <label htmlFor="telefono" className={styles["field-label"]}>
-                  Teléfono <span className={styles["required"]}>(*)</span>
-                </label>
-                <input
-                  type="tel"
-                  id="telefono"
-                  name="telefono"
-                  placeholder="Ej: 3492..."
-                  value={formData.telefono}
-                  onChange={handleInputChange}
-                  className={styles["form-input"]}
-                />
+                <label className={styles["field-label"]}>Teléfono <span className={styles["required"]}>(*)</span></label>
+                <input className={styles["form-input"]} type="tel" name="telefono" value={formData.telefono} onChange={handleInputChange} />
               </div>
             </div>
           </div>
@@ -180,9 +276,21 @@ export default function FormularioEncargado({ data, onBack, onSuccess }: Props) 
         </form>
       </div>
 
-      <button className={styles["btn-cancel"]} onClick={onBack}>
-        Cancelar
-      </button>
+      <button className={styles["btn-cancel"]} onClick={onBack}>Cancelar</button>
+
+      {showModal && (
+        <div className={styles["modal-overlay"]}>
+            <div className={styles["modal-content"]}>
+                <ListadoHuesped 
+                    mode="reservar"
+                    results={resultados}
+                    onRetry={() => setShowModal(false)}
+                    onSelectionComplete={handleSeleccionCompleta}
+                />
+            </div>
+        </div>
+      )}
+
     </div>
   );
 }
