@@ -6,6 +6,7 @@ import styles from "./estado.module.css"
 import Button from "@/components/Button"
 // Importamos la validación que creamos antes
 //import { isValidDateRange } from "@/utils/validations" 
+import { isValidDateRange, isFutureOrToday } from "@/utils/validators"
 
 interface FormularioFechasProps {
   // Función que llama el padre cuando todo está OK
@@ -22,26 +23,33 @@ export default function FormularioFechas({ onNext, onCancel }: FormularioFechasP
   
   const [error, setError] = useState("");
 
+  // ------------------------------
+  // Aquí va nuestro handler de submit
+  // ------------------------------
   const handleDateRangeSubmit = () => {
     const { startDate, endDate } = dateRange
 
-    // 1. Validar campos vacíos
+    // 1️⃣ Validar que no estén vacías
     if (!startDate || !endDate) {
-      setError("Debe seleccionar ambas fechas.");
-      return;
+      setError("Debe seleccionar ambas fechas (desde y hasta).")
+      return
     }
 
-    // 2. Validar rango lógico usando tu utilidad
-    // if (!isValidDateRange(startDate, endDate)) {
-    //   setError("La fecha de egreso debe ser posterior a la de ingreso.");
-    //   return;
-    // }
+    // 2️⃣ Validar rango lógico (desde <= hasta)
+    if (!isValidDateRange(startDate, endDate)) {
+      setError("La fecha de ingreso debe ser anterior o igual a la de egreso.")
+      return
+    }
 
-    // Si pasa las validaciones, limpiamos errores y avisamos al Padre
-    setError("");
-    
-    // Aquí pasamos los datos hacia ARRIBA (al Manager)
-    onNext({ startDate, endDate });
+    // 3️⃣ Validar que la fecha de ingreso sea hoy o futura
+    //if (!isFutureOrToday(startDate)) {
+      //setError("La fecha de ingreso no puede ser anterior a hoy.")
+      //return
+   // }
+
+    // ✅ Todo ok, limpiar errores y pasar datos al padre
+    setError("")
+    onNext({ startDate, endDate })
   }
 
   return (
@@ -50,7 +58,11 @@ export default function FormularioFechas({ onNext, onCancel }: FormularioFechasP
         <h3 className={styles.subtitle}>Seleccione un rango de fechas:</h3>
 
         {/* Mensaje de error visual (Mejor que un alert) */}
-        {error && <p className={styles.errorText} style={{color: 'red', marginBottom: '10px'}}>{error}</p>}
+        {error && (
+          <p style={{ color: 'red', fontWeight: 'bold', marginBottom: '10px' }}>
+            {error}
+          </p>
+        )}
 
         <div className={styles.row}>
           <label className={styles.label}>

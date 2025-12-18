@@ -4,28 +4,42 @@ import styles from "./alta.module.css"; // Ajusta la ruta a tu CSS
 import FormField from "@/components/FormField";
 import Title from "@/components/Title";
 import Button from "@/components/Button";
+import { get } from "http";
 
 const paisesAmerica = ["Argentina", "Bolivia", "Brasil", "Canadá", "Chile", "Colombia", "Costa Rica", "Cuba", "Dominica", "Ecuador", "El Salvador", "Estados Unidos", "Granada", "Guatemala", "Guyana", "Haití", "Honduras", "Jamaica", "México", "Nicaragua", "Panamá", "Paraguay", "Perú", "República Dominicana", "San Cristóbal y Nieves", "San Vicente y las Granadinas", "Santa Lucía", "Surinam", "Trinidad y Tobago", "Uruguay", "Venezuela"];
 
 interface Props {
-  form: any;         // Tus datos
-  errors: string[];  // Tu lista de errores
+  form: any;   // Tus datos
+
+  // Ahora errors es un objeto que mapea nombre de campo → mensaje de error
+  errors: { [field: string]: string };
+
   // Funciones para manejar los inputs
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   onChangeDireccion: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onBlur: (e: React.FocusEvent<HTMLInputElement | HTMLSelectElement>) => void;
   onBlurDireccion: (e: React.FocusEvent<HTMLInputElement>) => void;
+
   // Botones
   onSubmit: (e: React.FormEvent) => void;
   onCancel: () => void;
 }
 
+
 export default function FormularioAltaHuesped({ 
   form, errors, onChange, onChangeDireccion, onBlur, onBlurDireccion, onSubmit, onCancel 
 }: Props) {
 
+
+  //lo anterior:
   // Helper para mantener tu lógica de "errors.includes(...)"
-  const hasError = (field: string) => errors.includes(field);
+  //const hasError = (field: string) => errors.includes(field);
+
+  //lo nuevo:
+  // Devuelve true si hay error en el campo
+  const hasError = (field: string) => !!errors[field];
+  // Devuelve el mensaje de error real
+  const getError = (field: string) => errors[field];
 
   return (
     <div className={styles.wrapper}>
@@ -36,7 +50,7 @@ export default function FormularioAltaHuesped({
       <main className={styles.mainContent}>
         
         {/* Tu lista de errores global (si la usas) */}
-        {errors.length > 0} 
+        {/* {errors.length > 0} */}
 
         <form id="formHuesped" className={styles.form} onSubmit={onSubmit}>
           
@@ -53,20 +67,20 @@ export default function FormularioAltaHuesped({
                 onBlur={onBlur} 
               />
               {hasError("apellido") && (
-                <span className={styles.errorMessage}>Este campo es obligatorio</span>
+                <span className={styles.errorMessage}>{getError("apellido")}</span>
               )}
             </FormField>
 
-            <FormField label="Nombres *">
+            <FormField label="nombre *">
               <input 
-                name="nombres" 
+                name="nombre" 
                 placeholder="INGRESE UN NOMBRE..." 
-                value={form.nombres} 
+                value={form.nombre} 
                 onChange={onChange}
                 onBlur={onBlur}
               />
-              {hasError("nombres") && (
-                <span className={styles.errorMessage}>Este campo es obligatorio</span>
+              {hasError("nombre") && (
+                <span className={styles.errorMessage}>{getError("nombre")}</span>
               )}
             </FormField>
           </div>
@@ -81,7 +95,7 @@ export default function FormularioAltaHuesped({
                 onBlur={onBlur}
                 style={{ borderColor: hasError("documento") ? "red" : undefined }}
               />
-              {hasError("documento") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
+              {hasError("documento") && <span style={{ color: 'red', fontSize: '0.8rem' }}>{getError("documento")}</span>}
             </FormField>
 
             <FormField label="Tipo de Documento *">
@@ -121,7 +135,7 @@ export default function FormularioAltaHuesped({
                   <option key={pais} value={pais.toUpperCase()}>{pais}</option>
                 ))}
               </select>
-              {hasError("nacionalidad") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
+              {hasError("nacionalidad") && <span style={{ color: 'red', fontSize: '0.8rem' }}>{getError("nacionalidad")}</span>}
             </FormField>
           </div>
 
@@ -136,7 +150,7 @@ export default function FormularioAltaHuesped({
                 onBlur={onBlur}
                 style={{ borderColor: hasError("fechaNacimiento") ? "red" : undefined }}
               />
-              {hasError("fechaNacimiento") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
+              {hasError("fechaNacimiento") && <span style={{ color: 'red', fontSize: '0.8rem' }}>{getError("fechaNacimiento")}</span>}
             </FormField>
           </div>
 
@@ -153,7 +167,7 @@ export default function FormularioAltaHuesped({
                 onBlur={onBlurDireccion}
                 style={{ borderColor: hasError("pais") ? "red" : undefined }}
               />
-              {hasError("pais") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
+              {hasError("pais") && <span style={{ color: 'red', fontSize: '0.8rem' }}>{getError("pais")}</span>}
             </FormField>
 
             <FormField label="Provincia *">
@@ -165,7 +179,7 @@ export default function FormularioAltaHuesped({
                 onBlur={onBlurDireccion}
                 style={{ borderColor: hasError("provincia") ? "red" : undefined }}
               />
-              {hasError("provincia") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
+              {hasError("provincia") && <span style={{ color: 'red', fontSize: '0.8rem' }}>{getError("provincia")}</span>}
             </FormField>
           </div>
 
@@ -179,7 +193,7 @@ export default function FormularioAltaHuesped({
                 onBlur={onBlurDireccion}
                 style={{ borderColor: hasError("ciudad") ? "red" : undefined }}
               />
-              {hasError("ciudad") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
+              {hasError("ciudad") && <span style={{ color: 'red', fontSize: '0.8rem' }}>{getError("ciudad")}</span>}
             </FormField>
 
             <FormField label="Codigo Postal *">
@@ -191,7 +205,7 @@ export default function FormularioAltaHuesped({
                 onBlur={onBlurDireccion}
                 style={{ borderColor: hasError("codigoPostal") ? "red" : undefined }}
               />
-              {hasError("codigoPostal") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
+              {hasError("codigoPostal") && <span style={{ color: 'red', fontSize: '0.8rem' }}>{getError("codigoPostal")}</span>}
             </FormField>
           </div>
 
@@ -205,7 +219,7 @@ export default function FormularioAltaHuesped({
                 onBlur={onBlurDireccion}
                 style={{ borderColor: hasError("calle") ? "red" : undefined }}
               />
-              {hasError("calle") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
+              {hasError("calle") && <span style={{ color: 'red', fontSize: '0.8rem' }}>{getError("calle")}</span>}
             </FormField>
 
             <FormField label="Numero *">
@@ -217,12 +231,12 @@ export default function FormularioAltaHuesped({
                 onBlur={onBlurDireccion}
                 style={{ borderColor: hasError("numero") ? "red" : undefined }}
               />
-              {hasError("numero") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
+              {hasError("numero") && <span style={{ color: 'red', fontSize: '0.8rem' }}>{getError("numero")}</span>}
             </FormField>
           </div>
 
           <div className={styles.row}>
-            <FormField label="Piso *">
+            <FormField label="Piso ">
               <input 
                 name="piso" 
                 placeholder="INGRESE UN PISO..." 
@@ -231,10 +245,10 @@ export default function FormularioAltaHuesped({
                 onBlur={onBlurDireccion}
                 style={{ borderColor: hasError("piso") ? "red" : undefined }}
               />
-              {hasError("piso") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
+              {hasError("piso") && <span style={{ color: 'red', fontSize: '0.8rem' }}>{getError("piso")}</span>}
             </FormField>
 
-            <FormField label="Departamento *">
+            <FormField label="Departamento ">
               <input 
                 name="departamento" 
                 placeholder="INGRESE UN DEPARTAMENTO..." 
@@ -243,7 +257,7 @@ export default function FormularioAltaHuesped({
                 onBlur={onBlurDireccion}
                 style={{ borderColor: hasError("departamento") ? "red" : undefined }}
               />
-              {hasError("departamento") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
+              {hasError("departamento") && <span style={{ color: 'red', fontSize: '0.8rem' }}>{getError("departamento")}</span>}
             </FormField>
           </div>
 
@@ -260,7 +274,7 @@ export default function FormularioAltaHuesped({
                 onBlur={onBlur}
                 style={{ borderColor: hasError("posicionIVA") ? "red" : undefined }}
               />
-              {hasError("posicionIVA") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
+              {hasError("posicionIVA") && <span style={{ color: 'red', fontSize: '0.8rem' }}>{getError("posicionIVA")}</span>}
             </FormField>
 
             <FormField label="Ocupación *">
@@ -272,7 +286,7 @@ export default function FormularioAltaHuesped({
                 onBlur={onBlur}
                 style={{ borderColor: hasError("ocupacion") ? "red" : undefined }}
               />
-              {hasError("ocupacion") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
+              {hasError("ocupacion") && <span style={{ color: 'red', fontSize: '0.8rem' }}>{getError("ocupacion")}</span>}
             </FormField>
           </div>
 
@@ -289,11 +303,12 @@ export default function FormularioAltaHuesped({
                 onBlur={onBlur}
                 style={{ borderColor: hasError("telefono") ? "red" : undefined }}
               />
-              {hasError("telefono") && <span style={{ color: 'red', fontSize: '0.8rem' }}>Este campo es obligatorio</span>}
+              {hasError("telefono") && <span style={{ color: 'red', fontSize: '0.8rem' }}>{getError("telefono")}</span>}
             </FormField>
 
-            <FormField label="Email *">
-              <input name="email" placeholder="INGRESE UN EMAIL..." value={form.email} onChange={onChange} />
+            <FormField label="Email ">
+              <input name="email" placeholder="INGRESE UN EMAIL..." value={form.email} onChange={onChange} onBlur={onBlur} />
+              {hasError("email") && <span style={{ color: 'red', fontSize: '0.8rem' }}>{getError("email")}</span>}
             </FormField>
           </div>
 

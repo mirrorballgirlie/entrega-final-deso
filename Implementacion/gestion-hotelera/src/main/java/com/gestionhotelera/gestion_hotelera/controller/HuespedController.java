@@ -2,12 +2,17 @@ package com.gestionhotelera.gestion_hotelera.controller;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -19,14 +24,9 @@ import com.gestionhotelera.gestion_hotelera.modelo.Huesped;
 
 import jakarta.validation.Valid;
 
-import org.springframework.web.bind.annotation.CrossOrigin;
-import java.util.List;
-import java.util.Map;
+//import jakarta.validation.Valid;
+//import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-
-import org.springframework.web.bind.annotation.PathVariable;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -38,6 +38,16 @@ public class HuespedController {
 
     @PostMapping("/alta")
     public ResponseEntity<?> altaHuesped(@Valid @RequestBody HuespedDTO huespedDTO, BindingResult result) {
+
+       /*  // Mostrar en consola el JSON recibido
+        try {
+            ObjectMapper mapper = new ObjectMapper();
+            System.out.println("JSON recibido desde el front:");
+            System.out.println(mapper.writeValueAsString(huespedDTO));
+        } catch (Exception e) {
+            System.out.println("Error al mostrar JSON recibido: " + e.getMessage());
+        } */
+
         if(result.hasErrors()) {
             Map<String, Object> errores = new HashMap<>();
         errores.put("status", 400);

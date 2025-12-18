@@ -3,9 +3,11 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import FormularioHuesped from "@/components/Formularios/FormularioHuesped";
 import ListadoHuesped from "@/components/Listados/ListadoHuesped";
+import { isValidName, validateDocumentNumber } from "@/utils/validators";
 
 interface Props {
   mode: "reservar" | "ocupar" | "buscar";
+ 
 }
 
 export default function BuscarHuespedManager({ mode }: Props) {
@@ -26,6 +28,10 @@ export default function BuscarHuespedManager({ mode }: Props) {
   // Resultados de búsqueda
   const [results, setResults] = useState<any[]>([]);
 
+  // Estado para errores de formato
+  const [formError, setFormError] = useState("");
+
+
   // 1. Manejo de inputs del formulario
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -41,6 +47,24 @@ export default function BuscarHuespedManager({ mode }: Props) {
     //   alert("Debe completar al menos un campo.");
     //   return;
     // }
+
+    // --- Validaciones de formato ---
+  //   if (form.apellido && !isValidName(form.apellido)) {
+  //    setFormError("Apellido con formato inválido: unicamente caracteres y espacios");
+  //    return;
+  //  }
+
+  //  if (form.nombre && !isValidName(form.nombre)) {
+  //   setFormError("Nombre con formato inválido: unicamente caracteres y espacios");
+  //  return;
+  //  }
+
+  //  if (form.documento && form.tipoDocumento && !validateDocumentNumber(form.tipoDocumento, form.documento)) {
+  //    setFormError("Documento con formato inválido para el tipo seleccionado. Para DNI, LE y LC solamente se permiten digitos. Pasaporte/otro caracteres alfanumericos. cargar SIN puntos (ejemplo 12345678)");
+  //    return;
+  //  }
+
+  setFormError(""); 
 
     setLoading(true);
 
@@ -89,6 +113,7 @@ export default function BuscarHuespedManager({ mode }: Props) {
           onChange={handleInputChange}
           onSubmit={handleSearchSubmit}
           onCancel={() => router.back()} // Sale de la página si cancela en el paso 1
+          formError={formError} // <-- pasamos error al formulario
         />
       )}
 

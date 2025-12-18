@@ -81,8 +81,11 @@ public class GestorHuesped {
         .calle(dirDto.getCalle())
         .numero(dirDto.getNumero())
         .codigoPostal(dirDto.getCodigoPostal())
+        .piso(dirDto.getPiso())
+        .departamento(dirDto.getDepartamento())
+
         .build();
-        //setear piso y depto
+        //setear piso y depto. listoooooo
 
         //guardar la direccion
 

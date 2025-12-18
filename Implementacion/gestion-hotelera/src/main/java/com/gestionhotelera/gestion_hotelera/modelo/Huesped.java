@@ -2,6 +2,8 @@ package com.gestionhotelera.gestion_hotelera.modelo;
 import java.time.LocalDate;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -11,12 +13,13 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Data
 @NoArgsConstructor
@@ -31,16 +34,31 @@ public class Huesped {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+
+    @NotBlank(message = "El nombre es obligatorio")
+    
+
+    
     private String nombre;
+
+    @NotBlank(message = "El apellido es obligatorio")
+    
     private String apellido;
+
+
     private String tipoDocumento;
     private String documento;
     private String posicionIVA;
     private LocalDate fechaNacimiento;
     private String telefono;
+
+    @Email(message = "Email inválido")
     private String email;
     private String ocupacion;
     private String nacionalidad;
+
+    @Pattern(regexp = "^(\\d{2}-\\d{8}-\\d{1}|\\d{11})?$", message = "CUIT inválido")
+    private String cuit;
 
     // --- 2. AQUÍ ESTÁ LA CORRECCIÓN ---
     @ManyToMany(mappedBy = "huespedes")

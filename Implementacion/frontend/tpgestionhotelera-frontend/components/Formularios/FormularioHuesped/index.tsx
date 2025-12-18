@@ -114,6 +114,9 @@
 
 import style from "./formulariohuesped.module.css"; 
 import Button from "@/components/Button";
+import { isValidName, validateDocumentNumber } from "@/utils/validators"; // tu archivo de validators
+import * as React from "react";
+
 
 interface Props {
   // Recibe el estado completo del padre
@@ -127,9 +130,37 @@ interface Props {
   onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => void;
   onSubmit: (e: React.FormEvent) => void;
   onCancel: () => void;
+  //formError?: string; // <-- esto hay que agregarlo
 }
 
-export default function FormularioHuesped({ form, onChange, onSubmit, onCancel }: Props) {
+export default function FormularioHuesped({ form, onChange, onSubmit, onCancel}: Props) {
+
+  const [formError, setFormError] = React.useState<string | null>(null);
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // --- VALIDACIONES USANDO TUS FUNCIONES ---
+    if (form.apellido && !isValidName(form.apellido)) {
+      setFormError("Apellido inválido: solo letras, espacios");
+      return;
+    }
+
+    if (form.nombre && !isValidName(form.nombre)) {
+      setFormError("Nombre inválido: solo letras, espacios");
+      return;
+    }
+
+    if (form.documento && form.tipoDocumento && !validateDocumentNumber(form.tipoDocumento, form.documento)) {
+      setFormError(
+        "Documento inválido para el tipo seleccionado. DNI/LE/LC: solo dígitos, Pasaporte/Otro: alfanumérico (todos sin puntos)."
+      );
+      return;
+    }
+
+    setFormError(null); // todo OK
+    onSubmit(e);
+  };
   
   return (
     <main className={style.container}>
@@ -142,7 +173,14 @@ export default function FormularioHuesped({ form, onChange, onSubmit, onCancel }
             Complete al menos un campo para realizar la búsqueda.
           </p> */}
 
-          <form className={style.form} onSubmit={onSubmit}>
+          {/* Mensaje de error */}
+          {formError && (
+            <div style={{ color: 'red', marginBottom: '10px', fontWeight: 'bold' }}>
+              {formError}
+            </div>
+          )}
+
+          <form className={style.form} onSubmit={handleSubmit}>
             <div className={style.formGroup}>
               <label className={style.label}>Apellido</label>
               <input
@@ -174,6 +212,9 @@ export default function FormularioHuesped({ form, onChange, onSubmit, onCancel }
                 <option value="">Seleccionar</option>
                 <option value="DNI">DNI</option>
                 <option value="Pasaporte">Pasaporte</option>
+                <option value="LE">LE</option>
+                <option value="LC">LC</option>
+                <option value="Otro">Otro</option>
               </select>
             </div>
 
