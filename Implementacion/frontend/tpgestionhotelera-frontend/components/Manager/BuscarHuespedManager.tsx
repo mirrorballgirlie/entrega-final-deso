@@ -113,7 +113,7 @@ export default function BuscarHuespedManager({ mode }: Props) {
           onChange={handleInputChange}
           onSubmit={handleSearchSubmit}
           onCancel={() => router.back()} // Sale de la página si cancela en el paso 1
-          formError={formError} // <-- pasamos error al formulario
+          // formError={formError} // <-- pasamos error al formulario
         />
       )}
 

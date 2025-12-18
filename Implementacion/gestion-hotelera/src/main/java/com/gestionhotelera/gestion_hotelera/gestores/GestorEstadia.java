@@ -1,3 +1,5 @@
+
+
 // package com.gestionhotelera.gestion_hotelera.gestores;
 
 // import java.time.LocalDate;
@@ -22,6 +24,7 @@
 // import com.gestionhotelera.gestion_hotelera.exception.BadRequestException;
 // import com.gestionhotelera.gestion_hotelera.exception.ResourceNotFoundException;
 // import com.gestionhotelera.gestion_hotelera.modelo.Estadia;
+// import com.gestionhotelera.gestion_hotelera.modelo.EstadoReserva;
 // import com.gestionhotelera.gestion_hotelera.modelo.Habitacion;
 // import com.gestionhotelera.gestion_hotelera.modelo.Huesped;
 // import com.gestionhotelera.gestion_hotelera.modelo.Reserva;
@@ -90,7 +93,6 @@
 //                     continue;
 //                 }
 
-//                 // verificar estadías que solapan
 //                 List<Estadia> estadiasSolap = safeList(estadiaRepository.findEstadiasQueSolapan(desde, hasta));
 //                 boolean existeEstadia = estadiasSolap.stream()
 //                         .anyMatch(e -> e.getHabitacion() != null && idHabitacion.equals(e.getHabitacion().getId()))
@@ -102,8 +104,30 @@
 //                     continue;
 //                 }
 
-//                 // verificar reservas solapadas
-//                 List<Reserva> reservas = safeList(reservaRepository.verificarDisponibilidad(idHabitacion, desde, hasta));
+//                 // List<Reserva> reservas = safeList(reservaRepository.verificarDisponibilidad(idHabitacion, desde, hasta));
+//                 // if (reservas != null && !reservas.isEmpty()) {
+//                 //     for (Reserva r : reservas) {
+//                 //         ConflictoReservaDTO c = new ConflictoReservaDTO();
+//                 //         c.setHabitacionId(idHabitacion);
+//                 //         c.setReservaId(r.getId());
+//                 //         c.setNombreReserva((r.getNombre() == null ? "" : r.getNombre()) + " " + (r.getApellido() == null ? "" : r.getApellido()));
+//                 //         c.setFechaDesde(r.getFechaDesde());
+//                 //         c.setFechaHasta(r.getFechaHasta());
+//                 //         conflictos.add(c);
+//                 //     }
+//                 //     continue;
+//                 // }
+
+//                 // ... imports necesarios (EstadoReserva)
+
+//                 // Llamada modificada: Se agrega EstadoReserva.ACTIVA
+//                 List<Reserva> reservas = safeList(reservaRepository.verificarDisponibilidad(
+//                     idHabitacion, 
+//                     desde, 
+//                     hasta, 
+//                     EstadoReserva.ACTIVA
+//                 ));
+
 //                 if (reservas != null && !reservas.isEmpty()) {
 //                     for (Reserva r : reservas) {
 //                         ConflictoReservaDTO c = new ConflictoReservaDTO();
@@ -114,7 +138,6 @@
 //                         c.setFechaHasta(r.getFechaHasta());
 //                         conflictos.add(c);
 //                     }
-//                     // no agregamos a validas
 //                     continue;
 //                 }
 
@@ -122,7 +145,7 @@
 //             }
 //         } catch (DataAccessException dae) {
 //             log.error("Error de acceso a datos en validarOcupacion", dae);
-//             throw dae; // deja que GlobalExceptionHandler convierta a 500
+//             throw dae;
 //         } catch (Exception ex) {
 //             log.error("Error inesperado en validarOcupacion", ex);
 //             throw ex;
@@ -142,7 +165,6 @@
 //         }
 
 //         try {
-//             // cargar huespedes
 //             List<Huesped> huespedes = huespedRepository.findAllById(req.getHuespedIds());
 //             if (huespedes.size() != req.getHuespedIds().size()) {
 //                 Set<Long> encontrados = huespedes.stream().map(Huesped::getId).collect(Collectors.toSet());
@@ -173,7 +195,6 @@
 //                     throw new BadRequestException("Habitación " + h.getNumero() + " no está en estado válido para ocupar (actual=" + estado + ").");
 //                 }
 
-//                 // verificar estadía existente
 //                 boolean existeEstadia = safeList(estadiaRepository.findEstadiasQueSolapan(desde, hasta))
 //                         .stream()
 //                         .anyMatch(e -> e.getHabitacion() != null && idHabitacion.equals(e.getHabitacion().getId()));
@@ -182,11 +203,21 @@
 //                     throw new BadRequestException("La habitación " + h.getNumero() + " ya está ocupada en el rango solicitado.");
 //                 }
 
-//                 // verificar reservas solapadas
-//                 List<Reserva> reservas = safeList(reservaRepository.verificarDisponibilidad(idHabitacion, desde, hasta));
-//                 if (reservas != null && !reservas.isEmpty() && !req.isOpcionOcuparIgual()) {
-//                     throw new BadRequestException("La habitación " + h.getNumero() + " tiene reservas solapadas. Use opcionOcuparIgual=true para forzar.");
-//                 }
+//                 // List<Reserva> reservas = safeList(reservaRepository.verificarDisponibilidad(idHabitacion, desde, hasta));
+//                 // if (reservas != null && !reservas.isEmpty() && !req.isOpcionOcuparIgual()) {
+//                 //     throw new BadRequestException("La habitación " + h.getNumero() + " tiene reservas solapadas. Use opcionOcuparIgual=true para forzar.");
+//                 // }
+//                 // Llamada modificada: Se agrega EstadoReserva.ACTIVA
+//                     List<Reserva> reservas = safeList(reservaRepository.verificarDisponibilidad(
+//                         idHabitacion, 
+//                         desde, 
+//                         hasta, 
+//                         EstadoReserva.ACTIVA
+//                     ));
+
+//                     if (reservas != null && !reservas.isEmpty() && !req.isOpcionOcuparIgual()) {
+//                         throw new BadRequestException("La habitación " + h.getNumero() + " tiene reservas solapadas. Use opcionOcuparIgual=true para forzar.");
+//                     }
 
 //                 Estadia est = Estadia.builder()
 //                         .estado("ACTIVA")
@@ -196,7 +227,6 @@
 //                         .huespedes(new ArrayList<>())
 //                         .build();
 
-//                 // linkear huespedes
 //                 for (Huesped hu : huespedes) {
 //                     est.getHuespedes().add(hu);
 //                 }
@@ -206,14 +236,10 @@
 
 //                 if (reservas != null && !reservas.isEmpty() && req.isOpcionOcuparIgual()) {
 //                     for (Reserva r : reservas) {
-//                         // decide politica: aquí solo logueo y dejo la reserva como está (evita seteo a null que puede romper restricciones DB)
 //                         log.info("Ocupando igual: conflicto con reserva id={} para habitacionId={}", r.getId(), idHabitacion);
-//                         // si querés desactivar la reserva, hacelo con un estado válido (ej: CANCELADA) y con reglas de negocio
-//                         // r.setEstado(EstadoReserva.CANCELADA); reservaRepository.save(r);
 //                     }
 //                 }
 
-//                 // actualizar estado de habitación a OCUPADA
 //                 h.setEstado("OCUPADA");
 //                 habitacionRepository.save(h);
 //             }
@@ -228,7 +254,6 @@
 //         }
 //     }
 
-//     // helpers
 //     private <T> List<T> safeList(List<T> maybeNull) {
 //         return maybeNull == null ? Collections.emptyList() : maybeNull;
 //     }
@@ -238,15 +263,13 @@
 //     }
 
 //     private Boolean existenciaEnDia(Long idHabitacion, LocalDate dia) {
-//     try {
-//         return estadiaRepository.existeEstadiaEnDia(idHabitacion, dia);
-//     } catch (Exception e) {
-//         return false; // fallback seguro
+//         try {
+//             return estadiaRepository.existeEstadiaEnDia(idHabitacion, dia);
+//         } catch (Exception e) {
+//             return false;
+//         }
 //     }
 // }
-
-// }
-
 package com.gestionhotelera.gestion_hotelera.gestores;
 
 import java.time.LocalDate;
@@ -333,13 +356,19 @@ public class GestorEstadia {
                     continue;
                 }
 
+                // --- CORRECCIÓN 1: VALIDACIÓN ---
+                // Solo nos importa si está rota/en mantenimiento.
+                // Si dice "OCUPADA" o "RESERVADA" en la DB estática, lo ignoramos,
+                // porque la verdadera validación se hace por fechas más abajo.
                 String estado = h.getEstado();
-                if (estado == null) estado = "DESCONOCIDO";
-                if (!"DISPONIBLE".equalsIgnoreCase(estado) && !"RESERVADA".equalsIgnoreCase(estado)) {
-                    errores.add("Habitación " + h.getNumero() + " no está en estado válido para ocupar (actual=" + estado + ").");
+                if (estado == null) estado = "DISPONIBLE";
+
+                if ("MANTENIMIENTO".equalsIgnoreCase(estado)) {
+                    errores.add("Habitación " + h.getNumero() + " está inhabilitada por mantenimiento.");
                     continue;
                 }
 
+                // Validación real de ocupación (Por fechas)
                 List<Estadia> estadiasSolap = safeList(estadiaRepository.findEstadiasQueSolapan(desde, hasta));
                 boolean existeEstadia = estadiasSolap.stream()
                         .anyMatch(e -> e.getHabitacion() != null && idHabitacion.equals(e.getHabitacion().getId()))
@@ -351,23 +380,7 @@ public class GestorEstadia {
                     continue;
                 }
 
-                // List<Reserva> reservas = safeList(reservaRepository.verificarDisponibilidad(idHabitacion, desde, hasta));
-                // if (reservas != null && !reservas.isEmpty()) {
-                //     for (Reserva r : reservas) {
-                //         ConflictoReservaDTO c = new ConflictoReservaDTO();
-                //         c.setHabitacionId(idHabitacion);
-                //         c.setReservaId(r.getId());
-                //         c.setNombreReserva((r.getNombre() == null ? "" : r.getNombre()) + " " + (r.getApellido() == null ? "" : r.getApellido()));
-                //         c.setFechaDesde(r.getFechaDesde());
-                //         c.setFechaHasta(r.getFechaHasta());
-                //         conflictos.add(c);
-                //     }
-                //     continue;
-                // }
-
-                // ... imports necesarios (EstadoReserva)
-
-                // Llamada modificada: Se agrega EstadoReserva.ACTIVA
+                // Validación de Reservas
                 List<Reserva> reservas = safeList(reservaRepository.verificarDisponibilidad(
                     idHabitacion, 
                     desde, 
@@ -436,10 +449,13 @@ public class GestorEstadia {
                 Habitacion h = habitacionRepository.findById(idHabitacion)
                         .orElseThrow(() -> new ResourceNotFoundException("Habitación no encontrada: " + idHabitacion));
 
+                // --- CORRECCIÓN 2: VALIDACIÓN FÍSICA ---
+                // Solo lanzamos error si la habitación está rota (MANTENIMIENTO).
                 String estado = h.getEstado();
-                if (estado == null) estado = "DESCONOCIDO";
-                if (!"DISPONIBLE".equalsIgnoreCase(estado) && !"RESERVADA".equalsIgnoreCase(estado)) {
-                    throw new BadRequestException("Habitación " + h.getNumero() + " no está en estado válido para ocupar (actual=" + estado + ").");
+                if (estado == null) estado = "DISPONIBLE";
+                
+                if ("MANTENIMIENTO".equalsIgnoreCase(estado)) {
+                    throw new BadRequestException("Habitación " + h.getNumero() + " está en MANTENIMIENTO y no puede ocuparse.");
                 }
 
                 boolean existeEstadia = safeList(estadiaRepository.findEstadiasQueSolapan(desde, hasta))
@@ -450,21 +466,16 @@ public class GestorEstadia {
                     throw new BadRequestException("La habitación " + h.getNumero() + " ya está ocupada en el rango solicitado.");
                 }
 
-                // List<Reserva> reservas = safeList(reservaRepository.verificarDisponibilidad(idHabitacion, desde, hasta));
-                // if (reservas != null && !reservas.isEmpty() && !req.isOpcionOcuparIgual()) {
-                //     throw new BadRequestException("La habitación " + h.getNumero() + " tiene reservas solapadas. Use opcionOcuparIgual=true para forzar.");
-                // }
-                // Llamada modificada: Se agrega EstadoReserva.ACTIVA
-                    List<Reserva> reservas = safeList(reservaRepository.verificarDisponibilidad(
-                        idHabitacion, 
-                        desde, 
-                        hasta, 
-                        EstadoReserva.ACTIVA
-                    ));
+                List<Reserva> reservas = safeList(reservaRepository.verificarDisponibilidad(
+                    idHabitacion, 
+                    desde, 
+                    hasta, 
+                    EstadoReserva.ACTIVA
+                ));
 
-                    if (reservas != null && !reservas.isEmpty() && !req.isOpcionOcuparIgual()) {
-                        throw new BadRequestException("La habitación " + h.getNumero() + " tiene reservas solapadas. Use opcionOcuparIgual=true para forzar.");
-                    }
+                if (reservas != null && !reservas.isEmpty() && !req.isOpcionOcuparIgual()) {
+                    throw new BadRequestException("La habitación " + h.getNumero() + " tiene reservas solapadas. Use opcionOcuparIgual=true para forzar.");
+                }
 
                 Estadia est = Estadia.builder()
                         .estado("ACTIVA")
@@ -487,8 +498,11 @@ public class GestorEstadia {
                     }
                 }
 
-                h.setEstado("OCUPADA");
-                habitacionRepository.save(h);
+                // --- CORRECCIÓN 3: ELIMINACIÓN DE PERSISTENCIA DE ESTADO ---
+                // h.setEstado("OCUPADA");  <--- ¡ELIMINADO!
+                // habitacionRepository.save(h); <--- ¡ELIMINADO!
+                // La habitación queda en estado "DISPONIBLE" (o el que tuviera), 
+                // ya que la ocupación ahora reside en la entidad 'Estadia'.
             }
 
             return new OcuparResponse(estadiaIds, "Estadías creadas correctamente");

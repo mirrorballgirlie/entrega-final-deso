@@ -63,7 +63,8 @@ export default function AltaHuespedManager({ onExit }: Props) {
         break;
 
       case "telefono":
-        if (!isValidPhone(value)) message = "Formato inválido: ej. 3411234567 o +5493411234567";
+        // if (!isValidPhone(value)) message = "Formato inválido: ej. 3411234567 o +54934112345";
+        if (!isValidPhone(value)) message = "Formato inválido: ej.+54934112345";
         break;
 
       case "email":
@@ -112,7 +113,7 @@ export default function AltaHuespedManager({ onExit }: Props) {
 
       case "numero":
       case "piso": 
-        if (!isNumeric(value)) message = "Formato inválido: solo números";
+        if (!isNumeric(value) && value !== "") message = "Formato inválido: solo números";
 
         break;  
       
