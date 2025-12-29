@@ -17,7 +17,7 @@ export default function Toast({ message, isVisible, type = "success" }: Props) {
   const stylesConfig = {
     success: { backgroundColor: "#28a745" },
     error:   { backgroundColor: "#dc3545" },
-    warning: { backgroundColor: "#ff9800" }, // Naranja fuerte para advertencia
+    warning: { backgroundColor: "#0077B6" }, 
   };
 
   const currentStyle = stylesConfig[type];

@@ -4,7 +4,6 @@ import FormularioFechas from "@/components/Formularios/FormularioFechas";
 import RoomGrid from "@/components/RoomGrid";
 import ListadoReserva from "@/components/Listados/ListadoReserva";
 import FormularioEncargado from "@/components/Formularios/FormularioEncargado";
-import PopupThreeOptions from "@/components/PopupThreeOptions";
 
 interface Props {
   onExit: () => void;
@@ -27,18 +26,13 @@ export default function ReservarManager({ onExit }: Props) {
 
 
   const handleGridNext = (data: { rooms: string[]; selectedData: { [key: string]: string[] } }) => {
-    // 1. Extraemos TODAS las fechas que el usuario seleccionó (clickeó)
     const allSelectedDates = Object.values(data.selectedData).flat().sort();
 
-    // Seguridad: si no hay fechas, no hacemos nada
     if (allSelectedDates.length === 0) return;
 
-    // 2. La fecha más chica es el INICIO real, la más grande es el FIN real
-    // Como son strings ISO ("YYYY-MM-DD"), el sort() funciona perfecto.
     const realStartDate = allSelectedDates[0];
     const realEndDate = allSelectedDates[allSelectedDates.length - 1];
 
-    // 3. Actualizamos el estado sobrescribiendo las fechas de búsqueda
     update({
         rooms: data.rooms,
         selectedData: data.selectedData,
@@ -46,7 +40,6 @@ export default function ReservarManager({ onExit }: Props) {
         endDate: realEndDate      
     });
 
-    // 4. Avanzamos
     next();
   };
 
@@ -79,9 +72,9 @@ export default function ReservarManager({ onExit }: Props) {
       {step === 2 && (
         <RoomGrid 
             mode="reservar"
-            startDate={flowData.startDate} // Le pasamos el rango AMPLIO para mostrar la grilla
+            startDate={flowData.startDate} 
             endDate={flowData.endDate}
-            onBack={back}
+            onBack={onExit} 
             onNext={handleGridNext}
         />
       )}
@@ -89,20 +82,12 @@ export default function ReservarManager({ onExit }: Props) {
       {/* PASO 3: Confirmar Selección (Listado) */}
       {step === 3 && (
         <ListadoReserva 
-            data={flowData} // Ahora flowData tendrá las fechas REALES (cortas)
-            onBack={back}
+            data={flowData} 
+            onBack={back}    // Volver al paso 2 (Grid)
+            onCancel={onExit} // Cancelar todo (Menú Principal)
             onNext={() => next()} 
         />
       )}
-
-      {/* PASO 4: Datos del Responsable + POST
-      {step === 4 && (
-        <FormularioEncargado 
-            data={flowData} 
-            onBack={back}
-            onSuccess={() => setSuccess(true)} 
-        />
-      )} */}
 
       {/* PASO 4: Datos del Responsable + POST */}
       {step === 4 && (

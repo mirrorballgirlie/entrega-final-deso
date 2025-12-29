@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import FormularioHuesped from "@/components/Formularios/FormularioHuesped";
 import ListadoHuesped from "@/components/Listados/ListadoHuesped";
-import { isValidName, validateDocumentNumber } from "@/utils/validators";
+//import { isValidName, validateDocumentNumber } from "@/utils/validators";
 
 interface Props {
   mode: "reservar" | "ocupar" | "buscar";

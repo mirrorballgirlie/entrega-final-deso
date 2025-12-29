@@ -18,7 +18,7 @@ enum Step {
   BUSCAR_HUESPED = 3,
   LISTADO_RESULTADOS = 4,
   RESUMEN_CONFIRMACION = 5,
-  POPUP_DECISION = 6, // Renombrado para mayor claridad (antes POPUP_EXITO)
+  POPUP_DECISION = 6, 
 }
 
 interface Guest {
@@ -61,10 +61,8 @@ export default function OcuparHabitacionManager() {
   const [guestSearchResults, setGuestSearchResults] = useState<Guest[]>([]);
   const [errorPopup, setErrorPopup] = useState<string | null>(null);
   
-  // Estado de carga para el momento de guardar (dentro del popup)
   const [isSaving, setIsSaving] = useState(false);
 
-  // Estados Toast
   const [showToast, setShowToast] = useState(false);
   const [toastMsg, setToastMsg] = useState("");
   const [toastType, setToastType] = useState<"success" | "error">("success");
@@ -89,7 +87,6 @@ export default function OcuparHabitacionManager() {
       reservationContext?: { reservadoPor?: string; clienteId?: number; } 
   }) => {
     
-    // Lógica de fechas (igual que antes)
     let realStartDate = bookingData.startDate;
     let realEndDate = bookingData.endDate;
     const roomNumbers = Object.keys(data.selectedData);
@@ -127,7 +124,6 @@ export default function OcuparHabitacionManager() {
                     guests: [huespedCompleto]
                 });
                 
-                // Toast solicitado: Aviso de carga automática
                 triggerToast(`Se agregó a ${huespedCompleto.nombre} ${huespedCompleto.apellido} (Responsable) a la lista.`);
                 
                 setCurrentStep(Step.RESUMEN_CONFIRMACION);
@@ -158,7 +154,6 @@ export default function OcuparHabitacionManager() {
     setCurrentStep(Step.BUSCAR_HUESPED);
   };
 
-  // ... (handleSearchChange, handleSearchSubmit, handleRetrySearch, handleGuestSelectionComplete IGUALES QUE ANTES) ...
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setGuestSearchForm({ ...guestSearchForm, [e.target.name]: e.target.value });
   };
@@ -193,12 +188,10 @@ export default function OcuparHabitacionManager() {
 
   // --- NUEVA LÓGICA DE FINALIZACIÓN ---
 
-  // 1. Al dar "Confirmar" en el Resumen, NO guardamos todavía. Solo mostramos el Popup.
   const handleOpenDecisionPopup = () => {
     setCurrentStep(Step.POPUP_DECISION);
   };
 
-  // 2. Función auxiliar para ejecutar el POST al Backend
   const executeSave = async (onSuccess: () => void) => {
     setIsSaving(true);
     try {
@@ -214,7 +207,7 @@ export default function OcuparHabitacionManager() {
       const payload = {
         huespedIds: listaHuespedesIds,
         habitaciones: listaHabitaciones,
-        opcionOcuparIgual: true // Forzamos ocupación si hay reserva (validado visualmente antes)
+        opcionOcuparIgual: true 
       };
 
       const res = await fetch(`${baseUrl}/api/estadias/ocupar`, {
@@ -229,14 +222,11 @@ export default function OcuparHabitacionManager() {
         throw new Error(msg);
       }
 
-      // Si todo sale bien, ejecutamos la acción de navegación
       onSuccess();
 
     } catch (error: any) {
       console.error(error);
       setErrorPopup(error.message || "Error al guardar.");
-      // Si falla, nos quedamos en el popup o volvemos al resumen?
-      // Mejor cerrar el popup para que vea el error
       setCurrentStep(Step.RESUMEN_CONFIRMACION); 
     } finally {
       setIsSaving(false);
@@ -245,7 +235,6 @@ export default function OcuparHabitacionManager() {
 
   // --- BOTONES DEL POPUP FINAL ---
 
-  // OPCIÓN 1: Salir (Guarda y va al Home)
   const handleOptionSalir = () => {
     executeSave(() => {
         triggerToast("Estadía registrada correctamente.", "success");
@@ -255,26 +244,20 @@ export default function OcuparHabitacionManager() {
     });
   };
 
-  // OPCIÓN 2: Seguir Cargando (NO GUARDA, vuelve a buscar para añadir a la lista actual)
   const handleOptionSeguir = () => {
-    // No llamamos a executeSave. Simplemente volvemos al paso de búsqueda.
-    // Los datos en bookingData.guests se mantienen en memoria.
     setGuestSearchResults([]);
     setGuestSearchForm({ apellido: "", nombre: "", tipoDocumento: "", documento: "" });
     setCurrentStep(Step.BUSCAR_HUESPED);
   };
 
-  // OPCIÓN 3: Cargar Otra Habitación (Guarda y reinicia para nueva carga)
   const handleOptionOtraHabitacion = () => {
     executeSave(() => {
         triggerToast("Estadía registrada. Lista para la siguiente.", "success");
-        // Reiniciamos datos
         setBookingData((prev) => ({
             ...prev,
             roomIds: [],
             roomDisplayData: null,
             guests: [],
-            // Mantenemos fechas
         }));
         setCurrentStep(Step.GRILLA);
     });
@@ -329,27 +312,22 @@ export default function OcuparHabitacionManager() {
             selectedData: bookingData.roomDisplayData || undefined,
           }}
           onBack={() => {
-              // Limpiamos la lista temporal si volvemos atrás para evitar duplicados en re-selección
               setBookingData(prev => ({ ...prev, guests: [] }));
               setCurrentStep(Step.BUSCAR_HUESPED);
           }}
-          // AHORA: Al confirmar, solo abrimos el popup de decisión
+          
+          onCancel={() => router.push("/")} 
           onNext={handleOpenDecisionPopup} 
         />
       )}
 
-      {/* --- POPUP FINAL (DECISIÓN) --- */}
       {currentStep === Step.POPUP_DECISION && (
         <PopupThreeOptions
-          // Mensaje de pregunta, no de éxito todavía (salvo para la opción 2 que implica seguir)
           message={isSaving ? "Guardando estadía..." : "¿Qué desea hacer a continuación?"}
-          
           option1Text="Salir"
           onOption1={handleOptionSalir}
-          
           option2Text="Seguir Cargando"
           onOption2={handleOptionSeguir}
-          
           option3Text="Cargar Otra Habitación"
           onOption3={handleOptionOtraHabitacion}
         />

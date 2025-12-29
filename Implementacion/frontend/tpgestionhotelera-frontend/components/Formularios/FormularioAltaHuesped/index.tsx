@@ -71,7 +71,7 @@ export default function FormularioAltaHuesped({
               )}
             </FormField>
 
-            <FormField label="nombre *">
+            <FormField label="Nombre *">
               <input 
                 name="nombre" 
                 placeholder="INGRESE UN NOMBRE..." 

@@ -399,6 +399,7 @@ public class GestorReserva {
     // --- MÉTODO 1: VALIDAR SELECCIÓN ---
     public ValidarSeleccionResponse validarSeleccion(ValidarSeleccionRequest req){
         validarFechas(req.getFechaDesde(), req.getFechaHasta());
+        //validacion si no hay fechas
         if (req.getHabitacionIds() == null || req.getHabitacionIds().isEmpty()) throw new BadRequestException("Sin habitaciones.");
 
         List<Long> validas = new ArrayList<>();

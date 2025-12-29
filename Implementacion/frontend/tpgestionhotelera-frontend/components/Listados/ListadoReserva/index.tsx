@@ -1,30 +1,48 @@
 "use client";
 
+import { useState } from "react";
 import styles from "./listado-reserva.module.css";
+import Toast from "@/components/Toast"; 
+import Button from "@/components/Button";
 
-// Definimos la estructura de datos que viene del Padre
 interface WizardData {
   startDate: string;
   endDate: string;
-  rooms: string[]; // IDs
-  selectedData?: { [key: string]: string[] }; // Para mostrar números
+  rooms: string[]; 
+  selectedData?: { [key: string]: string[] };
 }
 
 interface ListadoReservaProps {
-  data: WizardData; // Recibe los datos por props
-  onBack: () => void;
-  onNext: () => void; // Avanza al formulario de encargado
+  data: WizardData;
+  onBack: () => void;   
+  onCancel: () => void; 
+  onNext: () => void;   
 }
 
-export default function ListadoReserva({ data, onBack, onNext }: ListadoReservaProps) {
+export default function ListadoReserva({ data, onBack, onCancel, onNext }: ListadoReservaProps) {
   
-  // Lógica para mostrar números en lugar de IDs
+  const [showToast, setShowToast] = useState(false);
+  const [toastMsg, setToastMsg] = useState("");
+  const [toastType, setToastType] = useState<"success" | "error" | "warning">("warning");
+
   const habitacionesParaMostrar = data.selectedData 
     ? Object.keys(data.selectedData) 
     : data.rooms;
 
+  const handleReject = () => {
+    setToastMsg("Operación Cancelada");
+    setToastType("warning");
+    setShowToast(true);
+
+    setTimeout(() => {
+        onCancel();
+    }, 1500);
+  };
+
   return (
     <div className={styles["reservation-wrapper"]}>
+      <Toast message={toastMsg} isVisible={showToast} type={toastType} />
+
       <div className={styles["reservation-header"]}>
         <button onClick={onBack} className={styles["btn-back"]}>
           ← Volver
@@ -53,13 +71,19 @@ export default function ListadoReserva({ data, onBack, onNext }: ListadoReservaP
         </table>
 
         <div className={styles["reservation-buttons"]}>
-          <button onClick={onBack} className={styles["btn-reject"]}>
-            Modificar
-          </button>
+          {/* BOTÓN RECHAZAR */}
+          <Button 
+            onClick={handleReject} 
+            className={styles["btn-reject"]} 
+           
+          >
+            Rechazar
+          </Button>
 
-          <button onClick={onNext} className={styles["btn-accept"]}>
-            Confirmar y Cargar Datos
-          </button>
+          {/* BOTÓN ACEPTAR */}
+          <Button onClick={onNext} className={styles["btn-accept"]}>
+            Aceptar
+          </Button>
         </div>
       </div>
     </div>
