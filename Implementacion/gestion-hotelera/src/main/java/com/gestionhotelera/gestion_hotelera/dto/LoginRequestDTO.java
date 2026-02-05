@@ -1,20 +1,15 @@
 package com.gestionhotelera.gestion_hotelera.dto;
-
-import java.time.LocalDate;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
 
-public abstract class MetodoDePagoDTO {
+public class LoginRequestDTO {
 
-    private LocalDate fechaPago;
-    private double monto;
+    private String usuario;
+    private String contrasenia;
 
 }

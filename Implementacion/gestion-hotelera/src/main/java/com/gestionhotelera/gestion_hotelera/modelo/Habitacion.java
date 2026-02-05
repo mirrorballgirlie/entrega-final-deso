@@ -109,7 +109,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
-// import jakarta.persistence.OneToOne; <--- YA NO SE USA
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -132,6 +131,7 @@ public class Habitacion {
     private int numero;
 
     @Enumerated(EnumType.ORDINAL)
+    
     private TipoHabitacion tipo;
     
     private int capacidad;

@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import java.time.LocalDate;
 
 @Entity
 //@Table(name = "transferenciaBancaria")
@@ -22,7 +23,7 @@ public class TransferenciaBancaria extends MetodoDePago {
 
     private String numeroTransferencia;
     private double monto;
-    private Date fechaPago;
+    private LocalDate fechaPago;
     private String titular;
 
 }

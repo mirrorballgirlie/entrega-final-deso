@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import java.time.LocalDate;
 
 @SuperBuilder
 
@@ -18,7 +19,7 @@ public class TransferenciaBancariaDTO extends MetodoDePagoDTO {
 
     private String numeroTransferencia;
     private double monto;
-    private Date fechaPago;
+    private LocalDate fechaPago;
     private String titular;
 
 }
