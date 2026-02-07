@@ -41,33 +41,7 @@ public class ReservaController {
         return ResponseEntity.ok(recargo);
     }
     
-     //confirmar la reserva. si quiero reservar mas de una habitacion, se "replica" la reserva en cada habitacion seleccionada
-     //se replica manteniendo los datos del huesped y las fecahas de ingreso y egreso
-
-    // @PostMapping("/confirmar")
-    // public ResponseEntity<ConfirmarReservaResponse> confirmarReservas(@RequestBody ConfirmarReservaRequest req) {
-    //     ConfirmarReservaResponse resp = gestorReserva.confirmarReservas(req);
-    //     return ResponseEntity.ok(resp);
-    // }
-
-    //ULTIMA VERSION CON DEBUGGING
-    // @PostMapping("/confirmar")
-    // public ResponseEntity<?> confirmarReservas(@RequestBody ConfirmarReservaRequest req) {
-    //     try {
-    //      // Imprimimos qué llegó para estar seguros
-    //          System.out.println("JAVA RECIBIÓ: " + req.toString());
-
-    //         ConfirmarReservaResponse resp = gestorReserva.confirmarReservas(req);
-    //         return ResponseEntity.ok(resp);
-
-    //     } catch (Exception e) {
-    //         // ESTO ES LO QUE NECESITAMOS VER
-    //         e.printStackTrace(); // Imprime el error rojo en la consola de Java
-    //         return ResponseEntity.internalServerError().body("ERROR EN JAVA: " + e.getMessage());
-    //     }
-    // }
-
-
+  
 @PostMapping("/confirmar")
 public ResponseEntity<?> confirmarReservas(@RequestBody ConfirmarReservaRequest req) {
     try {
