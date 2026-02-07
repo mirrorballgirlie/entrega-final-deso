@@ -36,8 +36,8 @@ public class ReservaController {
     }
 
     @PostMapping("/{id}/cancelar") // Endpoint para cancelar reserva y calcular recargo
-    public ResponseEntity<Double> cancelar(@PathVariable Long id) {
-        double recargo = gestorReserva.cancelarReserva(id);
+    public ResponseEntity<String> cancelar(@PathVariable Long id) {
+        String recargo = gestorReserva.cancelarReserva(id);
         return ResponseEntity.ok(recargo);
     }
     

@@ -76,28 +76,14 @@ public ValidarSeleccionResponse validarSeleccion(ValidarSeleccionRequest req) {
 
     // --- MÉTODO 3: CANCELAR (CU06 con Strategy) ---
     @Transactional
-    public double cancelarReserva(Long idReserva) {
+    public String cancelarReserva(Long idReserva) {
         Reserva reserva = reservaRepository.findById(idReserva)
-                .orElseThrow(() -> new ResourceNotFoundException("Reserva ID " + idReserva + " no encontrada."));
-
-        LocalTime ahora = LocalTime.now(); // Uso de java.time solicitado
-        EstrategiaCancelacion estrategia;
-
-        // Lógica de recargos del Hotel Premier
-        if (ahora.isBefore(LocalTime.of(11, 0))) {
-            estrategia = new EstrategiaSinRecargo();
-        } else if (ahora.isBefore(LocalTime.of(18, 0))) {
-            estrategia = new EstrategiaMediaEstadia();
-        } else {
-            estrategia = new EstrategiaEstadiaCompleta();
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva no encontrada con id: " + idReserva));
+        if (reserva.getEstado() == EstadoReserva.CANCELADA) {
+            throw new BadRequestException("La reserva ya está cancelada.");
         }
-
-        // Una vez que se defina 'getCostoNoche' en Habitacion se descomentan estas lineas:
-        // double recargo = estrategia.calcularRecargo(reserva.getHabitacion().getCostoNoche());
-        // reserva.setEstado(EstadoReserva.CANCELADA);
-        // reservaRepository.save(reserva);
-        // return recargo;
-        
-        return 0.0; 
+        reserva.setEstado(EstadoReserva.CANCELADA);
+        reservaRepository.save(reserva);
+        return "Reserva cancelada correctamente. La habitación ahora está disponible.";
     }
 }
