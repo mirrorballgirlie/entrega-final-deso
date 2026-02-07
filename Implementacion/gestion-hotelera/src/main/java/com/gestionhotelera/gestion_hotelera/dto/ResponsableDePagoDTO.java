@@ -17,4 +17,12 @@ public class ResponsableDePagoDTO {
 
     private String cuit;
 
+    // Si es persona física, se usa este campo, si es persona jurídica, se deja en null
+    private PersonaFisicaDTO personaFisica;
+
+    // Si es persona jurídica, se usa este campo, si es persona física, se deja en null
+    private PersonaJuridicaDTO personaJuridica;
+
+    private String telefono; // <-- agregado
+
 }
