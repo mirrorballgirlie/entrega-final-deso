@@ -16,6 +16,7 @@ import com.gestionhotelera.gestion_hotelera.gestores.GestorReserva;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
@@ -34,7 +35,11 @@ public class ReservaController {
         return ResponseEntity.ok(resp);
     }
 
-    
+    @PostMapping("/{id}/cancelar") // Endpoint para cancelar reserva y calcular recargo
+    public ResponseEntity<Double> cancelar(@PathVariable Long id) {
+        double recargo = gestorReserva.cancelarReserva(id);
+        return ResponseEntity.ok(recargo);
+    }
     
      //confirmar la reserva. si quiero reservar mas de una habitacion, se "replica" la reserva en cada habitacion seleccionada
      //se replica manteniendo los datos del huesped y las fecahas de ingreso y egreso

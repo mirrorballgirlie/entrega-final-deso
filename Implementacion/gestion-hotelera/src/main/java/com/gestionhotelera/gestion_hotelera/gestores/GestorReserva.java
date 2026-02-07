@@ -24,43 +24,100 @@ public class GestorReserva {
         if (desde == null || hasta == null) throw new BadRequestException("Fechas nulas.");
         if (hasta.isBefore(desde)) throw new BadRequestException("Fecha hasta anterior a desde.");
     }
+// METODO 1 VALIDAR SELECCION DE HABITACIONES ANTES DE CONFIRMAR
+    
+    public ValidarSeleccionResponse validarSeleccion(ValidarSeleccionRequest req) {
+        List<String> mensajes = new ArrayList<>();
 
-    // --- MÉTODO 1: VALIDAR SELECCIÓN (Agregalo devuelta!) ---
-    public ValidarSeleccionResponse validarSeleccion(ValidarSeleccionRequest req){
-        validarFechas(req.getFechaDesde(), req.getFechaHasta());
-        if (req.getHabitacionIds() == null || req.getHabitacionIds().isEmpty()) 
-            throw new BadRequestException("Sin habitaciones.");
-
-        List<Long> validas = new ArrayList<>();
-        List<String> errores = new ArrayList<>();
-
-        for (long idHabitacion : req.getHabitacionIds()){
+        for (Long idHabitacion : req.getHabitacionIds()) {
             Habitacion h = habitacionRepository.findById(idHabitacion).orElse(null);
-            if (h == null) { errores.add("ID " + idHabitacion + " no existe."); continue; }
-
-            String estado = h.getEstado();
-            if ("MANTENIMIENTO".equalsIgnoreCase(estado) || "FUERA_SERVICIO".equalsIgnoreCase(estado)) {
-                errores.add("Habitación " + h.getNumero() + " en " + estado);
+            if (h == null) {
+                mensajes.add("Habitación ID " + idHabitacion + " no encontrada.");
                 continue;
             }
-
+            if ("MANTENIMIENTO".equalsIgnoreCase(h.getEstado()) || "FUERA_SERVICIO".equalsIgnoreCase(h.getEstado())) {
+                mensajes.add("La habitación " + h.getNumero() + " no está disponible para reserva.");
+                continue;
+            }
             List<Reserva> solapadas = reservaRepository.verificarDisponibilidad(
-                idHabitacion, req.getFechaDesde(), req.getFechaHasta(), EstadoReserva.ACTIVA
+                idHabitacion, 
+                req.getFechaDesde(), 
+                req.getFechaHasta(), 
+                EstadoReserva.ACTIVA
             );
-
             if (!solapadas.isEmpty()) {
-                errores.add("Habitación " + h.getNumero() + " ocupada en esas fechas.");
-                continue;
+                mensajes.add("La habitación " + h.getNumero() + " se ocupó recientemente en esas fechas.");
             }
-            validas.add(idHabitacion);
         }
-        return new ValidarSeleccionResponse(validas, errores);
+
+        boolean esValida = mensajes.isEmpty();
+        String mensajeGeneral = esValida ? "Selección válida." : String.join(" ", mensajes);
+        return new ValidarSeleccionResponse(esValida, mensajeGeneral);
+    } // HASTA ACA LO AUTOCOMPLETO EL VISUA, TODO LO OTRO ES COPY PASTE DE GEMINI
+
+
+   @Transactional
+public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
+    // 1. PASO CRÍTICO: Validar coherencia temporal
+    // Aquí es donde se lanza el error si la web tiene las fechas trocadas
+    validarFechas(req.getFechaDesde(), req.getFechaHasta());
+
+    // 2. Vincular con el Cliente/Huésped
+    Huesped clienteEncontrado = null;
+    if (req.getClienteId() != null) {
+        clienteEncontrado = huespedRepository.findById(req.getClienteId()).orElse(null);
     }
+
+    List<Long> reservasCreadas = new ArrayList<>();
+
+    // 3. Procesar cada habitación seleccionada
+    for (Long idHabitacion : req.getHabitacionIds()) {
+        // Búsqueda segura para evitar Error 500
+        Habitacion h = habitacionRepository.findById(idHabitacion)
+                .orElseThrow(() -> new ResourceNotFoundException("Habitación no encontrada: " + idHabitacion));
+
+        // Validar estado de la habitación
+        if ("MANTENIMIENTO".equalsIgnoreCase(h.getEstado()) || "FUERA_SERVICIO".equalsIgnoreCase(h.getEstado())) {
+            throw new BadRequestException("La habitación " + h.getNumero() + " no está disponible para reserva.");
+        }
+
+        // 4. Doble chequeo de disponibilidad (Concurrency check)
+        List<Reserva> solapadas = reservaRepository.verificarDisponibilidad(
+            idHabitacion, 
+            req.getFechaDesde(), 
+            req.getFechaHasta(), 
+            EstadoReserva.ACTIVA
+        );
+
+        if (!solapadas.isEmpty()) {
+            throw new BadRequestException("La habitación " + h.getNumero() + " se ocupó recientemente en esas fechas.");
+        }
+
+        // 5. Creación de la entidad mediante Builder
+        Reserva nuevaReserva = Reserva.builder()
+                .numero(generarNumeroReserva()) // Genera el próximo número secuencial
+                .estado(EstadoReserva.ACTIVA)
+                .fechaDesde(req.getFechaDesde())
+                .fechaHasta(req.getFechaHasta())
+                .nombre(req.getNombre().toUpperCase())
+                .apellido(req.getApellido().toUpperCase())
+                .telefono(req.getTelefono())
+                .habitacion(h)
+                .cliente(clienteEncontrado)
+                .build();
+
+        // 6. Persistencia en PostgreSQL
+        Reserva guardada = reservaRepository.save(nuevaReserva);
+        reservasCreadas.add(guardada.getId());
+    }
+
+    return new ConfirmarReservaResponse(reservasCreadas, "Reserva confirmada con éxito");
+}
 
     // --- MÉTODO 2: CONFIRMAR RESERVAS ---
     @Transactional
     public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
-        // ... (Mantené tu lógica de confirmación aquí)
+        validarFechas(req.getFechaDesde(), req.getFechaHasta());
         return new ConfirmarReservaResponse(new ArrayList<>(), "Éxito");
     }
 
