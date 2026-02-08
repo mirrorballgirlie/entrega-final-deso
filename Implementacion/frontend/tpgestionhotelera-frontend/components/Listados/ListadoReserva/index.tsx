@@ -71,7 +71,7 @@ export default function ListadoReserva({ data, onBack, onCancel, onNext }: Lista
         </table>
 
         <div className={styles["reservation-buttons"]}>
-          {/* BOTÓN RECHAZAR */}
+          {/* BOTON RECHAZAR */}
           <Button 
             onClick={handleReject} 
             className={styles["btn-reject"]} 
@@ -80,7 +80,7 @@ export default function ListadoReserva({ data, onBack, onCancel, onNext }: Lista
             Rechazar
           </Button>
 
-          {/* BOTÓN ACEPTAR */}
+          {/* BOTON ACEPTAR */}
           <Button onClick={onNext} className={styles["btn-accept"]}>
             Aceptar
           </Button>

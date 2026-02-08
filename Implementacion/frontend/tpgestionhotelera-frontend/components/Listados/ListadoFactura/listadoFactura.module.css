@@ -1,0 +1,52 @@
+.container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 16px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #fafafa;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.item {
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.titulo {
+  margin: 0;
+}
+
+.detalle {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fila {
+  display: flex;
+  justify-content: space-between;
+}
+
+.total {
+  display: flex;
+  justify-content: space-between;
+  font-weight: bold;
+  font-size: 1.1rem;
+  margin-top: 8px;
+}
+
+.tipoFactura {
+  margin-top: 4px;
+}
+
+.acciones {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}

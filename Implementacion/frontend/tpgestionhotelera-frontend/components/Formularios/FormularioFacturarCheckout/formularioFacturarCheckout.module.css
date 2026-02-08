@@ -1,0 +1,36 @@
+.wrapper {
+  background: #fffdf7;
+  min-height: 100vh;
+  padding: 40px;
+  color: #000;
+}
+
+.titleWrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 30px;
+  transform: scale(0.6);
+  transform-origin: center center;
+  width: 100%;
+}
+
+.form {
+  max-width: 420px;
+  color: #000;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.error {
+  color: #c62828;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.buttonContainer {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
