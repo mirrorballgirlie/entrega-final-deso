@@ -42,6 +42,7 @@ public class Habitacion {
     private double precio;
     private String descripcion;
     private String estado;
+    private TipoHabitacion tipoHabitacion;
 
     // --- CAMBIO PRINCIPAL AQUÍ ---
     // Antes era @OneToOne. Ahora es @OneToMany para permitir historial.

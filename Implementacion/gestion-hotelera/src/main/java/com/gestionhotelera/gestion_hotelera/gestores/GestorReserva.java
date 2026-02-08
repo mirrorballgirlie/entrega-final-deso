@@ -89,22 +89,6 @@ public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
             throw new BadRequestException("La habitación " + hab.getNumero() + " no está disponible.");
         }
 
-        Huesped cliente;
-
-        if (req.getClienteId() != null) {
-            // CASO A: El cliente ya existía
-            cliente = huespedRepository.findById(req.getClienteId()).get();
-        } else {
-            // CASO B: Es un cliente nuevo puesto a mano en el form
-            System.out.println("Creando cliente nuevo: " + req.getNombre());
-            cliente = new Huesped();
-            cliente.setNombre(req.getNombre());
-            cliente.setApellido(req.getApellido());
-            cliente.setTelefono(req.getTelefono());
-            // Importante: Guardarlo primero para que la DB le asigne un ID
-            cliente = huespedRepository.save(cliente); 
-        }
-
         // 3. Crear la entidad Reserva
         Reserva reserva = new Reserva();
         reserva.setHabitacion(hab);

@@ -19,6 +19,9 @@ import lombok.NoArgsConstructor;
 
 public class HuespedDTO {
 
+    @NotNull(message = "El ID del huésped no puede ser nulo")
+    
+    private Long id;
 
     @NotBlank(message = "El nombre no puede estar vacío")
     

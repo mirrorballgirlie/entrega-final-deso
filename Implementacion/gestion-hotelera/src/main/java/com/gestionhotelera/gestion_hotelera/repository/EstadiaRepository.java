@@ -82,4 +82,15 @@ public interface EstadiaRepository extends JpaRepository<Estadia, Long> {
     """)
     List<Estadia> findEstadiasQueSolapan(@Param("fechaDesde") LocalDate fechaDesde, @Param("fechaHasta") LocalDate fechaHasta);
 
+    // metodos para obtener estadias con fucha de egreso y numero de habitacion
+    @Query("""
+        SELECT e FROM Estadia e
+        JOIN e.habitacion h
+        WHERE h.numero = :numero
+        AND e.fechaEgreso = :fechaEgreso
+        AND e.estado = 'OCUPADA'
+    """)
+    List<Estadia> buscarEstadiaPorHabitacionYSalida(@Param("numero") Integer numero, @Param("fechaEgreso") LocalDate fechaEgreso);
+    
+
 }
