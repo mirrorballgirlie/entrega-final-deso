@@ -178,4 +178,14 @@ public class Estadia {
     @ToString.Exclude            // <--- NUEVO
     @EqualsAndHashCode.Exclude
     private Factura factura;
+
+    public double calcularTotal() {
+        double total = 0.0;
+        for (Consumo c : consumos) {
+            total += c.getPrecioUnitario() * c.getCantidad();
+        }
+        return total;
+    }
+
+    
 }

@@ -1,5 +1,6 @@
-package com.gestionhotelera.gestion_hotelera.gestores;
+/*
 
+package com.gestionhotelera.gestion_hotelera.gestores;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,3 +77,5 @@ public class GestorFacturacion {
         return gestorPersona.guardar(nuevaPersona);
     }
 }
+
+*/

@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -39,6 +40,7 @@ public class Factura {
     private double monto;
     private double iva;
     private double total;
+    private LocalDateTime fechaEmision;
 
     @ManyToMany
     @JoinTable(
@@ -58,7 +60,6 @@ public class Factura {
     @ManyToOne(optional = false)
     @JoinColumn(name = "responsable_id", nullable = false)
     private ResponsableDePago responsableDePago;
-
 
     @OneToMany(
     mappedBy = "factura",
@@ -98,6 +99,7 @@ public class Factura {
         private double monto;
         private double iva;
         private double total;
+        private LocalDateTime fechaEmision;
 
         public Builder nombre(String nombre) { this.nombre = nombre; return this; }
         public Builder tipo(TipoFactura tipo) { this.tipo = tipo; return this; }
@@ -115,6 +117,14 @@ public class Factura {
     public String toString() {
         return tipo + " - " + nombre + " - Total: $" + total;
     }*/
+
+    public void setTipo(String tipo) {
+        this.tipo = TipoFactura.valueOf(tipo.toUpperCase());
+    }
+
+    public void setFechaEmision(LocalDateTime fechaEmision) {
+        this.fechaEmision = fechaEmision;   
+    }
 
 }
 

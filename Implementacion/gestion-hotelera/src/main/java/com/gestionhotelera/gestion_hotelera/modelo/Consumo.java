@@ -28,7 +28,10 @@ public class Consumo {
     @JoinColumn(name = "estadia_id", nullable = false)
     private Estadia estadia;
 
-
+    public double getPrecioUnitario() {
+        return precio;
+    }
+   
    
     
 
