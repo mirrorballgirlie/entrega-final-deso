@@ -68,13 +68,65 @@ public ValidarSeleccionResponse validarSeleccion(ValidarSeleccionRequest req) {
 }
 
     // --- MÉTODO 2: CONFIRMAR RESERVAS ---
-    @Transactional
-    public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
-        validarFechas(req.getFechaDesde(), req.getFechaHasta());
-        return new ConfirmarReservaResponse(new ArrayList<>(), "Éxito");
+@Transactional
+public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
+     
+    // 1. Validar fechas
+    validarFechas(req.getFechaDesde(), req.getFechaHasta());
+    
+    List<Long> idsProcesados = new ArrayList<>();
+
+    // 2. Iterar sobre cada habitación solicitada y aplicar la lógica de negocio
+    for (Long habId : req.getHabitacionIds()) {
+       
+        
+        // Buscar la habitación o lanzar error si no existe
+        Habitacion hab = habitacionRepository.findByNumero(habId.intValue())
+                .orElseThrow(() -> new ResourceNotFoundException("Habitación no encontrada con id: " + habId));
+
+        // Regla de negocio: Solo reservar si está disponible
+        if (!hab.getEstado().equals("DISPONIBLE")) {
+            throw new BadRequestException("La habitación " + hab.getNumero() + " no está disponible.");
+        }
+
+        Huesped cliente;
+
+        if (req.getClienteId() != null) {
+            // CASO A: El cliente ya existía
+            cliente = huespedRepository.findById(req.getClienteId()).get();
+        } else {
+            // CASO B: Es un cliente nuevo puesto a mano en el form
+            System.out.println("Creando cliente nuevo: " + req.getNombre());
+            cliente = new Huesped();
+            cliente.setNombre(req.getNombre());
+            cliente.setApellido(req.getApellido());
+            cliente.setTelefono(req.getTelefono());
+            // Importante: Guardarlo primero para que la DB le asigne un ID
+            cliente = huespedRepository.save(cliente); 
+        }
+
+        // 3. Crear la entidad Reserva
+        Reserva reserva = new Reserva();
+        reserva.setHabitacion(hab);
+        reserva.setFechaDesde(req.getFechaDesde());
+        reserva.setFechaHasta(req.getFechaHasta());
+        reserva.setEstado(EstadoReserva.ACTIVA);
+        
+        // 4. Cambiar el estado de la Habitación
+        hab.setEstado("RESERVADA");
+
+        // 5. Persistir cambios
+        habitacionRepository.save(hab);
+        Reserva guardada = reservaRepository.save(reserva);
+        
+        idsProcesados.add(guardada.getId());
     }
 
-    // --- MÉTODO 3: CANCELAR (CU06 con Strategy) ---
+    // 6. Retornar respuesta con todos los IDs de reserva generados
+    return new ConfirmarReservaResponse(idsProcesados, "Se confirmaron " + idsProcesados.size() + " habitaciones con éxito.");
+}
+
+    // --- MÉTODO 3: CANCELAR ---
     @Transactional
     public String cancelarReserva(Long idReserva) {
         Reserva reserva = reservaRepository.findById(idReserva)

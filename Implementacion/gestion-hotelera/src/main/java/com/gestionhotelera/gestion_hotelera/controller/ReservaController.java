@@ -35,30 +35,29 @@ public class ReservaController {
         return ResponseEntity.ok(resp);
     }
 
-    @PostMapping("/{id}/cancelar") // Endpoint para cancelar reserva y calcular recargo
+    @PostMapping("/cancelar-reserva/{id}") // Endpoint para cancelar reserva y calcular recargo
     public ResponseEntity<String> cancelar(@PathVariable Long id) {
         String recargo = gestorReserva.cancelarReserva(id);
         return ResponseEntity.ok(recargo);
     }
     
   
-@PostMapping("/confirmar")
-public ResponseEntity<?> confirmarReservas(@RequestBody ConfirmarReservaRequest req) {
-    try {
-        System.out.println("JAVA RECIBIÓ: " + req); // Verificamos datos
-        return ResponseEntity.ok(gestorReserva.confirmarReservas(req));
-        
-    } catch (Exception e) {
-        // IMPRIMIR ERROR EN CONSOLA (Rojo)
-        e.printStackTrace(); 
-        
-        // DEVOLVER ERROR AL FRONTEND (Para que lo leas en el alert)
-        String causa = (e.getCause() != null) ? e.getCause().getMessage() : "Desconocida";
-        String mensaje = "ERROR JAVA: " + e.getMessage() + " | CAUSA: " + causa;
-        
-        return ResponseEntity.status(500).body("{\"message\": \"" + mensaje + "\"}");
+    @PostMapping("/confirmar")
+    public ResponseEntity<?> confirmarReservas(@RequestBody ConfirmarReservaRequest req) {
+        try {
+            System.out.println("JAVA RECIBIÓ: " + req); // Verificamos datos
+            return ResponseEntity.ok(gestorReserva.confirmarReservas(req));
+            
+        } catch (Exception e) {
+            // IMPRIMIR ERROR EN CONSOLA (Rojo)
+            e.printStackTrace(); 
+            
+            // DEVOLVER ERROR AL FRONTEND (Para que lo leas en el alert)
+            String causa = (e.getCause() != null) ? e.getCause().getMessage() : "Desconocida";
+            String mensaje = "ERROR JAVA: " + e.getMessage() + " | CAUSA: " + causa;
+            
+            return ResponseEntity.status(500).body("{\"message\": \"" + mensaje + "\"}");
+        }
     }
-}
-
 
 }

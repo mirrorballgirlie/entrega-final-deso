@@ -9,12 +9,15 @@ import org.springframework.stereotype.Repository;
 
 import com.gestionhotelera.gestion_hotelera.modelo.Habitacion;
 import com.gestionhotelera.gestion_hotelera.modelo.TipoHabitacion;
+import java.util.Optional;
 
 @Repository
 public interface HabitacionRepository extends JpaRepository<Habitacion, Long> {
 
     //busqueda de habitaciones por tipo o estado
     List <Habitacion> findByTipoOrEstado(TipoHabitacion tipo, String estado);
+
+    Optional<Habitacion> findByNumero(Integer numero);
 
 
     // buscar todas las habitaciones disponibles entre ciertas fechas dadas (para CU4 y CU5)
@@ -27,6 +30,7 @@ public interface HabitacionRepository extends JpaRepository<Habitacion, Long> {
             AND (r.fechaDesde <= :fechaHasta AND r.fechaHasta >= :fechaDesde)
         ))
     """)
-
+    
     List<Habitacion> findHabitacionesDisponibles(LocalDate fechaDesde, LocalDate fechaHasta);
+
 }
