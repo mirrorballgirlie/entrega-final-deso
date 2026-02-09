@@ -32,8 +32,6 @@ export default function LoginManager({ onLoginExitoso }: Props) {
   return (
     <div style={{ padding: "24px" }}>
 
-      <Title text="Iniciar sesión" />
-
       <FormularioLogin
         username={usuario}
         password={password}

@@ -11,6 +11,8 @@ import com.gestionhotelera.gestion_hotelera.exception.*;
 import com.gestionhotelera.gestion_hotelera.modelo.*;
 import com.gestionhotelera.gestion_hotelera.repository.*;
 import lombok.RequiredArgsConstructor;
+import java.util.stream.Collectors;
+
 
 @Service
 @RequiredArgsConstructor
@@ -89,15 +91,27 @@ public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
             throw new BadRequestException("La habitación " + hab.getNumero() + " no está disponible.");
         }
 
-        // 3. Crear la entidad Reserva
-        Reserva reserva = new Reserva();
-        reserva.setHabitacion(hab);
-        reserva.setFechaDesde(req.getFechaDesde());
-        reserva.setFechaHasta(req.getFechaHasta());
-        reserva.setEstado(EstadoReserva.ACTIVA);
+        Integer maxNumero = reservaRepository.obtenerMaximoNumero();
+        int proximoNumero = (maxNumero != null) ? maxNumero + 1 : 1;
+
+        // 2. Ahora creamos la entidad usando el Builder
+        Reserva reserva = Reserva.builder()
+            .apellido(req.getApellido())
+            .nombre(req.getNombre())
+            .telefono(req.getTelefono())
+            .fechaDesde(req.getFechaDesde())
+            .fechaHasta(req.getFechaHasta())
+            .estado(EstadoReserva.ACTIVA)
+            .numero(proximoNumero) // <--- Usamos la variable que calculamos arriba
+            .habitacion(hab) 
+            .cliente(huespedRepository.findById(req.getClienteId()).orElse(null))
+            .build();
+
+        
+        
         
         // 4. Cambiar el estado de la Habitación
-        hab.setEstado("RESERVADA");
+        //hab.setEstado("RESERVADA"); //DESCOMENTAR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         // 5. Persistir cambios
         habitacionRepository.save(hab);
@@ -122,4 +136,21 @@ public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
         reservaRepository.save(reserva);
         return "Reserva cancelada correctamente. La habitación ahora está disponible.";
      }
+
+     // --- MÉTODO 4: BUSCAR RESERVAS ACTIVAS POR TITULAR ---
+        public List<ReservaDTO> buscarReservasActivas(String nombre, String apellido) {
+        List<Reserva> reservas = reservaRepository.findByClienteNombreAndClienteApellidoAndEstado(
+            nombre, 
+            apellido, 
+            EstadoReserva.ACTIVA
+        );
+        return reservas.stream().map(reserva -> {
+            return ReservaDTO.builder()
+                .id(reserva.getId())
+                .fechaDesde(reserva.getFechaDesde())
+                .fechaHasta(reserva.getFechaHasta())
+                .numero(reserva.getHabitacion() != null ? reserva.getHabitacion().getNumero() : null)
+                .build();
+        }).collect(Collectors.toList());
+    }   
 }

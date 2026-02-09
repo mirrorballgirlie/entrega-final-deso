@@ -16,7 +16,6 @@ export default function Home({ onLogout }: Props) {
           <Link href="/buscar-huesped">Buscar Huésped</Link>
           <Link href="/estado-habitaciones2">Realizar Reserva</Link>
           <Link href="/ocupar-habitacion">Ocupar Habitación</Link>
-          <Link href="/buscar-responsable">Buscar Responsable de Pago</Link>
           <Link href="/cancelar-reserva">Cancelar Reserva</Link>
           <Link href="/facturar-checkout">Facturar Checkout</Link>
 
