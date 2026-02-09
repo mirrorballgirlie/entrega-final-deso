@@ -14,8 +14,10 @@ export default function CancelarReservaManager() {
   const [errors, setErrors] = useState<{ apellido?: string }>({});
   const [reservas, setReservas] = useState<Reserva[]>([]);
   
-  // 1. VARIABLE CLAVE: Aquí guardaremos al Holland elegido
-  const [reservaSeleccionada, setReservaSeleccionada] = useState<Reserva | null>(null);
+  
+  const [reservasSeleccionadas, setReservasSeleccionadas] =
+  useState<Reserva[]>([]);
+
 
   const [mostrarListado, setMostrarListado] = useState(false);
   const [mostrarConfirmacion, setMostrarConfirmacion] = useState(false);
@@ -52,20 +54,24 @@ export default function CancelarReservaManager() {
   };
 
   // 2. FUNCIÓN DE SELECCIÓN: Guardamos la reserva para usarla después
-  const seleccionarParaCancelar = (reserva: Reserva) => {
-    setReservaSeleccionada(reserva); 
+  const seleccionarParaCancelar = (reservasSeleccionadas: Reserva[]) => {
+    setReservasSeleccionadas(reservasSeleccionadas); 
     setMostrarListado(false);
     setMostrarConfirmacion(true);
   };
 
   // 3. CANCELAR: Usamos el ID guardado
   const handleContinuar = async () => {
-    if (!reservaSeleccionada) return;
+    if (reservasSeleccionadas.length === 0) return;
+
     try {
-      const response = await fetch(`http://localhost:8080/api/estadias/cancelar-reserva/${reservaSeleccionada.id}`, {
-        method: 'POST'
-      });
-      if (response.ok) router.push("/home");
+      for (const reserva of reservasSeleccionadas) {
+        const response = await fetch(`http://localhost:8080/api/reservas/cancelar-reserva/${reserva.id}`, {
+          method: 'POST'
+        });
+        if (!response.ok) throw new Error("Error al cancelar una reserva");
+      }
+      router.push("/home");
     } catch (error) {
       console.error("Error al cancelar");
     }
@@ -80,17 +86,7 @@ export default function CancelarReservaManager() {
     return (
       <ListadoReservasCancelables
         reservas={reservas}
-        // SOLUCIÓN AL ERROR DE TS:
-        // Si el componente no te deja pasar la reserva, 
-        // pasamos una función que SI cumpla con () => void
-        onAccept={() => {
-            // Aquí tomamos la reserva que el usuario seleccionó en la UI.
-            // Si tu componente de lista tuviera un radio button o similar sería mejor,
-            // pero para el examen, seleccionamos la que trajo la búsqueda.
-            if(reservas.length > 0) {
-                seleccionarParaCancelar(reservas[0]);
-            }
-        }}
+        onAccept={seleccionarParaCancelar}
         onCancel={() => setMostrarListado(false)}
       />
     );

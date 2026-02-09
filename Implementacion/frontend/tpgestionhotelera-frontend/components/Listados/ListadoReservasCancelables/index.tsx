@@ -16,7 +16,7 @@ export interface Reserva {
 
 interface Props {
   reservas: Reserva[];
-  onAccept: () => void;
+  onAccept: (reserva: Reserva[]) => void;
   onCancel: () => void;
 }
 
@@ -28,6 +28,10 @@ export default function ListadoCancelarReserva({
 }: Props) {
 
   const [seleccionadas, setSeleccionadas] = useState<number[]>([]);
+
+  const reservasSeleccionadas = reservas.filter(r =>
+    seleccionadas.includes(r.id)
+  );
 
   return (
     <div className={styles.wrapper}>
@@ -84,12 +88,12 @@ export default function ListadoCancelarReserva({
 
         <Button
           type="button"
-          onClick={onAccept}
           disabled={seleccionadas.length === 0}
-          className={styles.buttonContainer}
+          onClick={() => onAccept(reservasSeleccionadas)}
         >
           Aceptar
         </Button>
+
 
       </div>
     </div>
