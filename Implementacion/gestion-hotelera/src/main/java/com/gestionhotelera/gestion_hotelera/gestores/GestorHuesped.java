@@ -105,6 +105,7 @@ public class GestorHuesped {
         .ocupacion (dto.getOcupacion())
         .nacionalidad (dto.getNacionalidad())
         .direccion(direccion)
+        .cuit(dto.getCuit())
         .build();
 
         //guardar el huesped

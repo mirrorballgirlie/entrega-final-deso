@@ -121,5 +121,5 @@ public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
         reserva.setEstado(EstadoReserva.CANCELADA);
         reservaRepository.save(reserva);
         return "Reserva cancelada correctamente. La habitación ahora está disponible.";
-    }
+     }
 }
