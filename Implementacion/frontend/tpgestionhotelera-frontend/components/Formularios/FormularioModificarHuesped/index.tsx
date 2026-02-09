@@ -1,9 +1,10 @@
 "use client";
 import React from "react";
-import styles from "./modificar.module.css"; // Copiá alta.module.css y renombralo
+import styles from "./formularioModificarHuesped.module.css"; // Copiá alta.module.css y renombralo
 import FormField from "@/components/FormField";
 import Title from "@/components/Title";
 import Button from "@/components/Button";
+import Toast from "@/components/Toast";
 
 const paisesAmerica = [
   "Argentina","Bolivia","Brasil","Canadá","Chile","Colombia","Costa Rica","Cuba","Dominica",
@@ -44,7 +45,7 @@ export default function FormularioModificarHuesped({
 
   return (
     <div className={styles.wrapper}>
-      <header className={styles.header}>
+      <header className={styles.title}>
         <Title>Modificar Huésped</Title>
       </header>
 
@@ -306,7 +307,15 @@ export default function FormularioModificarHuesped({
           <div className={styles.buttonContainer}>
             <Button type="submit" form="formHuesped">Siguiente</Button>
             <Button type="button" onClick={onCancel}>Cancelar</Button>
-            {onDelete && <Button type="button" onClick={onDelete} style={{ background: 'red' }}>Borrar</Button>}
+
+            {onDelete && (
+              <Button
+              type="button"
+              onClick={onDelete}
+              style={{ background: 'red' }}>
+                Borrar
+              </Button>
+            )}
           </div>
 
         </form>
