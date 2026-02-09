@@ -30,7 +30,7 @@ export default function Home({ onLogout }: Props) {
               marginLeft: "16px",
               height: "100%",
               display: "flex",
-              alingItems: "center",
+              alignItems: "center",
             }}
           >
             Cerrar sesión
