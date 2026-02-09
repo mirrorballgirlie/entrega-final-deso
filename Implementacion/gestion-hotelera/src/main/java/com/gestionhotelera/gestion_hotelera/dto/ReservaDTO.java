@@ -28,6 +28,7 @@ public class ReservaDTO {
     private String nombre;
     private String apellido;
     private String telefono;
+    private String tipoHabitacion; 
     
     // --- NUEVO CAMPO: ID del Cliente (Opcional) ---
     private Long clienteId; 

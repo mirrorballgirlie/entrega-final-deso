@@ -150,6 +150,9 @@ public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
                 .fechaDesde(reserva.getFechaDesde())
                 .fechaHasta(reserva.getFechaHasta())
                 .numero(reserva.getHabitacion() != null ? reserva.getHabitacion().getNumero() : null)
+                .nombre(reserva.getNombre())
+                .apellido(reserva.getApellido())
+                .tipoHabitacion(reserva.getHabitacion() != null ? reserva.getHabitacion().getTipo().name() : null)
                 .build();
         }).collect(Collectors.toList());
     }    
