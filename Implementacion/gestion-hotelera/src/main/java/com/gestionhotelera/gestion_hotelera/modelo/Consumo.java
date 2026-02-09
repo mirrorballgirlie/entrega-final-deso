@@ -23,6 +23,8 @@ public class Consumo {
     private int cantidad;
     @Column
     private double precio;
+    @Column(nullable = false)
+    private boolean facturado = false;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "estadia_id", nullable = false)
