@@ -136,7 +136,7 @@ const onAceptar = () => {
   };
 
   const handleCancel = () => {
-    router.push("/");
+    router.push("/home");
   };
 
 //al aceptar ocupante
@@ -351,7 +351,7 @@ const onAceptar = () => {
                        return;}
                  alert("Factura confirmada ✔");
                  setMostrarModalFactura(false);
-                 router.push("/");
+                 router.push("/home");
                }}
              />
 

@@ -26,7 +26,7 @@ export default function BuscarResponsableManager() {
   };
 
   const handleCancel = () => {
-    router.push("/");
+    router.push("/home");
   };
 
   return (

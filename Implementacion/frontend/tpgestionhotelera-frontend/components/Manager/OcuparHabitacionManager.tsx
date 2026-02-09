@@ -239,7 +239,7 @@ export default function OcuparHabitacionManager() {
     executeSave(() => {
         triggerToast("Estadía registrada correctamente.", "success");
         setTimeout(() => {
-            router.push("/");
+            router.push("/home");
         }, 2000);
     });
   };
@@ -269,7 +269,7 @@ export default function OcuparHabitacionManager() {
       <Toast message={toastMsg} isVisible={showToast} type={toastType} />
 
       {currentStep === Step.FECHAS && (
-        <FormularioFechas onNext={handleFechasSubmit} onCancel={() => router.push("/")} />
+        <FormularioFechas onNext={handleFechasSubmit} onCancel={() => router.push("/home")} />
       )}
 
       {currentStep === Step.GRILLA && (
@@ -316,7 +316,7 @@ export default function OcuparHabitacionManager() {
               setCurrentStep(Step.BUSCAR_HUESPED);
           }}
           
-          onCancel={() => router.push("/")} 
+          onCancel={() => router.push("/home")}
           onNext={handleOpenDecisionPopup} 
         />
       )}
