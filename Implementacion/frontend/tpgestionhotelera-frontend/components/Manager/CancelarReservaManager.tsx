@@ -84,11 +84,11 @@ export default function CancelarReservaManager() {
     setForm({ apellido: "", nombres: "" });
     setErrors({});
     // navega al Home
-    router.push("/");
+    router.push("/home");
   };
 
   const handleCancelListado = () => {
-      router.push("/");
+      router.push("/home");
   };
 
     const handleAccept = () => {
@@ -96,7 +96,7 @@ export default function CancelarReservaManager() {
       setMostrarConfirmacion(true);
     };
     const handleContinuar = () => {
-        router.push("/");
+        router.push("/home");
     };
 
     // RENDER

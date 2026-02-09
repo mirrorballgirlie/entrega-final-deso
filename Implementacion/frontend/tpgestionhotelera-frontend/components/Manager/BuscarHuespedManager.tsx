@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import FormularioHuesped from "@/components/Formularios/FormularioHuesped";
 import ListadoHuesped from "@/components/Listados/ListadoHuesped";
+import ModificarHuespedManager from "@/components/Manager/ModificarHuespedManager";
 //import { isValidName, validateDocumentNumber } from "@/utils/validators";
 
 interface Props {
@@ -41,28 +42,6 @@ export default function BuscarHuespedManager({ mode }: Props) {
   // 2. Manejo del Submit (Fetch al backend)
   const handleSearchSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    // Validación simple
-    // if (!form.apellido && !form.nombre && !form.tipoDocumento && !form.documento) {
-    //   alert("Debe completar al menos un campo.");
-    //   return;
-    // }
-
-    // --- Validaciones de formato ---
-  //   if (form.apellido && !isValidName(form.apellido)) {
-  //    setFormError("Apellido con formato inválido: unicamente caracteres y espacios");
-  //    return;
-  //  }
-
-  //  if (form.nombre && !isValidName(form.nombre)) {
-  //   setFormError("Nombre con formato inválido: unicamente caracteres y espacios");
-  //  return;
-  //  }
-
-  //  if (form.documento && form.tipoDocumento && !validateDocumentNumber(form.tipoDocumento, form.documento)) {
-  //    setFormError("Documento con formato inválido para el tipo seleccionado. Para DNI, LE y LC solamente se permiten digitos. Pasaporte/otro caracteres alfanumericos. cargar SIN puntos (ejemplo 12345678)");
-  //    return;
-  //  }
 
   setFormError(""); 
 
@@ -104,6 +83,11 @@ export default function BuscarHuespedManager({ mode }: Props) {
     setStep(1);
     setResults([]);
   };
+  const handleSelectHuesped = (huesped: any) => {
+    // Redirigir a la página de "Modificar Huesped"
+    router.push(`/modificar-huesped/${huesped.id}`);
+  };
+
 
   return (
     <>
@@ -112,7 +96,7 @@ export default function BuscarHuespedManager({ mode }: Props) {
           form={form}
           onChange={handleInputChange}
           onSubmit={handleSearchSubmit}
-          onCancel={() => router.back()} // Sale de la página si cancela en el paso 1
+          onCancel={() => router.push("/home")} // Sale de la página si cancela en el paso 1
           // formError={formError} // <-- pasamos error al formulario
         />
       )}
@@ -122,8 +106,10 @@ export default function BuscarHuespedManager({ mode }: Props) {
           mode={mode}
           results={results}
           onRetry={handleRetry} // Vuelve al paso 1
+          onSelect={handleSelectHuesped}
         />
       )}
     </>
   );
+
 }
