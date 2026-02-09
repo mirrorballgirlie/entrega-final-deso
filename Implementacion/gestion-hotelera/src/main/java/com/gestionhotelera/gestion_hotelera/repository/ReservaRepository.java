@@ -66,7 +66,7 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
         @Param("dia") LocalDate dia, 
         @Param("estado") EstadoReserva estado
     );
-    
+     
     // Buscar listas grandes de reservas activas en rango (para optimización)
     @Query("""
         SELECT r FROM Reserva r
@@ -82,6 +82,12 @@ public interface ReservaRepository extends JpaRepository<Reserva, Long> {
     );
 
     // --- 4. BÚSQUEDA POR TITULAR (ReservaController) ---
+    @Query("""
+        SELECT r FROM Reserva r 
+        WHERE LOWER(r.cliente.apellido) = LOWER(:apellido) 
+        AND (:nombre IS NULL OR :nombre = '' OR LOWER(r.cliente.nombre) = LOWER(:nombre))
+        AND r.estado = :estado
+    """)
     List<Reserva> findByClienteNombreAndClienteApellidoAndEstado(
         @Param("nombre") String nombre, 
         @Param("apellido") String apellido, 

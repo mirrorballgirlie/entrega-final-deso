@@ -19,6 +19,7 @@ import com.gestionhotelera.gestion_hotelera.modelo.EstadoReserva; // Importante
 import com.gestionhotelera.gestion_hotelera.repository.EstadiaRepository;
 import com.gestionhotelera.gestion_hotelera.repository.HabitacionRepository;
 import com.gestionhotelera.gestion_hotelera.repository.ReservaRepository;
+import com.gestionhotelera.gestion_hotelera.modelo.EstadoEstadia;
 
 import lombok.RequiredArgsConstructor;
 
@@ -136,7 +137,7 @@ public class GestorHabitacion {
         }
 
         // 2. PRIORIDAD: OCUPADA (Estadía Activa - Calculado)
-        List<Estadia> estadias = estadiaRepository.encontrarEstadiasEnDia(hab.getId(), dia, "ACTIVA");
+        List<Estadia> estadias = estadiaRepository.encontrarEstadiasEnDia(hab.getId(), dia, EstadoEstadia.ACTIVA);
         if (!estadias.isEmpty()) {
             Estadia est = estadias.get(0);
             detalle.setEstado("OCUPADA");

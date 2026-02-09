@@ -5,6 +5,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import java.util.List; // Para el símbolo List
+import com.gestionhotelera.gestion_hotelera.dto.ReservaDTO; // Para el símbolo ReservaDTO
+import org.springframework.web.bind.annotation.GetMapping; // Para el símbolo GetMapping
+import org.springframework.web.bind.annotation.RequestParam; // Para el símbolo RequestParam
 
 
 import com.gestionhotelera.gestion_hotelera.dto.ConfirmarReservaRequest;
@@ -41,6 +45,13 @@ public class ReservaController {
         return ResponseEntity.ok(recargo);
     }
     
+ @GetMapping("/buscar-activas-por-titular")
+    public ResponseEntity<List<ReservaDTO>> buscarReservasActivasPorTitular(
+            @RequestParam(required = false) String nombre, 
+            @RequestParam String apellido) {
+        List<ReservaDTO> reservas = gestorReserva.buscarReservasActivas(nombre, apellido);
+        return ResponseEntity.ok(reservas);
+    }
   
     @PostMapping("/confirmar")
     public ResponseEntity<?> confirmarReservas(@RequestBody ConfirmarReservaRequest req) {

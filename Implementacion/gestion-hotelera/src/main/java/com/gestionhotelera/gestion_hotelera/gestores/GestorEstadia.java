@@ -30,6 +30,10 @@ import com.gestionhotelera.gestion_hotelera.repository.EstadiaRepository;
 import com.gestionhotelera.gestion_hotelera.repository.HabitacionRepository;
 import com.gestionhotelera.gestion_hotelera.repository.HuespedRepository;
 import com.gestionhotelera.gestion_hotelera.repository.ReservaRepository;
+import com.gestionhotelera.gestion_hotelera.dto.EstadiaDTO;
+import com.gestionhotelera.gestion_hotelera.modelo.EstadoEstadia; 
+import java.util.Optional;
+
 
 import lombok.RequiredArgsConstructor;
 
@@ -206,7 +210,7 @@ public class GestorEstadia {
                 }
 
                 Estadia est = Estadia.builder()
-                        .estado("ACTIVA")
+                        .estado(EstadoEstadia.ACTIVA)
                         .fechaIngreso(desde)
                         .fechaEgreso(hasta)
                         .habitacion(h)
@@ -258,4 +262,25 @@ public class GestorEstadia {
             return false;
         }
     }
+
+ 
+
+    
+
+public EstadiaDTO buscarEstadiaActivaPorHabitacion(Integer numeroHabitacion) {
+
+    Habitacion hab = habitacionRepository
+            .findByNumero(numeroHabitacion)
+            .orElse(null);
+
+    if (hab == null) return null;
+
+    return estadiaRepository
+            .findByHabitacionAndEstado(hab, EstadoEstadia.ACTIVA)
+            .map(EstadiaDTO::from)
+            .orElse(null);
+}
+
+
+
 }

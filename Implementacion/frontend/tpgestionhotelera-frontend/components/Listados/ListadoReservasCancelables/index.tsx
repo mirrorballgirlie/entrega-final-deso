@@ -7,11 +7,11 @@ import { useState } from "react";
 export interface Reserva {
   id: number;
   apellido: string;
-  nombres: string;
-  numeroHabitacion: string;
+  nombre: string;
+  numero: number;
   tipoHabitacion: string;
-  fechaInicio: string;
-  fechaFin: string;
+  fechaDesde: string;
+  fechaHasta: string;
 }
 
 interface Props {
@@ -64,14 +64,14 @@ export default function ListadoCancelarReserva({
                       );
                     }
                   }}
-                />
+                /> 
               </td>
               <td>{r.apellido}</td>
-              <td>{r.nombres}</td>
-              <td>{r.numeroHabitacion}</td>
+              <td>{r.nombre}</td>
+              <td>{r.numero}</td>
               <td>{r.tipoHabitacion}</td>
-              <td>{r.fechaInicio}</td>
-              <td>{r.fechaFin}</td>
+              <td>{r.fechaDesde}</td>
+              <td>{r.fechaHasta}</td>
             </tr>
           ))}
         </tbody>

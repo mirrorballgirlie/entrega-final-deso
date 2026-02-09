@@ -32,5 +32,5 @@
         """)
         
         List<Habitacion> findHabitacionesDisponibles(LocalDate fechaDesde, LocalDate fechaHasta);
-
+        Optional<Habitacion> findByNumero(Integer numero);
     }

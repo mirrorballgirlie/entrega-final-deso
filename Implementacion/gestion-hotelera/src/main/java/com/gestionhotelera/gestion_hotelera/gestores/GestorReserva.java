@@ -152,5 +152,5 @@ public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
                 .numero(reserva.getHabitacion() != null ? reserva.getHabitacion().getNumero() : null)
                 .build();
         }).collect(Collectors.toList());
-    }   
+    }    
 }
