@@ -35,7 +35,7 @@ public ValidarSeleccionResponse validarSeleccion(ValidarSeleccionRequest req) {
     List<String> mensajes = new ArrayList<>();
 
     for (Long idHabitacion : req.getHabitacionIds()) {
-        Habitacion h = habitacionRepository.findById(idHabitacion).orElse(null);
+        Habitacion h = habitacionRepository.findByNumero(idHabitacion).orElse(null);
         
         if (h == null) {
             mensajes.add("Habitación ID " + idHabitacion + " no encontrada.");
@@ -81,7 +81,7 @@ public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
        
         
         // Buscar la habitación o lanzar error si no existe
-        Habitacion hab = habitacionRepository.findByNumero(habId.intValue())
+        Habitacion hab = habitacionRepository.findByNumero(habId)
                 .orElseThrow(() -> new ResourceNotFoundException("Habitación no encontrada con id: " + habId));
 
         // Regla de negocio: Solo reservar si está disponible
