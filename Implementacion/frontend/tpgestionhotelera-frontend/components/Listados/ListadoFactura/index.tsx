@@ -106,7 +106,7 @@ const hayItemsNoSeleccionados =
       </div>
 
       <div className={styles.acciones}>
-        <Button variant="contained"
+        <Button 
          onClick={() => onAceptar(hayItemsNoSeleccionados)}
          >
           ACEPTAR

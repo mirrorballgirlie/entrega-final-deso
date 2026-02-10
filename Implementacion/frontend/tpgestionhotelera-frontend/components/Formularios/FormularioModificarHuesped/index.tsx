@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import styles from "./modificar.module.css"; // Copiá alta.module.css y renombralo
+import styles from "./formularioModificarHuesped.module.css";
 import FormField from "@/components/FormField";
 import Title from "@/components/Title";
 import Button from "@/components/Button";
