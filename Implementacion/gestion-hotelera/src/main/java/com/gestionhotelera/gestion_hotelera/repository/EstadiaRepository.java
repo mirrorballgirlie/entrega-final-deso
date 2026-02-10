@@ -61,4 +61,10 @@ public interface EstadiaRepository extends JpaRepository<Estadia, Long> {
     
     Optional<Estadia> findByHabitacionAndEstado(Habitacion habitacion, EstadoEstadia estado);
 
+    @Repository
+    public interface EstadiaRepository extends JpaRepository<Estadia, Long> {
+        @Query("SELECT e FROM Estadia e JOIN FETCH e.huespedes WHERE e.habitacion.numero = :numero AND e.fechaEgreso = :fechaEgreso AND e.estado = 0")
+        Optional<Estadia> buscarActivaPorHabitacionYFecha(@Param("numero") Integer numero, @Param("fechaEgreso") LocalDate fechaEgreso);
+    }
+
 }

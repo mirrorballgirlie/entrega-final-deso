@@ -33,6 +33,7 @@ public class GestorFactura {
     private final HuespedRepository huespedRepository;
     private final ConsumoRepository consumoRepository;
     private final RecargoCheckoutStrategy recargoStrategy;
+    private final FacturaRepository facturaRepository;
 
     public List<HuespedDTO> obtenerOcupantes(Integer numHab, LocalDate fechaSalida) {
     // 1. Buscamos la estadía activa para esa habitación y fecha
@@ -107,6 +108,45 @@ public class GestorFactura {
 
         return valorEstadia + totalConsumos;
     }
+
+    @Transactional
+    public Long crearFactura(FacturaDTO dto, Long estadiaId, List<Long> itemsFacturadosIds) {
+        Estadia estadia = estadiaRepository.findById(estadiaId).orElseThrow();
+        
+        Factura factura = Factura.builder()
+            .nombre(dto.getNombre())
+            .tipo(dto.getTipo())
+            .cuit(dto.getCuit())
+            .monto(dto.getMonto())
+            .iva(dto.getIva())
+            .total(dto.getTotal())
+            .fechaEmision(LocalDateTime.now())
+            .estadia(estadia)
+            .build();
+
+        // 1. Guardar factura
+        Factura guardada = facturaRepository.save(factura);
+
+        // 2. Marcar consumos como FACTURADOS para que no aparezcan de nuevo
+        if (itemsFacturadosIds != null && !itemsFacturadosIds.isEmpty()) {
+            consumoRepository.marcarComoFacturados(itemsFacturadosIds, guardada.getId());
+        }
+
+        return guardada.getId();
+    }
+
+3. El Controlador (FacturarController.java)
+Agregamos el @PostMapping para que React pueda enviar la factura final.
+
+Java
+
+@PostMapping("/generar")
+public ResponseEntity<Long> generarFactura(@RequestBody FacturaDTO facturaDto, 
+                                           @RequestParam Long estadiaId,
+                                           @RequestBody List<Long> itemsIds) {
+    Long id = gestorFactura.crearFactura(facturaDto, estadiaId, itemsIds);
+    return ResponseEntity.ok(id);
+}
     
 }
     
