@@ -230,11 +230,11 @@ public class GestorEstadia {
                     }
                 }
 
-                // --- CORRECCIÓN 3: ELIMINACIÓN DE PERSISTENCIA DE ESTADO ---
-                // h.setEstado("OCUPADA");  <--- ¡ELIMINADO!
-                // habitacionRepository.save(h); <--- ¡ELIMINADO!
-                // La habitación queda en estado "DISPONIBLE" (o el que tuviera), 
-                // ya que la ocupación ahora reside en la entidad 'Estadia'.
+            
+                 h.setEstado("OCUPADA"); 
+                 habitacionRepository.save(h); 
+                
+                
             }
 
             return new OcuparResponse(estadiaIds, "Estadías creadas correctamente");

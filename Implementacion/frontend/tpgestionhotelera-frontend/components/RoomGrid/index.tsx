@@ -172,7 +172,7 @@ export default function RoomGrid({ mode, startDate, endDate, onBack, onNext }: R
     setLoading(true)
     try {
       const base = process.env.NEXT_PUBLIC_API_BASE || ""
-      const url = `${base}/habitaciones/estado?desde=${start}&hasta=${end}`
+      const url = `${base}/api/habitaciones/estado?desde=${start}&hasta=${end}`
       const response = await fetch(url)
       if (!response.ok) throw new Error(`API error: ${response.status}`)
       const data: BackendResponse = await response.json()
