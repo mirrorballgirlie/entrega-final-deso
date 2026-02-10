@@ -27,7 +27,7 @@ import com.gestionhotelera.gestion_hotelera.repository.HuespedRepository;
 @AllArgsConstructor
 @Builder
 @Table(name = "huesped")
-@Entity
+@Entity 
 
 public class Huesped {
 

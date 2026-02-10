@@ -323,25 +323,18 @@ const validateAll = (): { [field: string]: string } => {
   };
 
   // Helper para armar el JSON plano que espera el backend (DTO)
-  const transformarPayload = () => {
-    // 1. Clonamos el formulario en un objeto de tipo 'any' para que TS no moleste
-    const payload: any = { ...form };
-
-    // 2. Eliminamos el ID. Si es null o undefined, desaparece del JSON.
-    // Esto evita el error "El id no puede ser nulo" en el backend
-    delete payload.id;
-
-    // 3. Retornamos la estructura que espera tu DTO de Java
-    return {
-        ...payload,
-        direccion: {
-            ...form.direccion,
-            numero: Number(form.direccion.numero),
-            piso: form.direccion.piso ? Number(form.direccion.piso) : null,
-            departamento: form.direccion.departamento || null
-        }
-    };
-};
+  const transformarPayload = () => ({
+     ...form,
+     // Aplanamos la dirección para que coincida con tu DTO si es necesario,
+     // o la enviamos anidada si tu Controller lo soporta. 
+     // Aquí uso la lógica que tenías:
+     direccion: {
+        ...form.direccion,
+        numero: Number(form.direccion.numero),
+        piso: form.direccion.piso ? Number(form.direccion.piso) : null,
+        departamento: form.direccion.departamento || null
+     }
+  });
 
   // --- RESET ---
   const handleReset = () => {
