@@ -175,11 +175,11 @@ const buscarHuespedes = async (e?: React.FormEvent) => {
     desde.setHours(0,0,0,0);
     hasta.setHours(0,0,0,0);
 
-    if (desde >= hasta) {
-          setError("La fecha de inicio debe ser anterior a la fecha de fin.");
-          setLoading(false);   // nos aseguramos de que loading no quede en true
+  if (desde > hasta) {
+        setError("La fecha de inicio debe ser anterior a la fecha de fin.");
+        setLoading(false);   // nos aseguramos de que loading no quede en true
   return;              // <-- cortamos la ejecución antes de hacer fetch
-}
+  }
 
   setLoading(true);
 

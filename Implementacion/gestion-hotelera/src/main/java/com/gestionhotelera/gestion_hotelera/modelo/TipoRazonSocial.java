@@ -2,9 +2,9 @@ package com.gestionhotelera.gestion_hotelera.modelo;
 
 public enum TipoRazonSocial {
 
-    CONSUMIDOR_FINAL,
-    MONOTRIBUTISTA,
-    RESPONASBLE_INSCRIPTO,
-    EXENTO
+    CONSUMIDOR_FINAL,      //0
+    MONOTRIBUTISTA,        //1
+    RESPONASBLE_INSCRIPTO, //2
+    EXENTO                 //3
 
 }

@@ -1,5 +1,5 @@
 package com.gestionhotelera.gestion_hotelera.modelo;
-import java.util.Date;
+import java.time.LocalDate;
 
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorType;
@@ -34,7 +34,7 @@ public abstract class MetodoDePago {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Date fechaPago;
+    private LocalDate fechaPago;
     private double monto;
 
 

@@ -1,5 +1,7 @@
 package com.gestionhotelera.gestion_hotelera.modelo;
-import java.util.Date;
+
+
+import java.time.LocalDate;
 
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
@@ -22,7 +24,7 @@ public class TransferenciaBancaria extends MetodoDePago {
 
     private String numeroTransferencia;
     private double monto;
-    private Date fechaPago;
+    private LocalDate fechaPago;
     private String titular;
 
 }

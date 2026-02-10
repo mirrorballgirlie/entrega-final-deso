@@ -1,9 +1,11 @@
 package com.gestionhotelera.gestion_hotelera.dto;
 
-import lombok.*;
-import lombok.experimental.SuperBuilder;
+import java.time.LocalDate;
 
-import java.util.Date;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 @Data
 @NoArgsConstructor
@@ -12,7 +14,7 @@ import java.util.Date;
 
 public abstract class MetodoDePagoDTO {
 
-    private Date fechaPago;
+    private LocalDate fechaPago;
     private double monto;
 
 }

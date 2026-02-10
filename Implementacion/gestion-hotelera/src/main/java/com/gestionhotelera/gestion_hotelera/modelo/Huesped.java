@@ -20,6 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.gestionhotelera.gestion_hotelera.repository.HuespedRepository;
 
 @Data
 @NoArgsConstructor

@@ -95,8 +95,8 @@ export const isRequired = (value: string) => !!value.trim();  //para campos obli
 export const isValidPhone = (phone: string): boolean => {
   if (!phone) return false;
   const trimmed = phone.trim();
-  // + opcional al principio, seguido de 7 a 15 dígitos
-  return /^\+?\d{11}$/.test(trimmed);    //cambiar a 11 caracteres
+  // Acepta un '+' opcional y entre 7 y 15 números
+  return /^\+?\d{7,15}$/.test(trimmed); 
 };
 
 

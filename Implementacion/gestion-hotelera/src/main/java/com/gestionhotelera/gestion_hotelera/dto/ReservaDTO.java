@@ -1,35 +1,11 @@
-// package com.gestionhotelera.gestion_hotelera.dto;
-// import java.time.LocalDate;
-
-// import com.gestionhotelera.gestion_hotelera.modelo.EstadoReserva;
-
-// import lombok.AllArgsConstructor;
-// import lombok.Builder;
-// import lombok.Data;
-// import lombok.NoArgsConstructor;
-
-// @Data
-// @NoArgsConstructor
-// @AllArgsConstructor
-// @Builder
-
-
-// public class ReservaDTO {
-
-//     private int numero;
-//     private EstadoReserva estado;
-//     private LocalDate fechaDesde;
-//     private LocalDate fechaHasta;
-//     private String nombre;
-//     private String apellido;
-//     private String telefono;
-
-// }
-
 package com.gestionhotelera.gestion_hotelera.dto;
 
 import java.time.LocalDate;
 import com.gestionhotelera.gestion_hotelera.modelo.EstadoReserva;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import com.gestionhotelera.gestion_hotelera.modelo.Reserva;
+import com.gestionhotelera.gestion_hotelera.modelo.Huesped;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,10 +28,27 @@ public class ReservaDTO {
     private String nombre;
     private String apellido;
     private String telefono;
+    private String tipoHabitacion; 
     
     // --- NUEVO CAMPO: ID del Cliente (Opcional) ---
     private Long clienteId; 
     
     // También solemos necesitar el ID de la habitación al crear
     private Long habitacionId; 
+
+    //builder de reserva
+    public static ReservaDTO from(Reserva reserva) {
+        return ReservaDTO.builder()
+                .id(reserva.getId())
+                .numero(reserva.getNumero())
+                .estado(reserva.getEstado())
+                .fechaDesde(reserva.getFechaDesde())
+                .fechaHasta(reserva.getFechaHasta())
+                .nombre(reserva.getCliente().getNombre())
+                .apellido(reserva.getCliente().getApellido())
+                .telefono(reserva.getCliente().getTelefono())
+                .clienteId(reserva.getCliente().getId()) 
+                .habitacionId(reserva.getHabitacion().getId()) 
+                .build();
+    }
 }

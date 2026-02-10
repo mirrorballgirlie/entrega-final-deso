@@ -7,16 +7,16 @@ import { useState } from "react";
 export interface Reserva {
   id: number;
   apellido: string;
-  nombres: string;
-  numeroHabitacion: string;
+  nombre: string;
+  numero: number;
   tipoHabitacion: string;
-  fechaInicio: string;
-  fechaFin: string;
+  fechaDesde: string;
+  fechaHasta: string;
 }
 
 interface Props {
   reservas: Reserva[];
-  onAccept: () => void;
+  onAccept: (reserva: Reserva[]) => void;
   onCancel: () => void;
 }
 
@@ -28,6 +28,10 @@ export default function ListadoCancelarReserva({
 }: Props) {
 
   const [seleccionadas, setSeleccionadas] = useState<number[]>([]);
+
+  const reservasSeleccionadas = reservas.filter(r =>
+    seleccionadas.includes(r.id)
+  );
 
   return (
     <div className={styles.wrapper}>
@@ -64,14 +68,14 @@ export default function ListadoCancelarReserva({
                       );
                     }
                   }}
-                />
+                /> 
               </td>
               <td>{r.apellido}</td>
-              <td>{r.nombres}</td>
-              <td>{r.numeroHabitacion}</td>
+              <td>{r.nombre}</td>
+              <td>{r.numero}</td>
               <td>{r.tipoHabitacion}</td>
-              <td>{r.fechaInicio}</td>
-              <td>{r.fechaFin}</td>
+              <td>{r.fechaDesde}</td>
+              <td>{r.fechaHasta}</td>
             </tr>
           ))}
         </tbody>
@@ -84,12 +88,12 @@ export default function ListadoCancelarReserva({
 
         <Button
           type="button"
-          onClick={onAccept}
           disabled={seleccionadas.length === 0}
-          className={styles.buttonContainer}
+          onClick={() => onAccept(reservasSeleccionadas)}
         >
           Aceptar
         </Button>
+
 
       </div>
     </div>

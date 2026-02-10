@@ -26,9 +26,9 @@ export default function FormularioCancelarReserva({
   onSubmit,
   onCancel,
 }: Props) {
-  const hasError = (field: string) => !!errors[field];
-  const getError = (field: string) => errors[field];
-
+const hasError = (field: keyof typeof errors) => !!errors[field];
+const getError = (field: keyof typeof errors) => errors[field];
+  
   return (
     <div className={styles.wrapper}>
       <header className={styles.titleWrapper}>

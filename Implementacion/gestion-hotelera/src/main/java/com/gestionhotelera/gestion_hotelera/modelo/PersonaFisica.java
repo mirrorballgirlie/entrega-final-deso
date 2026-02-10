@@ -26,6 +26,7 @@ public class PersonaFisica extends ResponsableDePago {
     @OneToOne
     @JoinColumn(name = "huesped_id")
     private Huesped huesped; // opcional
+    private String nombreRazonSocial; // el nombre completo de la persona física, se setea automáticamente a partir del nombre y apellido del huésped asociado
 
 
    

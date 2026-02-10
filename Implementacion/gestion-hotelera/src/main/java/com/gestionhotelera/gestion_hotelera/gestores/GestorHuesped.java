@@ -105,6 +105,7 @@ public class GestorHuesped {
         .ocupacion (dto.getOcupacion())
         .nacionalidad (dto.getNacionalidad())
         .direccion(direccion)
+        .cuit(dto.getCuit())
         .build();
 
         //guardar el huesped
@@ -167,5 +168,22 @@ public class GestorHuesped {
         // 4. Guardamos los cambios
         return huespedRepository.save(existente);
     }
+
+    public void eliminarHuesped(Long id) {                 //cu11
+
+    Huesped huesped = huespedRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Huésped no encontrado con id: " + id));
+
+    // Verificamos si tiene estadías asociadas
+    if (huesped.getEstadias() != null && !huesped.getEstadias().isEmpty()) {
+        throw new IllegalStateException(
+            "No se puede eliminar el huésped porque posee estadías asociadas."
+        );
+    }
+
+    // Si no tiene estadías, se elimina
+    huespedRepository.delete(huesped);
+}
+
 
 }
