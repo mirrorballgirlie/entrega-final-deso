@@ -42,11 +42,11 @@ public interface EstadiaRepository extends JpaRepository<Estadia, Long> {
     // Método para detectar solapamientos al crear nueva estadía (importante para tu validación anterior)
     @Query("""
         SELECT e FROM Estadia e
-        WHERE e.fechaIngreso < :fechaHasta 
-        AND e.fechaEgreso > :fechaDesde
-        AND e.estado != EstadoEstadia.CANCELADA
+        WHERE e.fechaIngreso < :hasta 
+        AND e.fechaEgreso > :desde
+        AND CAST(e.estado as integer) <> 2
     """)
-    List<Estadia> findEstadiasQueSolapan(@Param("fechaDesde") LocalDate fechaDesde, @Param("fechaHasta") LocalDate fechaHasta);
+    List<Estadia> findEstadiasQueSolapan(@Param("desde") LocalDate desde, @Param("hasta") LocalDate hasta);
 
     // metodos para obtener estadias con fucha de egreso y numero de habitacion
     @Query("""

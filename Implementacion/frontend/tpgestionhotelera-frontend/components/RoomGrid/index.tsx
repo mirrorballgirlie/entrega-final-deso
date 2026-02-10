@@ -193,9 +193,9 @@ export default function RoomGrid({ mode, startDate, endDate, onBack, onNext }: R
            const r = Math.random();
            let s: RoomStatus["status"] = "available";
            let user = undefined;
-           if(r > 0.8) { s = "reserved"; user = "JUAN PEREZ (Mock)"; }
-           else if (r > 0.9) s = "occupied";
-           else if (r > 0.95) s = "maintenance";
+           //if(r > 0.8) { s = "reserved"; user = "JUAN PEREZ (Mock)"; }
+           //else if (r > 0.9) s = "occupied";
+           //else if (r > 0.95) s = "maintenance";
 
            statuses.push({ roomNumber: room, date, status: s, reservadoPor: user })
            mockIdMap[room] = Number(room)
