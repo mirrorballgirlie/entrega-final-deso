@@ -1,16 +1,36 @@
 "use client";
-
 import { useState } from "react";
 import React from "react";
 import Button from "@/components/Button";
 import styles from "./listadoFactura.module.css";
 
+// 1. DEFINIR LA ESTRUCTURA DE LOS DATOS
+export interface Consumo {
+  id: string;
+  descripcion: string;
+  monto: number;
+}
+
+interface ListadoFacturaProps {
+  persona: {
+    nombre?: string;
+    razonSocial?: string;
+    condicionIVA: string;
+    cuit?: string;
+  };
+  estadia: number;
+  consumos: Consumo[];
+  onAceptar: (datosFactura: any, hayPendientes: boolean) => void;
+  cuitTercero?: string;
+}
+
 const ListadoFactura = ({
   persona,
   estadia,
   consumos = [],
-  onAceptar
-}) => {
+  onAceptar,
+  cuitTercero
+}: ListadoFacturaProps) => { 
 
 const esResponsableInscripto = persona?.condicionIVA === "RI";
 const tipoFactura = esResponsableInscripto ? "A" : "B";
@@ -38,6 +58,19 @@ const subtotal =
 
 const iva = esResponsableInscripto ? subtotal * 0.21 : 0;
 const total = subtotal + iva;
+
+const handleFinalizar = () => {
+    const dataParaFactura = {
+        nombre: persona.razonSocial || persona.nombre,
+        tipo: tipoFactura,
+        cuit: persona.cuit || cuitTercero,
+        monto: subtotal,
+        iva: iva,
+        total: total,
+        itemsIds: Object.keys(seleccionados).filter(id => seleccionados[id])
+    };
+    onAceptar(dataParaFactura, hayItemsNoSeleccionados);
+};
 
 const hayItemsNoSeleccionados =
   !estadiaSeleccionada ||
@@ -106,9 +139,7 @@ const hayItemsNoSeleccionados =
       </div>
 
       <div className={styles.acciones}>
-        <Button variant="contained"
-         onClick={() => onAceptar(hayItemsNoSeleccionados)}
-         >
+        <Button onClick={handleFinalizar}>
           ACEPTAR
         </Button>
       </div>

@@ -5,7 +5,6 @@ import { useRouter } from "next/navigation";
 import FormularioFacturarCheckout from "@/components/Formularios/FormularioFacturarCheckout";
 import ListadoOcupantes, { Ocupante, SeleccionResponsable } from "@/components/Listados/ListadoOcupantes";
 import Button from "@/components/Button";
-import ListadoFactura, { hayItemsNoSeleccionados } from "@/components/Listados/ListadoFactura";
 
 export default function FacturarCheckoutManager() {
   const router = useRouter();
@@ -30,7 +29,7 @@ export default function FacturarCheckoutManager() {
   const [mostrarFormularioResponsable, setMostrarFormularioResponsable] = useState(false);
   const [razonSocial, setRazonSocial] = useState<string | null>(null);
   const [flujo, setFlujo] = useState<'ocupantes' | 'cuit' | 'factura'>('ocupantes');
-  const [ocupanteSeleccionado, setOcupanteSeleccionado] = useState(null);
+  const [ocupanteSeleccionado, setOcupanteSeleccionado] = useState<{requiereCuit: boolean; mayorEdad: boolean} | null>(null);;
   const [personaFactura, setPersonaFactura] = useState<any>(null);
   const [mostrarModalFactura, setMostrarModalFactura] = useState(false);
 
@@ -91,49 +90,30 @@ const onAceptar = () => {
     return horaIngresada > ahora;
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const handleSubmit = async (e: React.FormEvent<any>) => {
+  e.preventDefault();
+  // ... (tus validaciones de errores de habitación y hora)
 
-    const nuevosErrores: {
-      numeroHabitacion?: string;
-      horaSalida?: string;
-    } = {};
+  try {
+    // Llamamos al controlador real
+    const params = new URLSearchParams({ 
+      habitacion: form.numeroHabitacion, 
+      salida: new Date().toISOString().split('T')[0] // Fecha de hoy o la que elijas
+    });
 
-    // validar habitación
-    if (!form.numeroHabitacion.trim()) {
-      nuevosErrores.numeroHabitacion = "Número de habitación faltante";
-    } else {
-      const numero = Number(form.numeroHabitacion);
+    const response = await fetch(`http://localhost:8080/api/facturas/buscar-ocupantes?${params.toString()}`);
+    
+    if (!response.ok) throw new Error("No se encontraron ocupantes");
 
-      if (isNaN(numero) || numero <= 0) {
-        nuevosErrores.numeroHabitacion = "Número de habitación incorrecto";
-      } else if (!habitacionesExistentes.includes(numero)) {
-        nuevosErrores.numeroHabitacion = "La habitación no existe";
-      } else if (habitacionesOcupadas.includes(numero)) {
-        nuevosErrores.numeroHabitacion = "La habitación está ocupada";
-      }
-    }
-
-    // validar hora
-    if (!form.horaSalida.trim()) {
-      nuevosErrores.horaSalida = "Hora de salida faltante";
-    } else if (esHoraFutura(form.horaSalida)) {
-      nuevosErrores.horaSalida = "La hora no puede ser futura";
-    }
-
-    // si hay errores
-    if (Object.keys(nuevosErrores).length > 0) {
-      setErrors(nuevosErrores);
-      return;
-    }
-
-    // si no
-    setErrors({});
-    //console.log("Checkout facturado", form);
-    setOcupantes(ocupantesMock);
+    const datosReales = await response.json();
+    
+    setOcupantes(datosReales); // <--- ACÁ guardás los ocupantes que vienen de tu BDD
     setMostrarGrilla(true);
-
-  };
+    setErrors({});
+  } catch (error) {
+    alert("Error: No se encontró una estadía activa para esa habitación.");
+  }
+};
 
   const handleCancel = () => {
     router.push("/home");
@@ -147,15 +127,16 @@ const onAceptar = () => {
     setMostrarInputCUIT(true); //muestra cuit tercero
     return;
     }
-    if (responsableSeleccionado ){ // //=! tercero
-        if(responsableSeleccionado.edad < 18){
+    const ocupante = responsableSeleccionado;
+    if (ocupante ){ // //=! tercero
+        if(ocupante.edad < 18){
         setErrorSeleccion("La persona seleccionada es menor de edad. Por favor elija otra.");
         setResponsableSeleccionado(null);
         return;
         }
 
         setPersonaFactura({
-            nombre: responsableSeleccionado.nombre,
+            nombre: ocupante.nombre,
             condicionIVA: "CF",
         });
 
@@ -195,6 +176,32 @@ const onAceptar = () => {
     setResponsableSeleccionado(null);
     }
   };
+
+  const handleFacturaFinal = async (datosFactura: any, pendientes: boolean) => {
+    try {
+        const response = await fetch("http://localhost:8080/api/facturas/generar", {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(datosFactura)
+        });
+
+        if (response.ok) {
+            if (pendientes) {
+                // REQUERIMIENTO: si hay items no tildados vuelve a mostrar la grilla
+                alert("Factura parcial generada. Quedan ítems pendientes.");
+                setMostrarModalFactura(false);
+                setResponsableSeleccionado(null);
+                setRazonSocial(null);
+                // Aquí podrías volver a cargar los ocupantes/consumos actualizados
+            } else {
+                alert("Facturación completa");
+                router.push("/home");
+            }
+        }
+    } catch (error) {
+        console.error("Error al facturar", error);
+    }
+};
 
 //ui
 
@@ -342,6 +349,7 @@ const onAceptar = () => {
                persona={personaFactura}
                estadia={facturaMock.estadia}
                consumos={consumosDisponiblesMock}
+               cuitTercero={cuitTercero}
                onAceptar={(hayItemsNoSeleccionados) => {
                    if(hayItemsNoSeleccionados){
                        setMostrarModalFactura(false);
