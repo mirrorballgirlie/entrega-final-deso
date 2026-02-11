@@ -26,6 +26,7 @@ import com.gestionhotelera.gestion_hotelera.repository.PersonaFisicaRepository;
 import com.gestionhotelera.gestion_hotelera.repository.PersonaJuridicaRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 @Service
 @RequiredArgsConstructor

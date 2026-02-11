@@ -1,14 +1,20 @@
 package com.gestionhotelera.gestion_hotelera.dto;
 
 import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Getter
+@Setter
+
 public class EstadoDiarioDTO {
 
     private LocalDate fecha;
