@@ -18,7 +18,7 @@ import com.gestionhotelera.gestion_hotelera.dto.ConsumoDTO;
 @RestController
 @RequiredArgsConstructor
 
-
+ 
 public class FacturarController {
     private final GestorFactura gestorFactura;
     
