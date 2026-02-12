@@ -1,15 +1,17 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import FormularioFechas from "@/components/Formularios/FormularioFechas";
 import RoomGrid from "@/components/RoomGrid";
 import ListadoReserva from "@/components/Listados/ListadoReserva";
 import FormularioEncargado from "@/components/Formularios/FormularioEncargado";
 
-interface Props {
-  onExit: () => void;
-}
 
-export default function ReservarManager({ onExit }: Props) {
+
+export default function ReservarManager() {
+    const router = useRouter();
+    const handleExit = () => {router.push("/home");};
+
   const [step, setStep] = useState(1);
   const [flowData, setFlowData] = useState({
     startDate: "",
@@ -49,7 +51,7 @@ export default function ReservarManager({ onExit }: Props) {
             <h2 style={{color: '#28a745', marginBottom: '20px'}}>¡Reserva Exitosa!</h2>
             <p>La reserva se ha registrado correctamente en el sistema.</p>
             <button 
-                onClick={onExit}
+                onClick={handleExit}
                 style={{padding: '10px 20px', marginTop: '20px', cursor: 'pointer', background: '#007bff', color: 'white', border: 'none', borderRadius: '5px'}}
             >
                 Volver al Menú Principal
@@ -64,7 +66,7 @@ export default function ReservarManager({ onExit }: Props) {
       {step === 1 && (
         <FormularioFechas 
             onNext={(fechas) => { update(fechas); next(); }} 
-            onCancel={onExit} 
+            onCancel={handleExit}
         />
       )}
 
@@ -74,7 +76,7 @@ export default function ReservarManager({ onExit }: Props) {
             mode="reservar"
             startDate={flowData.startDate} 
             endDate={flowData.endDate}
-            onBack={onExit} 
+            onBack={handleExit}
             onNext={handleGridNext}
         />
       )}
@@ -84,7 +86,7 @@ export default function ReservarManager({ onExit }: Props) {
         <ListadoReserva 
             data={flowData} 
             onBack={back}    // Volver al paso 2 (Grid)
-            onCancel={onExit} // Cancelar todo (Menú Principal)
+            onCancel={handleExit} // Cancelar todo (Menú Principal)
             onNext={() => next()} 
         />
       )}
@@ -94,7 +96,7 @@ export default function ReservarManager({ onExit }: Props) {
         <FormularioEncargado 
             data={flowData} 
             onBack={back}
-            onSuccess={onExit} 
+            onSuccess={handleExit}
         />
       )}
     </>

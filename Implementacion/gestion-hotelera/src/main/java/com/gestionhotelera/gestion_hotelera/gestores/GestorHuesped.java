@@ -14,6 +14,7 @@ import com.gestionhotelera.gestion_hotelera.repository.DireccionRepository;
 import com.gestionhotelera.gestion_hotelera.repository.HuespedRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.*;
 
 
 @Service
@@ -105,6 +106,7 @@ public class GestorHuesped {
         .ocupacion (dto.getOcupacion())
         .nacionalidad (dto.getNacionalidad())
         .direccion(direccion)
+        .cuit(dto.getCuit())
         .build();
 
         //guardar el huesped

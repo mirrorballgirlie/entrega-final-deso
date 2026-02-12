@@ -1,0 +1,93 @@
+.home {
+  background-color: #FFFCF5;
+  min-height: 100vh; /* ocupa toda la altura de la pantalla */
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  background-color: #6c769e;;
+  color: #FFFCF5;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 60px;
+
+  /* color: #FFFCF5;
+  font-family: "Mate SC";
+  font-size: 48px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal; */
+
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.nav a {
+  color: white;
+  margin-left: 24px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.nav a:hover {
+  color: #FFD700; /* dorado suave al pasar el mouse */
+}
+
+.main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.main h2 {
+  font-size: 1.8rem;
+  color: #374375;
+}
+
+.main p {
+  color: #444;
+  margin-top: 12px;
+}
+
+header .hotelpremier {
+  color: #FFFCF5;
+  font-family: "Mate SC", serif;
+  font-size: 36px;
+  font-style: normal;
+  font-weight: 400;
+  line-height: normal;
+
+}
+.navbar {
+    margin-top: 20px;
+    display: flex;
+    justify-content: flex-end ;
+    gap: 20px;
+    width: 1920px;
+    height: 60px;
+    margin-right: 40px;
+    color: #FFFCF5;
+    font-family: "Open Sans";
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 400px;
+    line-height: normal;
+
+}
+.h1 {
+    margin-top: 10px;
+    font-family: "Open Sans";
+    font-size: 30px;
+    color: #FFFCF5;
+    margin-bottom: 20px;
+}

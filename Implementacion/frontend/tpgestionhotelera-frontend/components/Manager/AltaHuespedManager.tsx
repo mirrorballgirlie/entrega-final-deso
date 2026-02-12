@@ -4,11 +4,9 @@ import FormularioAltaHuesped from "@/components/Formularios/FormularioAltaHuespe
 import PopupCritical from "@/components/PopupCritical";
 // Importa tus validadores
 import { isValidCUIT, isValidEmail, isValidPhone, isValidName, isValidLocation, isValidPostCode, validateDocumentNumber, isNumeric, onlyLettersAndNumbers, isFutureOrToday } from "@/utils/validators";
+import { useRouter } from "next/navigation";
 
 
-interface Props {
-  onExit: () => void;
-}
 
 const INITIAL_STATE = {
   apellido: "", nombre: "", tipoDocumento: "DNI", documento: "", cuit: "",
@@ -19,7 +17,11 @@ const INITIAL_STATE = {
   }
 };
 
-export default function AltaHuespedManager({ onExit }: Props) {
+export default function AltaHuespedManager() {
+
+    const router = useRouter();
+    const handleExit = () => { router.push("/home");};
+
   const [form, setForm] = useState(INITIAL_STATE);
   const [errors, setErrors] = useState<{ [field: string]: string }>({});
   
@@ -372,7 +374,7 @@ const validateAll = (): { [field: string]: string } => {
           message="¿Desea cancelar el alta del huésped?"
           primaryText="SI" // Sale
           secondaryText="NO" // Se queda
-          onPrimary={onExit}
+          onPrimary={handleExit}
           onSecondary={() => setShowCancelPopup(false)}
         />
       )}
@@ -384,7 +386,7 @@ const validateAll = (): { [field: string]: string } => {
           primaryText="SI" // Carga otro (Reset)
           secondaryText="NO" // Sale al menú
           onPrimary={handleReset}
-          onSecondary={onExit}
+          onSecondary={handleExit}
         />
       )}
     </>

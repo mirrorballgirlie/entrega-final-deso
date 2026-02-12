@@ -254,7 +254,8 @@ export default function ListadoHuesped({ mode, results, onRetry, onSelectionComp
 
       // Lógica de navegación antigua
       if (mode === "buscar") {
-        router.push("/");
+        const huespedSeleccionado = results[selectedSingleIndex];
+          router.push(`/modificar-huesped/${huespedSeleccionado.id}`);
       } else {
         // Caso "reservar" antiguo
         sessionStorage.setItem("guestData", JSON.stringify(huespedSeleccionado));

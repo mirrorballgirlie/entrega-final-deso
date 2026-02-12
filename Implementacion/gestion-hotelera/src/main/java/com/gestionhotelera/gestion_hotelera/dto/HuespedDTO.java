@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 
 public class HuespedDTO {
 
+    private Long id;
 
     @NotBlank(message = "El nombre no puede estar vacío")
     

@@ -21,6 +21,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -125,6 +126,13 @@ public class Huesped {
     public String toString() {
         return nombre + " " + apellido + " (" + documento + ")";
     }*/
+
+
+    //pruebaaaaa porque lombok me tiene re podrida
+//     public String getNombre() {
+//     return nombre;
+// }
+
 
 
 }

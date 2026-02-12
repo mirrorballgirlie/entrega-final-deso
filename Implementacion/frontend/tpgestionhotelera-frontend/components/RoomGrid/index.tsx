@@ -172,7 +172,7 @@ export default function RoomGrid({ mode, startDate, endDate, onBack, onNext }: R
     setLoading(true)
     try {
       const base = process.env.NEXT_PUBLIC_API_BASE || ""
-      const url = `${base}/habitaciones/estado?desde=${start}&hasta=${end}`
+      const url = `${base}/api/habitaciones/estado?desde=${start}&hasta=${end}`
       const response = await fetch(url)
       if (!response.ok) throw new Error(`API error: ${response.status}`)
       const data: BackendResponse = await response.json()
@@ -193,9 +193,9 @@ export default function RoomGrid({ mode, startDate, endDate, onBack, onNext }: R
            const r = Math.random();
            let s: RoomStatus["status"] = "available";
            let user = undefined;
-           if(r > 0.8) { s = "reserved"; user = "JUAN PEREZ (Mock)"; }
-           else if (r > 0.9) s = "occupied";
-           else if (r > 0.95) s = "maintenance";
+           //if(r > 0.8) { s = "reserved"; user = "JUAN PEREZ (Mock)"; }
+           //else if (r > 0.9) s = "occupied";
+           //else if (r > 0.95) s = "maintenance";
 
            statuses.push({ roomNumber: room, date, status: s, reservadoPor: user })
            mockIdMap[room] = Number(room)

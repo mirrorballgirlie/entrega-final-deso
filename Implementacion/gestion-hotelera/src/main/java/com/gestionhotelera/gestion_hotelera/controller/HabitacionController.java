@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 
 @CrossOrigin(origins = "http://localhost:3000") 
 @RestController
-@RequestMapping("/habitaciones")
+@RequestMapping("/api/habitaciones")
 @RequiredArgsConstructor
 
 public class HabitacionController {
