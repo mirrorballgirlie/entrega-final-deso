@@ -20,6 +20,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import com.gestionhotelera.gestion_hotelera.modelo.TipoFactura;
+import com.gestionhotelera.gestion_hotelera.modelo.EstadoFactura;
+import lombok.Builder;
 
 @Data
 @NoArgsConstructor
@@ -41,6 +44,7 @@ public class Factura {
     private double iva;
     private double total;
     private LocalDateTime fechaEmision;
+    EstadoFactura estado;
 
     @ManyToMany
     @JoinTable(
@@ -49,7 +53,7 @@ public class Factura {
         inverseJoinColumns = @JoinColumn(name = "impuesto_id")
     )
 
-    @Builder.Default
+    @lombok.Builder.Default
 
     private List<Impuesto> impuestos = new ArrayList<>();
 
@@ -66,12 +70,12 @@ public class Factura {
     cascade = CascadeType.ALL,
     orphanRemoval = true)
 
-    @Builder.Default
+    @lombok.Builder.Default
 
     private List<MetodoDePago> metodosDePago = new ArrayList<>();
 
     @OneToMany(mappedBy = "factura")
-    @Builder.Default
+    @lombok.Builder.Default
     private List<Pago> pagos = new ArrayList<>();
 
     @ManyToOne
@@ -83,7 +87,7 @@ public class Factura {
 
 
 
-    /*private Factura(Builder builder) {
+    private Factura(Builder builder) {
         this.nombre = builder.nombre;
         this.tipo = builder.tipo;
         this.cuit = builder.cuit;
@@ -100,6 +104,7 @@ public class Factura {
         private double iva;
         private double total;
         private LocalDateTime fechaEmision;
+        private EstadoFactura estado;
 
         public Builder nombre(String nombre) { this.nombre = nombre; return this; }
         public Builder tipo(TipoFactura tipo) { this.tipo = tipo; return this; }
@@ -113,10 +118,7 @@ public class Factura {
 
     public double getTotal() { return total; }
 
-    /*@Override
-    public String toString() {
-        return tipo + " - " + nombre + " - Total: $" + total;
-    }*/
+  
 
     public void setTipo(String tipo) {
         this.tipo = TipoFactura.valueOf(tipo.toUpperCase());
