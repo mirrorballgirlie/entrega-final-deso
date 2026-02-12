@@ -4,7 +4,6 @@ import { useRouter } from "next/navigation";
 import FormularioHuesped from "@/components/Formularios/FormularioHuesped";
 import ListadoHuesped from "@/components/Listados/ListadoHuesped";
 import ModificarHuespedManager from "@/components/Manager/ModificarHuespedManager";
-//import { isValidName, validateDocumentNumber } from "@/utils/validators";
 
 interface Props {
   mode: "reservar" | "ocupar" | "buscar";
@@ -14,11 +13,9 @@ interface Props {
 export default function BuscarHuespedManager({ mode }: Props) {
   const router = useRouter();
 
-  // Estados del Manager
   const [step, setStep] = useState<1 | 2>(1); // 1 = Formulario, 2 = Listado
   const [loading, setLoading] = useState(false);
   
-  // Datos del Formulario
   const [form, setForm] = useState({
     apellido: "",
     nombre: "", // Ojo: en tu form original usabas "nombres" o "nombre"? Unifiqué a nombre
@@ -26,26 +23,22 @@ export default function BuscarHuespedManager({ mode }: Props) {
     documento: ""
   });
 
-  // Resultados de búsqueda
   const [results, setResults] = useState<any[]>([]);
+  const [selectedHuesped, setSelectedHuesped] = useState<any>(null);
 
-  // Estado para errores de formato
-  const [formError, setFormError] = useState("");
+  const [formError, setFormError] = useState("");//?
 
-
-  // 1. Manejo de inputs del formulario
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  // 2. Manejo del Submit (Fetch al backend)
-  const handleSearchSubmit = async (e: React.FormEvent) => {
+const handleSearchSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-  setFormError(""); 
-
     setLoading(true);
+
+  //setFormError("");
+
 
     try {
       const base = process.env.NEXT_PUBLIC_API_BASE || "";
@@ -61,14 +54,8 @@ export default function BuscarHuespedManager({ mode }: Props) {
       if (!res.ok) throw new Error("Error en la búsqueda");
 
       const data = await res.json();
-      
-      // La API devuelve { existe: boolean, resultados: [] }
-      const encontrados = data.existe ? data.resultados : [];
-      setResults(encontrados);
-      
-      // Avanzamos al paso 2 (Listado)
-      // Incluso si está vacío, pasamos al paso 2 para que ListadoHuesped muestre el Popup de "No encontrado"
-      setStep(2); 
+      setResults(data.existe ? data.resultados : []);
+      setStep(2);
 
     } catch (error) {
       console.error(error);
@@ -78,14 +65,13 @@ export default function BuscarHuespedManager({ mode }: Props) {
     }
   };
 
-  // 3. Volver a buscar (desde el listado)
   const handleRetry = () => {
     setStep(1);
     setResults([]);
   };
   const handleSelectHuesped = (huesped: any) => {
-    // Redirigir a la página de "Modificar Huesped"
-    router.push(`/modificar-huesped/${huesped.id}`);
+    setSelectedHuesped(huesped); // guardamos en estado
+    setStep(3); // pasamos al manager de modificar
   };
 
 
@@ -97,8 +83,7 @@ export default function BuscarHuespedManager({ mode }: Props) {
           onChange={handleInputChange}
           onSubmit={handleSearchSubmit}
           onCancel={() => router.push("/home")} // Sale de la página si cancela en el paso 1
-          // formError={formError} // <-- pasamos error al formulario
-        />
+          />
       )}
 
       {step === 2 && (
@@ -106,9 +91,12 @@ export default function BuscarHuespedManager({ mode }: Props) {
           mode={mode}
           results={results}
           onRetry={handleRetry} // Vuelve al paso 1
-          onSelect={handleSelectHuesped}
+          onSelectionComplete={(huespedes) => handleSelectHuesped(huespedes[0])}
         />
       )}
+     {step === 3 && selectedHuesped && (
+         <ModificarHuespedManager huesped = {selectedHuesped} />
+         )}
     </>
   );
 
