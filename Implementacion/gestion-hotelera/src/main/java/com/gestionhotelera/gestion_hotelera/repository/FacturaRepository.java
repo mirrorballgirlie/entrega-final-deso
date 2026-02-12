@@ -9,18 +9,13 @@ import com.gestionhotelera.gestion_hotelera.modelo.Estadia;
 import java.time.LocalDate;
 import java.util.Optional;
 import com.gestionhotelera.gestion_hotelera.modelo.EstadoEstadia;
+import com.gestionhotelera.gestion_hotelera.modelo.EstadoFactura;
+import java.util.List;
 
 public interface FacturaRepository extends JpaRepository<Factura, Long> {
 
-    @Query("SELECT e FROM Estadia e " +
-       "JOIN e.habitacion h " +
-       "WHERE h.numero = :numero " +
-       "AND e.fechaEgreso = :fechaEgreso " +
-       "AND e.estado = com.gestionhotelera.gestion_hotelera.modelo.EstadoEstadia.ACTIVA") // <--- PAQUETE COMPLETO
-Optional<Estadia> buscarEstadiaPorHabitacionYSalida(
-    @Param("numero") Integer numero, 
-    @Param("fechaEgreso") LocalDate fechaEgreso
-);
+    @Query("SELECT f FROM Factura f JOIN f.estadia e WHERE e.habitacion.numero = :nroHabitacion AND f.estado = :estado")
+    List<Factura> findFacturasPendientesByNroHabitacionyEstado(@Param("nroHabitacion") Integer nroHabitacion, @Param("estado") EstadoFactura estado);
 
 }
 

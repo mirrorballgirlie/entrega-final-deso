@@ -1,6 +1,8 @@
 package com.gestionhotelera.gestion_hotelera.dto;
 
 import com.gestionhotelera.gestion_hotelera.modelo.TipoFactura;
+import com.gestionhotelera.gestion_hotelera.modelo.EstadoFactura;
+import java.time.LocalDateTime;
 
 import lombok.*;
 
@@ -17,5 +19,9 @@ public class FacturaDTO {
     private double monto;
     private double iva;
     private double total;
+    LocalDateTime fechaEmision;
+    EstadoFactura estado;
+    
+
 
 }
