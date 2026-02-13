@@ -1,6 +1,7 @@
 package com.gestionhotelera.gestion_hotelera.controller;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,6 +12,7 @@ import com.gestionhotelera.gestion_hotelera.dto.UsuarioDTO;
 import com.gestionhotelera.gestion_hotelera.gestores.GestorUsuario;
 
 import lombok.RequiredArgsConstructor;
+@CrossOrigin(origins = "http://localhost:3000")
 
 @RestController
 @RequestMapping("/usuarios")

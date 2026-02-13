@@ -3,6 +3,7 @@ import styles from "./formularioFacturarCheckout.module.css";
 import FormField from "@/components/FormField";
 import Button from "@/components/Button";
 import Title from "@/components/Title";
+import React from "react";
 
 interface Props {
   form: {
@@ -14,7 +15,19 @@ interface Props {
     horaSalida?: string;
   };
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-  onSubmit: (e: React.FormEvent) => void;
+  //onSubmit: (e: React.FormEvent) => void;   me daba error este onSubmit en el manager
+//   La diferencia es:
+
+// La primera versión es más genérica y no permite async.
+
+// La segunda versión es específica para formularios HTML en React y permite funciones async.
+
+// En nuestro caso de uso necesitamos async porque hacemos llamadas al backend.
+
+// Por eso debemos tipar el onSubmit como:
+
+// (e: React.FormEvent<HTMLFormElement>) => void | Promise<void> 
+  onSubmit: (e: React.FormEvent<HTMLFormElement>) => void | Promise<void>;
   onCancel: () => void;
 }
 
@@ -69,3 +82,4 @@ export default function FormularioFacturarCheckout({
     </div>
   );
 }
+

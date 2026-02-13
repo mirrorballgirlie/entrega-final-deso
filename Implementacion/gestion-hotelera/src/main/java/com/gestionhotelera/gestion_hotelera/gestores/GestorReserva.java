@@ -1,30 +1,28 @@
 package com.gestionhotelera.gestion_hotelera.gestores;
 
 import java.time.LocalDate;
-import java.time.LocalTime; 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.gestionhotelera.gestion_hotelera.dto.ConfirmarReservaRequest;
 import com.gestionhotelera.gestion_hotelera.dto.ConfirmarReservaResponse;
+import com.gestionhotelera.gestion_hotelera.dto.ReservaDTO;
 import com.gestionhotelera.gestion_hotelera.dto.ValidarSeleccionRequest;
 import com.gestionhotelera.gestion_hotelera.dto.ValidarSeleccionResponse;
 import com.gestionhotelera.gestion_hotelera.exception.BadRequestException;
 import com.gestionhotelera.gestion_hotelera.exception.ResourceNotFoundException;
 import com.gestionhotelera.gestion_hotelera.modelo.EstadoReserva;
 import com.gestionhotelera.gestion_hotelera.modelo.Habitacion;
-import com.gestionhotelera.gestion_hotelera.modelo.Huesped;
 import com.gestionhotelera.gestion_hotelera.modelo.Reserva;
 import com.gestionhotelera.gestion_hotelera.repository.HabitacionRepository;
 import com.gestionhotelera.gestion_hotelera.repository.HuespedRepository;
 import com.gestionhotelera.gestion_hotelera.repository.ReservaRepository;
 
 import lombok.RequiredArgsConstructor;
-import java.util.stream.Collectors;
-import lombok.*;
 
 
 @Service
@@ -34,7 +32,7 @@ public class GestorReserva {
     private final HabitacionRepository habitacionRepository;
     private final ReservaRepository reservaRepository;
     private final HuespedRepository huespedRepository; 
-    private final GestorHuesped gestorHuesped; // Para reutilizar lógica de búsqueda de huéspedes
+    //private final GestorHuesped gestorHuesped; // Para reutilizar lógica de búsqueda de huéspedes
 
     private void validarFechas(LocalDate desde, LocalDate hasta) {
         if (desde == null || hasta == null) throw new BadRequestException("Fechas nulas.");
@@ -151,80 +149,6 @@ public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
         return "Reserva cancelada correctamente. La habitación ahora está disponible.";
      }
 
-<<<<<<< HEAD
-        List<Long> reservasCreadas = new ArrayList<>();
-
-        for (Long idHabitacion : req.getHabitacionIds()) {
-            Habitacion h = habitacionRepository.findById(idHabitacion)
-                    .orElseThrow(() -> new ResourceNotFoundException("Habitación no encontrada"));
-
-            if ("MANTENIMIENTO".equalsIgnoreCase(h.getEstado())) {
-                throw new BadRequestException("Habitación en mantenimiento.");
-            }
-
-            List<Reserva> solapadas = reservaRepository.verificarDisponibilidad(
-                idHabitacion, 
-                req.getFechaDesde(), 
-                req.getFechaHasta(), 
-                EstadoReserva.ACTIVA
-            );
-
-            if (!solapadas.isEmpty()) {
-                throw new BadRequestException("Habitación " + h.getNumero() + " ya ocupada en esas fechas.");
-            }
-
-            int nuevoNumero = generarNumeroReserva();
-
-            Reserva r = Reserva.builder()
-                    .numero(nuevoNumero)
-                    .estado(EstadoReserva.ACTIVA)
-                    .fechaDesde(req.getFechaDesde())
-                    .fechaHasta(req.getFechaHasta())
-                    .nombre(req.getNombre().toUpperCase())
-                    .apellido(req.getApellido().toUpperCase())
-                    .telefono(req.getTelefono())
-                    .habitacion(h)
-                    // --- 3. ASIGNAMOS EL CLIENTE ---
-                    .cliente(clienteEncontrado) // Será un objeto Huesped o null
-                    .build();
-
-            Reserva saved = reservaRepository.save(r);
-            reservasCreadas.add(saved.getId());
-        }
-        return new ConfirmarReservaResponse(reservasCreadas, "Éxito");
-    }
-
-    private int generarNumeroReserva() {
-        Integer max = reservaRepository.obtenerMaximoNumero();
-        return (max == null) ? 1 : max + 1;
-    }
-
-    //para CU6 cancelar reserva, vamos a reciclar el metodo que tenemos en gestor huesped
-
-    public List<Reserva> buscarReservasPorApellidoYNombre(String apellido, String nombre) {
-    if (apellido == null || apellido.isBlank()) {
-        throw new BadRequestException("El campo apellido no puede estar vacío");
-    }
-
-    // Reutilizamos GestorHuesped 
-    List<Huesped> huespedes = gestorHuesped.buscarFiltrado(apellido.toUpperCase(), nombre != null ? nombre.toUpperCase() : null, null, null);
-
-    if (huespedes.isEmpty()) return List.of(); // No hay resultados
-
-    // Ahora buscamos reservas activas de esos huéspedes
-    List<Reserva> reservas = new ArrayList<>();
-    for (Huesped h : huespedes) {
-        List<Reserva> res = reservaRepository.findAll().stream()
-                .filter(r -> r.getCliente() != null && r.getCliente().getId().equals(h.getId()))
-                .filter(r -> r.getEstado() == EstadoReserva.ACTIVA)
-                .toList();
-        reservas.addAll(res);
-    }
-
-    return reservas;
-}
-
-=======
      // --- MÉTODO 4: BUSCAR RESERVAS ACTIVAS POR TITULAR ---
         public List<ReservaDTO> buscarReservasActivas(String nombre, String apellido) {
         List<Reserva> reservas = reservaRepository.findByClienteNombreAndClienteApellidoAndEstado(
@@ -244,5 +168,4 @@ public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
                 .build();
         }).collect(Collectors.toList());
     }    
->>>>>>> develop-thiago
 }

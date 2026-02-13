@@ -1,7 +1,8 @@
 package com.gestionhotelera.gestion_hotelera.gestores.strategy;
 
-import org.springframework.stereotype.Component;
 import java.time.LocalTime;
+
+import org.springframework.stereotype.Component;
 
 
 @Component
