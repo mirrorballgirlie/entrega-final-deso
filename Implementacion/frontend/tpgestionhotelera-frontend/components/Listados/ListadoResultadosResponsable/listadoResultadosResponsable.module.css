@@ -1,0 +1,85 @@
+.container {
+  width: 100%;
+  max-width: 900px;
+  margin: 30px auto;
+  margin-top: 50px;
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.titleWrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  text-align: center;
+  transform: scale(0.6);
+
+}
+.titleWrapper :global(h2),
+.titleWrapper :global(h1) {
+  font-size: 25px;
+  white-space: nowrap;
+  margin: 0;
+  padding: 0;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 20px;
+  font-family: 'Open Sans', sans-serif;
+}
+.table th {
+  background-color: #374375;
+  color: white;
+  padding: 15px;
+  text-align: left;
+}
+.table thead th {
+  text-align: left;
+  background-color: #374375;
+  color: white;
+  padding: 12px;
+  font-size: 14px;
+  text-transform: uppercase;
+}
+
+.table tbody tr {
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.table tbody tr:hover {
+  background-color: #f9f9f9;
+}
+
+.table tbody td {
+  padding: 12px;
+  font-size: 14px;
+  color: #333;
+}
+
+.selectedRow {
+  background-color: #e8f0fe;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+.radioCell {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 12px 0;
+}
+.radioCell input[type="radio"] {
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  accent-color: #374375; /* Hace que el radio sea del color de tu marca */
+}
