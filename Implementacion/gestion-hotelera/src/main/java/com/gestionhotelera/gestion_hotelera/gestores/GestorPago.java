@@ -7,6 +7,7 @@ import com.gestionhotelera.gestion_hotelera.modelo.EstadoFactura;
 import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.*;
+import com.gestionhotelera.gestion_hotelera.modelo.Factura;
 
 @Service
 @RequiredArgsConstructor
@@ -21,5 +22,13 @@ public class GestorPago {
                 .stream()
                 .map(factura -> new FacturaDTO(factura.getNombre(), factura.getTipo(), factura.getCuit(), factura.getMonto(),factura.getIva(),factura.getTotal(), factura.getFechaEmision(), factura.getEstado()))
                 .collect(Collectors.toList());
+    }
+
+    public void pagar(Double monto, Long idFactura) {
+        
+        Factura factura = facturaRepository.findById(idFactura).orElse(null);
+        factura.setEstado(EstadoFactura.PAGO);
+        factura.setTotal(factura.getTotal() - monto);
+        facturaRepository.save(factura);
     }
 }
