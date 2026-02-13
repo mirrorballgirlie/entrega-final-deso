@@ -20,7 +20,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import com.gestionhotelera.gestion_hotelera.repository.HuespedRepository;
+
 
 @Data
 @NoArgsConstructor
@@ -126,6 +126,13 @@ public class Huesped {
     public String toString() {
         return nombre + " " + apellido + " (" + documento + ")";
     }*/
+
+
+    //pruebaaaaa porque lombok me tiene re podrida
+//     public String getNombre() {
+//     return nombre;
+// }
+
 
 
 }

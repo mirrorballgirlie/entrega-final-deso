@@ -5,6 +5,7 @@ type Rounded = "small" | "medium" | "pill";
 interface Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: ReactNode;
   rounded?: Rounded;
+  variant?: "contained" | "outlined" | "text"; // opcional para que esto mas o menos ande? tiene que ser si o si opional porque sino se rompe todo jaja
 }
 
 export default function Button({ children, rounded = "medium", style, ...rest }: Props) {

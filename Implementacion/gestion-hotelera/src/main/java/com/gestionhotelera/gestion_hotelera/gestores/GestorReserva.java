@@ -1,17 +1,28 @@
 package com.gestionhotelera.gestion_hotelera.gestores;
 
 import java.time.LocalDate;
-import java.time.LocalTime; 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import com.gestionhotelera.gestion_hotelera.dto.*;
-import com.gestionhotelera.gestion_hotelera.exception.*;
-import com.gestionhotelera.gestion_hotelera.modelo.*;
-import com.gestionhotelera.gestion_hotelera.repository.*;
+
+import com.gestionhotelera.gestion_hotelera.dto.ConfirmarReservaRequest;
+import com.gestionhotelera.gestion_hotelera.dto.ConfirmarReservaResponse;
+import com.gestionhotelera.gestion_hotelera.dto.ReservaDTO;
+import com.gestionhotelera.gestion_hotelera.dto.ValidarSeleccionRequest;
+import com.gestionhotelera.gestion_hotelera.dto.ValidarSeleccionResponse;
+import com.gestionhotelera.gestion_hotelera.exception.BadRequestException;
+import com.gestionhotelera.gestion_hotelera.exception.ResourceNotFoundException;
+import com.gestionhotelera.gestion_hotelera.modelo.EstadoReserva;
+import com.gestionhotelera.gestion_hotelera.modelo.Habitacion;
+import com.gestionhotelera.gestion_hotelera.modelo.Reserva;
+import com.gestionhotelera.gestion_hotelera.repository.HabitacionRepository;
+import com.gestionhotelera.gestion_hotelera.repository.HuespedRepository;
+import com.gestionhotelera.gestion_hotelera.repository.ReservaRepository;
+
 import lombok.RequiredArgsConstructor;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -21,6 +32,7 @@ public class GestorReserva {
     private final HabitacionRepository habitacionRepository;
     private final ReservaRepository reservaRepository;
     private final HuespedRepository huespedRepository; 
+    //private final GestorHuesped gestorHuesped; // Para reutilizar lógica de búsqueda de huéspedes
 
     private void validarFechas(LocalDate desde, LocalDate hasta) {
         if (desde == null || hasta == null) throw new BadRequestException("Fechas nulas.");
