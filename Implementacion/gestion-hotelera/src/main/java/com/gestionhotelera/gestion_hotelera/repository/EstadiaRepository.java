@@ -11,10 +11,10 @@ import com.gestionhotelera.gestion_hotelera.modelo.Estadia;
 import com.gestionhotelera.gestion_hotelera.modelo.Habitacion;
 import java.util.Optional;
 import com.gestionhotelera.gestion_hotelera.modelo.EstadoEstadia;
-import com.gestionhotelera.gestion_hotelera.dto.EstadiaDTO; // Importa tu DTO para usarlo en el método de consulta
-import com.gestionhotelera.gestion_hotelera.modelo.Estadia; // Importa tu entidad para usarla en el método de consulta
-import com.gestionhotelera.gestion_hotelera.modelo.Habitacion; // Importa tu entidad para usarla en el método de consulta
-
+import com.gestionhotelera.gestion_hotelera.dto.EstadiaDTO; 
+import com.gestionhotelera.gestion_hotelera.modelo.Estadia; 
+import com.gestionhotelera.gestion_hotelera.modelo.Habitacion; 
+import com.gestionhotelera.gestion_hotelera.repository.EstadiaRepository;
 
 
 @Repository
@@ -25,7 +25,7 @@ public interface EstadiaRepository extends JpaRepository<Estadia, Long> {
         SELECT e FROM Estadia e 
         WHERE e.habitacion.id = :habitacionId 
         AND :dia BETWEEN e.fechaIngreso AND e.fechaEgreso 
-        AND e.estado = :estado
+        AND e.estado = :estado /*fijarse si compara bien y no hay que usar CAST o algo asi*/
     """)
     List<Estadia> encontrarEstadiasEnDia(@Param("habitacionId") Long habitacionId, @Param("dia") LocalDate dia, @Param("estado") EstadoEstadia estado);
 
@@ -61,10 +61,8 @@ public interface EstadiaRepository extends JpaRepository<Estadia, Long> {
     
     Optional<Estadia> findByHabitacionAndEstado(Habitacion habitacion, EstadoEstadia estado);
 
-    @Repository
-    public interface EstadiaRepository extends JpaRepository<Estadia, Long> {
-        @Query("SELECT e FROM Estadia e JOIN FETCH e.huespedes WHERE e.habitacion.numero = :numero AND e.fechaEgreso = :fechaEgreso AND e.estado = 0")
-        Optional<Estadia> buscarActivaPorHabitacionYFecha(@Param("numero") Integer numero, @Param("fechaEgreso") LocalDate fechaEgreso);
-    }
+    @Query("SELECT e FROM Estadia e JOIN FETCH e.huespedes WHERE e.habitacion.numero = :numero AND e.fechaEgreso = :fechaEgreso AND e.estado = 0")
+    Optional<Estadia> buscarActivaPorHabitacionYFecha(@Param("numero") Integer numero, @Param("fechaEgreso") LocalDate fechaEgreso);
+    
 
 }

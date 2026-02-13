@@ -1,4 +1,4 @@
-package com.gestionhotelera.gestion_hotelera.gestores;
+/*package com.gestionhotelera.gestion_hotelera.gestores;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +20,11 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import com.gestionhotelera.gestion_hotelera.gestores.strategy.RecargoCheckoutStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import com.gestionhotelera.gestion_hotelera.dto.FacturaDTO;
+import java.time.LocalDateTime;
+
+
 
 
 @Service
@@ -128,26 +133,14 @@ public class GestorFactura {
         Factura guardada = facturaRepository.save(factura);
 
         // 2. Marcar consumos como FACTURADOS para que no aparezcan de nuevo
-        if (itemsFacturadosIds != null && !itemsFacturadosIds.isEmpty()) {
+        /*if (itemsFacturadosIds != null && !itemsFacturadosIds.isEmpty()) {
             consumoRepository.marcarComoFacturados(itemsFacturadosIds, guardada.getId());
-        }
+        }*/
 
-        return guardada.getId();
-    }
+        //return guardada.getId();
+   // }
 
-3. El Controlador (FacturarController.java)
-Agregamos el @PostMapping para que React pueda enviar la factura final.
 
-Java
-
-@PostMapping("/generar")
-public ResponseEntity<Long> generarFactura(@RequestBody FacturaDTO facturaDto, 
-                                           @RequestParam Long estadiaId,
-                                           @RequestBody List<Long> itemsIds) {
-    Long id = gestorFactura.crearFactura(facturaDto, estadiaId, itemsIds);
-    return ResponseEntity.ok(id);
-}
-    
-}
+//}
     
 

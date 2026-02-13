@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import java.util.List;
 import com.gestionhotelera.gestion_hotelera.gestores.GestorPago;
 import lombok.*;
-
+import org.springframework.web.bind.annotation.PostMapping;
 
 
 
@@ -28,5 +28,15 @@ public class PagoController {
     public ResponseEntity<List<FacturaDTO>> obtenerFacturasPendientes(@PathVariable Integer nroHabitacion) {
         List<FacturaDTO> facturas = gestorPago.obtenerFacturasPendientes(nroHabitacion);
         return ResponseEntity.ok(facturas);
+    }
+
+    @PostMapping("pagar/{monto}/de/{idFactura}")
+    public ResponseEntity<String> pagar(@PathVariable Double monto, @PathVariable Long idFactura) {
+        try {
+            gestorPago.pagar(monto, idFactura);
+            return ResponseEntity.ok("Pago realizado con éxito");
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error al procesar el pago: " + e.getMessage());
+        }
     }
 }
