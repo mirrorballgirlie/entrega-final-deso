@@ -14,7 +14,6 @@ import com.gestionhotelera.gestion_hotelera.repository.DireccionRepository;
 import com.gestionhotelera.gestion_hotelera.repository.HuespedRepository;
 
 import lombok.RequiredArgsConstructor;
-import lombok.*;
 
 
 @Service
@@ -136,17 +135,30 @@ public class GestorHuesped {
         Huesped existente = huespedRepository.findById(id)
             .orElseThrow(() -> new RuntimeException("Huésped no encontrado con id: " + id));
 
-        // 2. Actualizamos Datos Personales
+        // 2. Verificamos si el documento ha cambiado y si el nuevo documento ya existe en otro huésped
+        if (!existente.getDocumento().equals(dto.getDocumento()) || 
+            !existente.getTipoDocumento().equals(dto.getTipoDocumento())) {
+            // El documento ha cambiado, verificar si ya existe otro huésped con este documento
+            Optional<Huesped> duplicado = findByTipoDocumentoAndDocumento(dto.getTipoDocumento(), dto.getDocumento());
+            if (duplicado.isPresent()) {
+                throw new IllegalArgumentException("El tipo y número de documento ya existe en el sistema.");
+            }
+        }
+
+        // 3. Actualizamos Datos Personales
         existente.setApellido(dto.getApellido());
         existente.setNombre(dto.getNombre()); 
+        existente.setTipoDocumento(dto.getTipoDocumento());
+        existente.setDocumento(dto.getDocumento());
         existente.setFechaNacimiento(dto.getFechaNacimiento());
         existente.setNacionalidad(dto.getNacionalidad());
         existente.setTelefono(dto.getTelefono());
         existente.setEmail(dto.getEmail());
         existente.setOcupacion(dto.getOcupacion());
         existente.setPosicionIVA(dto.getPosicionIVA());
+        existente.setCuit(dto.getCuit());
         
-        // 3. Actualizamos Dirección (Usando el sub-DTO)
+        // 4. Actualizamos Dirección (Usando el sub-DTO)
         DireccionDTO dirDto = dto.getDireccion(); 
         
         if (dirDto != null) {
@@ -166,7 +178,7 @@ public class GestorHuesped {
             existente.getDireccion().setDepartamento(dirDto.getDepartamento());
         }
 
-        // 4. Guardamos los cambios
+        // 5. Guardamos los cambios
         return huespedRepository.save(existente);
     }
 

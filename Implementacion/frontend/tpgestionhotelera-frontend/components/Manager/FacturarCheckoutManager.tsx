@@ -222,11 +222,23 @@ const handleCancel = () => {
       setEstadiaId(estadia.id);
 
       const resOcupantes = await fetch(
-        `http://localhost:8080/buscar-ocupantes?habitacion=${numero}&salida=${new Date().toISOString().split("T")[0]}` //segun chat esta url esta bien
+        `http://localhost:8080/api/facturas/buscar-ocupantes?habitacion=${numero}&salida=${new Date().toISOString().split("T")[0]}`
       );
 
+      if (!resOcupantes.ok) {
+        alert("Error al obtener ocupantes");
+        return;
+      }
+
       const dataOcupantes = await resOcupantes.json();
-      setOcupantes(dataOcupantes);
+      // Transformar HuespedDTO al formato Ocupante esperado
+      const ocupantesTransformados = dataOcupantes.map((h: any) => ({
+        id: h.id,
+        nombre: h.nombre + " " + h.apellido,
+        dni: h.documento,
+        edad: h.fechaNacimiento ? new Date().getFullYear() - new Date(h.fechaNacimiento).getFullYear() : 0
+      }));
+      setOcupantes(ocupantesTransformados);
       setMostrarGrilla(true);
 
     } catch {
@@ -329,7 +341,7 @@ const handleCancel = () => {
     }
   } else {
     const resMayor = await fetch(
-      `http://localhost:8080/verificar-mayor/${responsableSeleccionado.id}`
+      `http://localhost:8080/api/facturas/verificar-mayor/${responsableSeleccionado.id}`
     );
 
     const esMayor = await resMayor.json();
@@ -344,15 +356,16 @@ const handleCancel = () => {
 
     if (estadiaId) {
       const resValor = await fetch(
-        `http://localhost:8080/${estadiaId}/valor-estadia`
+        `http://localhost:8080/api/facturas/${estadiaId}/valor-estadia`
       );
       const valor = await resValor.json();
       setValorEstadia(valor);
 
       const resConsumos = await fetch(
-        `http://localhost:8080/${estadiaId}/items-pendientes`
+        `http://localhost:8080/api/facturas/${estadiaId}/items-pendientes`
       );
       const consumos = await resConsumos.json();
+      // ConsumoDTO ya tiene el formato correcto (id, nombre, cantidad, precio, subtotal)
       setConsumosReales(consumos);
     }
   }
@@ -401,9 +414,10 @@ const handleCancel = () => {
   const handleCUITAceptar = async () => {
     if (!razonSocial) {
       if (!cuitTercero.trim()) {
-        alert("Ingrese un CUIT válido");
+        // 5.C - Si CUIT vacío, debería ir a CU03 (Alta de Responsable)
+        // TODO: Implementar navegación a CU03 o modal de alta
+        alert("CUIT vacío. Debe crear un nuevoResponsable (CU03 - No implementado aún)");
         return;
-        //ACA EN REALIDAD SE DEBERIA IMPLEMENTAR EL LLAMADO A ALTA DE RESPONSABLE DE PAGO, PERO AUN NO ESTA IMPLEMENTADO
       }
 
       // MOCK
@@ -422,13 +436,22 @@ const handleCancel = () => {
         `http://localhost:8080/responsablesdepago?cuit=${cuitTercero}`
       );
 
+      if (!res.ok) {
+        alert("Error al buscar CUIT");
+        return;
+      }
+
       const data = await res.json();
       if (!data || data.length === 0) {
         alert("CUIT no encontrado");
         return;
       }
 
-      setRazonSocial(data[0].razonSocial);
+      // El servidor retorna ResponsableDePagoDTO con razón social
+      const razonSocial = data[0].personaJuridica?.nombreRazonSocial || 
+                          data[0].personaFisica?.nombreRazonSocial || 
+                          data[0].cuit;
+      setRazonSocial(razonSocial);
       return;
     }
 
@@ -691,7 +714,7 @@ if (!mostrarGrilla) {
               estadia={USE_MOCK ? facturaMock.estadia : valorEstadia}
               consumos={USE_MOCK ? consumosDisponiblesMock : consumosReales}
               //onAceptar={() => {
-              onAceptar={(hayItemsNoSeleccionados: boolean) => {
+              onAceptar={ async (hayItemsNoSeleccionados: boolean, estadiaSeleccionada: boolean, seleccionados: Record<number, boolean>) => {
 
 
                 if (hayItemsNoSeleccionados) {
@@ -700,11 +723,59 @@ if (!mostrarGrilla) {
                 setResponsableSeleccionado(null);
                 return; // vuelve al punto 4
                 }
-                // ✅ Flujo principal
-                // Acá debería ir el POST al backend para generar factura
-                alert("Factura confirmada ✔");
-                setMostrarModalFactura(false);
-                router.push("/home");
+                // ✅ Flujo principal - Generar factura
+                if (USE_MOCK) {
+                  alert("Factura confirmada ✔ (MOCK)");
+                  setMostrarModalFactura(false);
+                  router.push("/home");
+                } else {
+                  // Generar factura en el backend
+                  try {
+                    const generarRes = await fetch(
+                      `http://localhost:8080/api/facturas/generar`,
+                      {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                          estadiaId: estadiaId,
+                          //cuitResponsable: personaFactura.razonSocial ? cuitTercero : responsableSeleccionado?.dni,
+                          // cuitResponsable: personaFactura.razonSocial
+                          // ? cuitTercero
+                          // : typeof responsableSeleccionado === "object"
+                          // ? responsableSeleccionado.dni
+                          // : "",
+                          // cuitResponsable:
+                          // personaFactura.razonSocial
+                          // ? cuitTercero
+                          // : responsableSeleccionado
+                          // ? responsableSeleccionado.dni
+                          // : "",
+                          cuitResponsable:
+                        personaFactura.razonSocial
+                        ? cuitTercero
+                        : (responsableSeleccionado && responsableSeleccionado !== "TERCERO")
+                        ? responsableSeleccionado.dni
+                        : "",
+                        incluirEstadia: estadiaSeleccionada,
+                          idsConsumosSeleccionados: consumosReales
+                            .map((c: any, index: number) => seleccionados[c.id] ? c.id : null)
+                            .filter((id: any) => id !== null)
+                        })
+                      }
+                    );
+
+                    if (generarRes.ok) {
+                      alert("Factura generada correctamente ✔");
+                      setMostrarModalFactura(false);
+                      router.push("/home");
+                    } else {
+                      alert("Error al generar factura");
+                    }
+                  } catch (error) {
+                    console.error(error);
+                    alert("Error de conexión al generar factura");
+                  }
+                }
               }}
             />
           </div>

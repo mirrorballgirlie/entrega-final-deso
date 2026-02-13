@@ -28,7 +28,10 @@ type ListadoFacturaProps = {
   persona: Persona;
   estadia: number;               // monto de la estadía
   consumos?: Consumo[];
-  onAceptar: (hayItemsNoSeleccionados: boolean) => void;
+  onAceptar: (hayItemsNoSeleccionados: boolean,
+                estadiaSeleccionada: boolean,
+                seleccionados: Record<number, boolean>
+  ) => void;
 };
 
 
@@ -161,7 +164,7 @@ const hayItemsNoSeleccionados =
 
       <div className={styles.acciones}>
         <Button variant="contained"
-         onClick={() => onAceptar(hayItemsNoSeleccionados)}
+         onClick={() => onAceptar(hayItemsNoSeleccionados, estadiaSeleccionada, seleccionados)}
          >
           ACEPTAR
         </Button>

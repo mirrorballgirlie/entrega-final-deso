@@ -1,21 +1,28 @@
 package com.gestionhotelera.gestion_hotelera.controller;
 import java.time.LocalDate;
 import java.util.List;
+
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.gestionhotelera.gestion_hotelera.dto.HuespedDTO;
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import com.gestionhotelera.gestion_hotelera.gestores.GestorFactura;
-import org.springframework.web.bind.annotation.PathVariable;
-import java.util.stream.Collectors;
+
 import com.gestionhotelera.gestion_hotelera.dto.ConsumoDTO;
+import com.gestionhotelera.gestion_hotelera.dto.GenerarFacturaRequest;
+import com.gestionhotelera.gestion_hotelera.dto.HuespedDTO;
+import com.gestionhotelera.gestion_hotelera.gestores.GestorFactura;
+import com.gestionhotelera.gestion_hotelera.modelo.Factura;
+
+import lombok.RequiredArgsConstructor;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
+@RequestMapping("/api/facturas")
 @RequiredArgsConstructor
 
  
@@ -71,6 +78,12 @@ public class FacturarController {
 
         // 3. Retornamos el Neto Total
         return (valorEstadia != null ? valorEstadia : 0) + totalConsumos;
+    }
+
+    @PostMapping("/generar")
+    public ResponseEntity<Factura> generarFactura(@RequestBody GenerarFacturaRequest request) {
+        Factura factura = gestorFactura.generarFactura(request);
+        return ResponseEntity.ok(factura);
     }
     
 }

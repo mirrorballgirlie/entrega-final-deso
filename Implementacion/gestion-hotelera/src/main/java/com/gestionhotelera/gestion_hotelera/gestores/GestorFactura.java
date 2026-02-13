@@ -1,25 +1,31 @@
 package com.gestionhotelera.gestion_hotelera.gestores;
 import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
-import org.springframework.stereotype.Service;
-import com.gestionhotelera.gestion_hotelera.dto.HuespedDTO;
-import com.gestionhotelera.gestion_hotelera.modelo.Estadia;
-import com.gestionhotelera.gestion_hotelera.repository.EstadiaRepository;
-import lombok.RequiredArgsConstructor;
-import com.gestionhotelera.gestion_hotelera.exception.ResourceNotFoundException;
-import com.gestionhotelera.gestion_hotelera.repository.FacturaRepository;
-import java.util.Optional;
-import com.gestionhotelera.gestion_hotelera.modelo.Factura;
-import com.gestionhotelera.gestion_hotelera.repository.HuespedRepository;
-import com.gestionhotelera.gestion_hotelera.modelo.Huesped;
-import com.gestionhotelera.gestion_hotelera.dto.ConsumoDTO;
-import com.gestionhotelera.gestion_hotelera.modelo.Consumo;
-import com.gestionhotelera.gestion_hotelera.repository.ConsumoRepository;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.stereotype.Service;
+
+import com.gestionhotelera.gestion_hotelera.dto.ConsumoDTO;
+import com.gestionhotelera.gestion_hotelera.dto.GenerarFacturaRequest;
+import com.gestionhotelera.gestion_hotelera.dto.HuespedDTO;
+import com.gestionhotelera.gestion_hotelera.exception.ResourceNotFoundException;
 import com.gestionhotelera.gestion_hotelera.gestores.strategy.RecargoCheckoutStrategy;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.gestionhotelera.gestion_hotelera.modelo.Consumo;
+import com.gestionhotelera.gestion_hotelera.modelo.Estadia;
+import com.gestionhotelera.gestion_hotelera.modelo.Factura;
+import com.gestionhotelera.gestion_hotelera.modelo.Huesped;
+import com.gestionhotelera.gestion_hotelera.modelo.ResponsableDePago;
+import com.gestionhotelera.gestion_hotelera.modelo.TipoFactura;
+import com.gestionhotelera.gestion_hotelera.repository.ConsumoRepository;
+import com.gestionhotelera.gestion_hotelera.repository.EstadiaRepository;
+import com.gestionhotelera.gestion_hotelera.repository.FacturaRepository;
+import com.gestionhotelera.gestion_hotelera.repository.HuespedRepository;
+import com.gestionhotelera.gestion_hotelera.repository.ResponsableDePagoRepository;
+
+import lombok.RequiredArgsConstructor;
 
 
 @Service
@@ -33,6 +39,8 @@ public class GestorFactura {
     private final HuespedRepository huespedRepository;
     private final ConsumoRepository consumoRepository;
     private final RecargoCheckoutStrategy recargoStrategy;
+    private final FacturaRepository facturaRepository;
+    private final ResponsableDePagoRepository responsableRepository;
 
     public List<HuespedDTO> obtenerOcupantes(Integer numHab, LocalDate fechaSalida) {
     // 1. Buscamos la estadía activa para esa habitación y fecha
@@ -69,9 +77,11 @@ public class GestorFactura {
         
         return pendientes.stream().map(c -> {
             ConsumoDTO dto = new ConsumoDTO();
+            dto.setId(c.getId());
             dto.setNombre(c.getNombre());
             dto.setCantidad(c.getCantidad());
             dto.setPrecio(c.getPrecio());
+            dto.setSubtotal(c.getCantidad() * c.getPrecio()); // Calcular subtotal
             return dto;
         }).collect(Collectors.toList());
     }
@@ -107,7 +117,66 @@ public class GestorFactura {
 
         return valorEstadia + totalConsumos;
     }
+
+    public Factura generarFactura(GenerarFacturaRequest request) {
+        // Obtener estadia
+        Estadia estadia = estadiaRepository.findById(request.getEstadiaId())
+            .orElseThrow(() -> new ResourceNotFoundException("Estadía no encontrada"));
+
+        // Obtener responsable de pago por CUIT
+        ResponsableDePago responsable = responsableRepository.findByCuit(request.getCuitResponsable())
+            .orElseThrow(() -> new ResourceNotFoundException("Responsable no encontrado"));
+
+        // Calcular monto
+        double montoEstadia = request.isIncluirEstadia() ? obtenerValorEstadia(request.getEstadiaId()) : 0;
+        
+        // Obtener consumos seleccionados
+        List<Consumo> consumosSeleccionados = new ArrayList<>();
+        double montoConsumos = 0;
+        
+        if (request.getIdsConsumosSeleccionados() != null && !request.getIdsConsumosSeleccionados().isEmpty()) {
+            consumosSeleccionados = consumoRepository.findAllById(request.getIdsConsumosSeleccionados());
+            montoConsumos = consumosSeleccionados.stream()
+                .mapToDouble(c -> c.getCantidad() * c.getPrecio())
+                .sum();
+        }
+
+        double subtotal = montoEstadia + montoConsumos;
+        
+        // Determinar tipo de factura y calcular IVA
+        TipoFactura tipoFactura;
+        double iva = 0;
+        
+        // Suponemos que si es PersonaJuridica con condición RI, se aplica IVA
+        // Por ahora simplificamos: si responsable es de cierto tipo, etc.
+        // TODO: Verificar la condición fiscal del responsable
+        tipoFactura = TipoFactura.B; // Por defecto B
+        
+        double total = subtotal + iva;
+
+        // Crear factura
+        Factura factura = Factura.builder()
+            .estadia(estadia)
+            .responsableDePago(responsable)
+            .nombre(responsable.getCuit()) // O el nombre real
+            .tipo(tipoFactura)
+            .cuit(responsable.getCuit())
+            .monto(subtotal)
+            .iva(iva)
+            .total(total)
+            .build();
+
+        // Guardar factura
+        Factura facturaGuardada = facturaRepository.save(factura);
+
+        // Marcar consumos como facturados
+        if (!consumosSeleccionados.isEmpty()) {
+            consumosSeleccionados.forEach(c -> c.setFacturado(true));
+            consumoRepository.saveAll(consumosSeleccionados);
+        }
+
+        return facturaGuardada;
+    }
     
 }
-    
 

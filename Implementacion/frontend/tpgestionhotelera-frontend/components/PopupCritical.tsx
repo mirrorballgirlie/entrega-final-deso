@@ -4,16 +4,17 @@ import Button from "./Button";
 interface Props {
   // title: string;
   message: string;
-  primaryText: string;    
-  secondaryText: string;
-  onPrimary: () => void;  
-  onSecondary: () => void;
+  primaryText?: string;    
+  secondaryText?: string;
+  onPrimary?: () => void;  
+  onSecondary?: () => void;
+  hideButtons?: boolean;   // 👈 AGREGAR ESTO
   
   //onAccept: () => void;
   //onCancel: () => void;
 }
 
-export default function PopupCritical({ message, primaryText, secondaryText, onPrimary, onSecondary }: Props) {
+export default function PopupCritical({ message, primaryText, secondaryText, onPrimary, onSecondary, hideButtons }: Props) {
   return (
     
     <div style={{
@@ -70,7 +71,7 @@ export default function PopupCritical({ message, primaryText, secondaryText, onP
         }}>{message}</p>
       </div>
         
-        <div style={{
+        {/* <div style={{
           padding: "2rem",
           display:"flex",
           justifyContent:"space-between",
@@ -81,7 +82,19 @@ export default function PopupCritical({ message, primaryText, secondaryText, onP
         }}>
           <Button onClick={onPrimary} >{primaryText}</Button>
           <Button onClick={onSecondary}>{secondaryText}</Button >
-        </div>
+        </div> */}
+        {!hideButtons && primaryText && secondaryText && onPrimary && onSecondary && (
+        <div style={{
+        padding: "2rem",
+        display:"flex",
+        justifyContent:"space-between",
+        alignContent:"flex-end",
+      }}>
+    <Button onClick={onPrimary}>{primaryText}</Button>
+    <Button onClick={onSecondary}>{secondaryText}</Button>
+  </div>
+)}
+
         
       </main>
     </div>
