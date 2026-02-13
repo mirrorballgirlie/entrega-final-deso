@@ -5,13 +5,10 @@ import { useRouter } from "next/navigation";
 import FormularioFacturarCheckout from "@/components/Formularios/FormularioFacturarCheckout";
 import ListadoOcupantes, { Ocupante, SeleccionResponsable } from "@/components/Listados/ListadoOcupantes";
 import Button from "@/components/Button";
-<<<<<<< HEAD
-=======
 //import ListadoFactura, { hayItemsNoSeleccionados } from "@/components/Listados/ListadoFactura";
 import ListadoFactura from "@/components/Listados/ListadoFactura";
 
 const USE_MOCK = false; // 🔥 CAMBIAR A false PARA USAR BACKEND REAL
->>>>>>> develop-maria
 
 export default function FacturarCheckoutManager() {
   const router = useRouter();
@@ -36,12 +33,8 @@ export default function FacturarCheckoutManager() {
   const [mostrarFormularioResponsable, setMostrarFormularioResponsable] = useState(false);
   const [razonSocial, setRazonSocial] = useState<string | null>(null);
   const [flujo, setFlujo] = useState<'ocupantes' | 'cuit' | 'factura'>('ocupantes');
-<<<<<<< HEAD
-  const [ocupanteSeleccionado, setOcupanteSeleccionado] = useState<{requiereCuit: boolean; mayorEdad: boolean} | null>(null);;
-=======
   //const [ocupanteSeleccionado, setOcupanteSeleccionado] = useState(null);
   const [ocupanteSeleccionado, setOcupanteSeleccionado] = useState<Ocupante | null>(null);
->>>>>>> develop-maria
   const [personaFactura, setPersonaFactura] = useState<any>(null);
   const [mostrarModalFactura, setMostrarModalFactura] = useState(false);
 
@@ -118,50 +111,6 @@ const handleCancel = () => {
     return horaIngresada > ahora;
   };
 
-<<<<<<< HEAD
-  const handleSubmit = async (e: React.FormEvent<any>) => {
-  e.preventDefault();
-  // ... (tus validaciones de errores de habitación y hora)
-
-  try {
-    // Llamamos al controlador real
-    const params = new URLSearchParams({ 
-      habitacion: form.numeroHabitacion, 
-      salida: new Date().toISOString().split('T')[0] // Fecha de hoy o la que elijas
-    });
-
-    const response = await fetch(`http://localhost:8080/api/facturas/buscar-ocupantes?${params.toString()}`);
-    
-    if (!response.ok) throw new Error("No se encontraron ocupantes");
-
-    const datosReales = await response.json();
-    
-    setOcupantes(datosReales); // <--- ACÁ guardás los ocupantes que vienen de tu BDD
-    setMostrarGrilla(true);
-    setErrors({});
-  } catch (error) {
-    alert("Error: No se encontró una estadía activa para esa habitación.");
-  }
-};
-
-  const handleCancel = () => {
-    router.push("/home");
-  };
-
-//al aceptar ocupante
-  const handleAcceptOcupante = () => {
-    if(responsableSeleccionado === "TERCERO") { // es tercero
-    setErrorSeleccion("");
-    setMostrarModalFactura(false);
-    setMostrarInputCUIT(true); //muestra cuit tercero
-    return;
-    }
-    const ocupante = responsableSeleccionado;
-    if (ocupante ){ // //=! tercero
-        if(ocupante.edad < 18){
-        setErrorSeleccion("La persona seleccionada es menor de edad. Por favor elija otra.");
-        setResponsableSeleccionado(null);
-=======
   
 
   // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -246,7 +195,6 @@ const handleCancel = () => {
     if (USE_MOCK) {
       if (!habitacionesExistentes.includes(numero)) {
         alert("La habitación no existe");                    //simula que la habitacion exista
->>>>>>> develop-maria
         return;
       }
       if (habitacionesOcupadas.includes(numero)) {
@@ -254,20 +202,9 @@ const handleCancel = () => {
         return;
       }
 
-<<<<<<< HEAD
-        setPersonaFactura({
-            nombre: ocupante.nombre,
-            condicionIVA: "CF",
-        });
-
-        setErrorSeleccion("");
-        setMostrarInputCUIT(false);
-        setMostrarModalFactura(true);
-=======
       setOcupantes(ocupantesMock);         //cargar ocupantes fake y mostrar el listado
       setMostrarGrilla(true);
       return;
->>>>>>> develop-maria
     }
 
     // 🔴 MODO REAL BDD
@@ -514,36 +451,6 @@ const handleCancel = () => {
     }
   };
 
-<<<<<<< HEAD
-  const handleFacturaFinal = async (datosFactura: any, pendientes: boolean) => {
-    try {
-        const response = await fetch("http://localhost:8080/api/facturas/generar", {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(datosFactura)
-        });
-
-        if (response.ok) {
-            if (pendientes) {
-                // REQUERIMIENTO: si hay items no tildados vuelve a mostrar la grilla
-                alert("Factura parcial generada. Quedan ítems pendientes.");
-                setMostrarModalFactura(false);
-                setResponsableSeleccionado(null);
-                setRazonSocial(null);
-                // Aquí podrías volver a cargar los ocupantes/consumos actualizados
-            } else {
-                alert("Facturación completa");
-                router.push("/home");
-            }
-        }
-    } catch (error) {
-        console.error("Error al facturar", error);
-    }
-};
-
-//ui
-=======
->>>>>>> develop-maria
 
 //==========================================UI===========================================
 
@@ -799,131 +706,10 @@ if (!mostrarGrilla) {
                 setMostrarModalFactura(false);
                 router.push("/home");
               }}
-<<<<<<< HEAD
-            >
-              <label style={{
-                  display: "block",
-                  color: "black",
-                  marginBottom: "8px"
-                  }}
-              >
-              CUIT del tercero
-              </label>
-
-              <input
-                type="text"
-                value={cuitTercero}
-                onChange={(e) => setCuitTercero(e.target.value)}
-                placeholder="Ingrese CUIT"
-                style={{ width: "100%", color: "black" }}
-              />
-
-
-                {razonSocial && (
-                      <div
-                        style={{
-                          backgroundColor: "#eee",
-                          padding: "10px",
-                          borderRadius: "6px",
-                          color: "black",
-                          fontSize: "14px",
-                        }}
-                      >
-                        <strong>Razón social:</strong> {razonSocial}
-                      </div>
-                    )}
-
-
-              <div style={{
-                  marginTop: "10px",
-                  display: "flex",
-                  gap: "8px"
-                  }}
-              >
-                <Button type="button" onClick={handleCUITCancelar}>
-                  Cancelar
-                </Button>
-                <Button type="button" onClick={handleCUITAceptar}>
-                  Aceptar
-                </Button>
-              </div>
-            </div>
-          )
-      }
-
-     </ListadoOcupantes>
-
-       {mostrarModalFactura && personaFactura && (
-         <div
-           style={{
-             position: "fixed",
-             color: "black",
-             inset: 0,
-             backgroundColor: "rgba(0,0,0,0.5)",
-             display: "flex",
-             alignItems: "center",
-             justifyContent: "center",
-             zIndex: 1000,
-           }}
-         >
-           <div
-             style={{
-                 position: "relative",
-               backgroundColor: "white",
-               padding: "24px",
-               borderRadius: "12px",
-               width: "100%",
-               maxWidth: "600px",
-               maxHeight: "90vh",
-               overflowY: "auto",
-             }}
-           >
-            <button
-              onClick={() => setMostrarModalFactura(false)}
-              style={{
-                position: "absolute",
-                top: "12px",
-                right: "12px",
-                border: "none",
-                background: "transparent",
-                fontSize: "20px",
-                cursor: "pointer",
-                color: "#555",
-              }}
-              aria-label="Cerrar"
-            >
-               ✕
-            </button>
-
-             <ListadoFactura
-               persona={personaFactura}
-               estadia={facturaMock.estadia}
-               consumos={consumosDisponiblesMock}
-               cuitTercero={cuitTercero}
-               onAceptar={(hayItemsNoSeleccionados) => {
-                   if(hayItemsNoSeleccionados){
-                       setMostrarModalFactura(false);
-                       setResponsableSeleccionado(null);
-                       setRazonSocial(null);
-                       setCuitTercero("");
-                       return;}
-                 alert("Factura confirmada ✔");
-                 setMostrarModalFactura(false);
-                 router.push("/home");
-               }}
-             />
-
-           </div>
-         </div>
-       )}
-
-
-=======
             />
           </div>
         </div>
       )}
->>>>>>> develop-maria
     </div>
   );
 }

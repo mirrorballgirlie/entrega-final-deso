@@ -4,27 +4,6 @@ import React from "react";
 import Button from "@/components/Button";
 import styles from "./listadoFactura.module.css";
 
-<<<<<<< HEAD
-// 1. DEFINIR LA ESTRUCTURA DE LOS DATOS
-export interface Consumo {
-  id: string;
-  descripcion: string;
-  monto: number;
-}
-
-interface ListadoFacturaProps {
-  persona: {
-    nombre?: string;
-    razonSocial?: string;
-    condicionIVA: string;
-    cuit?: string;
-  };
-  estadia: number;
-  consumos: Consumo[];
-  onAceptar: (datosFactura: any, hayPendientes: boolean) => void;
-  cuitTercero?: string;
-}
-=======
 // -------------------------
 // TYPES PARA LISTADO FACTURA
 // -------------------------
@@ -58,21 +37,14 @@ type ListadoFacturaProps = {
 //   consumos = [],
 //   onAceptar
 // }) => {
->>>>>>> develop-maria
 
 const ListadoFactura = ({
   persona,
   estadia,
   consumos = [],
-<<<<<<< HEAD
-  onAceptar,
-  cuitTercero
-}: ListadoFacturaProps) => { 
-=======
   onAceptar
 }: ListadoFacturaProps) => {
 
->>>>>>> develop-maria
 
 const esResponsableInscripto = persona?.condicionIVA === "RI";
 const tipoFactura = esResponsableInscripto ? "A" : "B";

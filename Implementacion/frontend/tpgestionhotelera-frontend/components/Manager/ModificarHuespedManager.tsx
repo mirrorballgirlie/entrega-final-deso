@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import FormularioModificarHuesped from "@/components/Formularios/FormularioModificarHuesped";
 import PopupCritical from "@/components/PopupCritical";
 import Toast from "@/components/Toast";
+import { on } from "events";
 
 interface GuestData {
   id: number;
@@ -112,6 +113,14 @@ export default function ModificarHuespedManager({ huesped }: Props) {
     }, 1500);
   };
 
+  const onBlurSubmit = (e: React.FocusEvent) => {
+    const validationErrors = validateForm();
+    if (Object.keys(validationErrors).length > 0) {
+      setErrors(validationErrors);
+      return; // Flujo 2.A: errores de omisión
+    }
+  }
+
   //cancelar
   const handleCancel = () => setPopupCancel(true);
   const confirmCancel = () => {
@@ -189,10 +198,13 @@ export default function ModificarHuespedManager({ huesped }: Props) {
   return (
     <div>
       <FormularioModificarHuesped
+        huesped={form}
         form={form}
         errors={errors}
         onChange={handleChange}
         onChangeDireccion={handleChangeDireccion}
+        onBlur={onBlurSubmit}
+        onBlurDireccion={onBlurSubmit}
         onSubmit={handleSubmit}
         onCancel={handleCancel}
         onDelete={handleDeleteClick}
@@ -241,7 +253,7 @@ export default function ModificarHuespedManager({ huesped }: Props) {
       {popupCannotDelete && (
         <PopupCritical
           message="El huésped no puede ser eliminado pues se ha alojado en el Hotel en alguna oportunidad. PRESIONE CUALQUIER TECLA PARA CONTINUAR…"
-          hideButtons={true}
+          //hideButtons={true}
         />
       )}
       {popupAnyKey && (
