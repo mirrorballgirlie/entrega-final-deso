@@ -5,6 +5,7 @@ import FormularioModificarHuesped from "@/components/Formularios/FormularioModif
 import PopupCritical from "@/components/PopupCritical";
 import Toast from "@/components/Toast";
 import { on } from "events";
+import triggerToast from "@/components/Toast";
 
 interface GuestData {
   id: number;
@@ -45,6 +46,11 @@ export default function ModificarHuespedManager({ huesped }: Props) {
   const [popupDeleteConfirm, setPopupDeleteConfirm] = useState(false); // segundo popup confirmar eliminación real
   const [popupCannotDelete, setPopupCannotDelete] = useState(false); // huésped con historial
   const [popupAnyKey, setPopupAnyKey] = useState(false); // para “presione cualquier tecla”
+  const triggerToast = (msg: string, type: string) => {
+    setToastMsg(msg);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
 
   // --- HANDLERS ---
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
@@ -169,17 +175,40 @@ export default function ModificarHuespedManager({ huesped }: Props) {
   };
 
   const cancelDeleteStep1 = () => setPopupDelete(false);
-  const deleteGuest = () => {
-    setPopupDeleteConfirm(false);
-    setToastMsg(
-      `Los datos del huésped ${form.nombre} ${form.apellido}, ${form.tipoDocumento} ${form.documento} han sido eliminados del sistema`
-    );
-    setShowToast(true);
-    setTimeout(() => {
-      setShowToast(false);
-      router.push("/home");
-    }, 2000);
-  };
+
+  const deleteGuest = async () => {
+    try {
+        const base = process.env.NEXT_PUBLIC_API_BASE || "";
+        
+        const response = await fetch(`${base}/api/huespedes/baja/${form.id}`, {
+            method: 'DELETE',
+        });
+
+        if (response.ok) {
+            // 2. ÉXITO: Recién ahora hacemos la parte visual
+            setPopupDeleteConfirm(false);
+            setToastMsg(
+                `Los datos del huésped ${form.nombre} ${form.apellido} han sido eliminados del sistema`
+            );
+            setShowToast(true);
+
+            setTimeout(() => {
+                setShowToast(false);
+                router.push("/home");
+            }, 2000);
+        } else {
+            // 3. ERROR: Si el backend no pudo eliminar
+            const errorMsg = await response.text();
+            //mensaje de que no se pudo eliminar
+            triggerToast(errorMsg || "No se pudo eliminar al huésped", "error");
+            setPopupDeleteConfirm(false);
+        }
+    } catch (error) {
+        triggerToast("Error de conexión con el servidor", "error");
+    }
+};
+
+
   const cancelDeleteConfirm = () => {
     setPopupDeleteConfirm(false);
     router.push("/home");
