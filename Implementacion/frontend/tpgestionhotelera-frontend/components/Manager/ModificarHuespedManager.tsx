@@ -153,11 +153,15 @@ export default function ModificarHuespedManager({ huesped }: Props) {
   //borrar
   const handleDeleteClick = () => setPopupDelete(true); // abre primer popup
 
-  const confirmDeleteStep1 = () => {
+  const confirmDeleteStep1 = async () => {
     setPopupDelete(false);
 
-    const hospedadoAntes = false; //hardcodeado para probar!!!
-    if (hospedadoAntes) {
+
+    const base = process.env.NEXT_PUBLIC_API_BASE || "";
+    const hospedadoAntes = await fetch(`${base}/api/huespedes/existe/${form.id}`, {
+      method: 'GET',
+    });
+    if (hospedadoAntes.ok) {
       setPopupCannotDelete(true);
     } else {
       setPopupDeleteConfirm(true);

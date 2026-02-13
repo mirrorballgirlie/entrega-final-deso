@@ -22,6 +22,10 @@ import org.springframework.web.bind.annotation.RestController;
 import com.gestionhotelera.gestion_hotelera.dto.HuespedDTO;
 import com.gestionhotelera.gestion_hotelera.gestores.GestorHuesped;
 import com.gestionhotelera.gestion_hotelera.modelo.Huesped;
+import com.gestionhotelera.gestion_hotelera.gestores.GestorEstadia_Huesped;
+import com.gestionhotelera.gestion_hotelera.modelo.Estadia_Huesped;
+import com.gestionhotelera.gestion_hotelera.modelo.Estadia;
+import com.gestionhotelera.gestion_hotelera.modelo.Huesped;
 
 import jakarta.validation.Valid;
 
@@ -210,6 +214,17 @@ public ResponseEntity<?> eliminarHuesped(@PathVariable Long id) {
     }
 }
 
+    private GestorEstadia_Huesped gestorEstadia_Huesped;
+
+    @GetMapping("/huesped-previo/{id}")
+    public ResponseEntity<?> existeHuespedPrevio(@PathVariable Long id) {
+        try {
+            gestorEstadia_Huesped.verificarHuespedPrevio(id);
+            return ResponseEntity.ok(true);
+        } catch (Exception e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 }
 
