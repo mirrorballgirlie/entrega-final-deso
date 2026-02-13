@@ -72,5 +72,13 @@ public class FacturarController {
         // 3. Retornamos el Neto Total
         return (valorEstadia != null ? valorEstadia : 0) + totalConsumos;
     }
+
+    @PostMapping("/generar")
+public ResponseEntity<Long> generarFactura(@RequestBody FacturaDTO facturaDto, 
+                                           @RequestParam Long estadiaId,
+                                           @RequestBody List<Long> itemsIds) {
+    Long id = gestorFactura.crearFactura(facturaDto, estadiaId, itemsIds);
+    return ResponseEntity.ok(id);
+}
     
 }

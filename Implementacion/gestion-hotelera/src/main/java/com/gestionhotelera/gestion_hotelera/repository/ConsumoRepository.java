@@ -11,8 +11,13 @@ import org.springframework.data.repository.query.Param;
 @Repository
 public interface ConsumoRepository extends JpaRepository<Consumo, Long> {
 
-    @Query("SELECT c FROM Consumo c WHERE c.estadia.id = :estadiaId AND c.facturado = false")
-        List<Consumo> findPendientesByEstadiaId(@Param("estadiaId") Long estadiaId);
+    @Query("SELECT c FROM Consumo c WHERE c.estadia.id = :estadiaId AND c.factura IS NULL")
+    List<Consumo> findPendientesByEstadiaId(@Param("estadiaId") Long estadiaId);
+
+    @Modifying
+    @Transactional
+    @Query("UPDATE Consumo c SET c.factura.id = :facturaId WHERE c.id IN :ids")
+    void marcarComoFacturados(@Param("ids") List<Long> ids, @Param("facturaId") Long facturaId);
 
 }
 
