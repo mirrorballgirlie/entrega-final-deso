@@ -6,6 +6,7 @@ import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.gestionhotelera.gestion_hotelera.modelo.EstadoHabitacion;
 
 @Data
 @NoArgsConstructor
@@ -19,7 +20,7 @@ public class HabitacionEstadoDTO {
     private int capacidad;
     private double precio;
     private String descripcion;
-    private String estadoActual;
+    private EstadoHabitacion estadoActual;
     private List<EstadoDiarioDTO> estadosPorDia = new ArrayList<>();
 
     //se agrega este dto para poder simplificar la respuesta en el front para el cu5, sino hay muchos atributos que quedarian en null

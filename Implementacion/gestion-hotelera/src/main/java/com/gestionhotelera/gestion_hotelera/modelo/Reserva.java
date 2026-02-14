@@ -21,7 +21,7 @@ public class Reserva {
         
     private int numero;
 
-    @Enumerated(EnumType.ORDINAL) // 0=ACTIVA, 1=CANCELADA
+    
     private EstadoReserva estado;
     
     private LocalDate fechaDesde;

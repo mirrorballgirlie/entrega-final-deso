@@ -24,9 +24,6 @@ import lombok.experimental.SuperBuilder;
 public class NotaCredito extends MetodoDePago{
 
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
 
     private int numero;

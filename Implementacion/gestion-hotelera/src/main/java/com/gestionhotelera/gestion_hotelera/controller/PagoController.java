@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 public class PagoController {
     private final GestorPago gestorPago;
 
-    @GetMapping("/{nroHabitacion}/facturas-pendientes")
+    @GetMapping("/facturas-pendiente/{nroHabitacion}")
     public ResponseEntity<List<FacturaDTO>> obtenerFacturasPendientes(@PathVariable Integer nroHabitacion) {
         List<FacturaDTO> facturas = gestorPago.obtenerFacturasPendientes(nroHabitacion);
         return ResponseEntity.ok(facturas);

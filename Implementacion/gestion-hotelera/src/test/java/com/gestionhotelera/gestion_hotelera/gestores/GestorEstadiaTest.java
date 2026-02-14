@@ -35,6 +35,7 @@ import com.gestionhotelera.gestion_hotelera.repository.EstadiaRepository;
 import com.gestionhotelera.gestion_hotelera.repository.HabitacionRepository;
 import com.gestionhotelera.gestion_hotelera.repository.HuespedRepository;
 import com.gestionhotelera.gestion_hotelera.repository.ReservaRepository;
+import com.gestionhotelera.gestion_hotelera.modelo.EstadoHabitacion;
 
 @ExtendWith(MockitoExtension.class)
 class GestorEstadiaTest {
@@ -59,7 +60,7 @@ class GestorEstadiaTest {
         habitacion = new Habitacion();
         habitacion.setId(1L);
         habitacion.setNumero(101);
-        habitacion.setEstado("DISPONIBLE");
+        habitacion.setEstado(EstadoHabitacion.DISPONIBLE);
 
         habitacionDTO = new HabitacionOcupacionDTO();
         habitacionDTO.setHabitacionId(1L);
@@ -91,7 +92,7 @@ class GestorEstadiaTest {
 
     @Test
     void validarOcupacion_habitacionEnMantenimiento() {
-        habitacion.setEstado("MANTENIMIENTO");
+        habitacion.setEstado(EstadoHabitacion.MANTENIMIENTO);
         when(habitacionRepository.findById(1L)).thenReturn(Optional.of(habitacion));
 
         ValidarOcupacionRequest req = new ValidarOcupacionRequest(List.of(habitacionDTO));
@@ -170,7 +171,7 @@ class GestorEstadiaTest {
 
     @Test
     void ocuparHabitaciones_habitacionEnMantenimiento() {
-        habitacion.setEstado("MANTENIMIENTO");
+        habitacion.setEstado(EstadoHabitacion.MANTENIMIENTO);
 
         //when(huespedRepository.findAllById(List.of(1L))).thenReturn(List.of(new Huesped(1L)));
 

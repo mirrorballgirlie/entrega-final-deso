@@ -20,6 +20,7 @@ import com.gestionhotelera.gestion_hotelera.repository.EstadiaRepository;
 import com.gestionhotelera.gestion_hotelera.repository.HabitacionRepository;
 import com.gestionhotelera.gestion_hotelera.repository.ReservaRepository;
 import com.gestionhotelera.gestion_hotelera.modelo.EstadoEstadia;
+import com.gestionhotelera.gestion_hotelera.modelo.EstadoHabitacion;
 
 import lombok.RequiredArgsConstructor;
 import lombok.*;
@@ -43,18 +44,18 @@ public class GestorHabitacion {
 
         return habitaciones.stream().peek(h -> {
             // 1. PRIORIDAD: MANTENIMIENTO (Leemos directo de la DB)
-            String estadoFisico = h.getEstado();
+            EstadoHabitacion estadoFisico = h.getEstado();
             
             // CORRECCIÓN 1: Limpieza de estados no usados
-            if ("MANTENIMIENTO".equalsIgnoreCase(estadoFisico)) {
-                h.setEstado("MANTENIMIENTO");
+            if (estadoFisico == EstadoHabitacion.MANTENIMIENTO) {
+                h.setEstado(EstadoHabitacion.MANTENIMIENTO);
                 return; // Si está en mantenimiento, no buscamos reservas ni estadías
             }
 
             // 2. PRIORIDAD: OCUPADA (Calculado)
             boolean ocupada = dias.stream().anyMatch(d -> safeBoolean(estadiaRepository.existeEstadiaEnDia(h.getId(), d)));
             if (ocupada) {
-                h.setEstado("OCUPADA");
+                h.setEstado(EstadoHabitacion.OCUPADA);
                 return;
             }
 
@@ -62,12 +63,12 @@ public class GestorHabitacion {
             // CORRECCIÓN 2: Agregamos EstadoReserva.ACTIVA para que coincida con el Repository
             boolean reservada = dias.stream().anyMatch(d -> safeBoolean(reservaRepository.existeReservaEnDia(h.getId(), d, EstadoReserva.ACTIVA)));
             if (reservada) {
-                h.setEstado("RESERVADA");
+                h.setEstado(EstadoHabitacion.RESERVADA);
                 return;
             }
 
             // 4. DEFECTO: DISPONIBLE
-            h.setEstado("DISPONIBLE");
+            h.setEstado(EstadoHabitacion.DISPONIBLE);
 
         }).collect(Collectors.toList());
     }
@@ -75,7 +76,7 @@ public class GestorHabitacion {
     public List<Habitacion> buscarDisponibles(LocalDate desde, LocalDate hasta) {
         // Reutilizamos la lógica anterior
         return mostrarEstadoEntreFechas(desde, hasta).stream()
-                .filter(h -> "DISPONIBLE".equalsIgnoreCase(h.getEstado()))
+                .filter(h -> h.getEstado() == EstadoHabitacion.DISPONIBLE)
                 .collect(Collectors.toList());
     }
 
@@ -84,7 +85,7 @@ public class GestorHabitacion {
                 .orElseThrow(() -> new ResourceNotFoundException("Habitación no encontrada con id: " + idHabitacion));
         
         // Aquí solo deberíamos permitir poner "DISPONIBLE" o "MANTENIMIENTO"
-        hab.setEstado(nuevoEstado); 
+        hab.setEstado(EstadoHabitacion.valueOf(nuevoEstado)); 
         return habitacionRepository.save(hab);
     }
 
@@ -129,10 +130,10 @@ public class GestorHabitacion {
 
         // 1. PRIORIDAD: MANTENIMIENTO (Estado Físico en BD)
         // Solo verificamos "MANTENIMIENTO". Ignoramos cualquier otro estado antiguo.
-        String estadoFisico = hab.getEstado();
+        EstadoHabitacion estadoFisico = hab.getEstado();
         
-        if ("MANTENIMIENTO".equalsIgnoreCase(estadoFisico)) {
-            detalle.setEstado("MANTENIMIENTO");
+        if (estadoFisico == EstadoHabitacion.MANTENIMIENTO) {
+            detalle.setEstado(EstadoHabitacion.MANTENIMIENTO);
             detalle.setReservadoPor("Mantenimiento"); 
             return detalle;
         }
@@ -141,7 +142,7 @@ public class GestorHabitacion {
         List<Estadia> estadias = estadiaRepository.encontrarEstadiasEnDia(hab.getId(), dia, EstadoEstadia.ACTIVA);
         if (!estadias.isEmpty()) {
             Estadia est = estadias.get(0);
-            detalle.setEstado("OCUPADA");
+            detalle.setEstado(EstadoHabitacion.OCUPADA);
             
             // Lógica para mostrar quién ocupa
             if (est.getReserva() != null) {
@@ -162,7 +163,7 @@ public class GestorHabitacion {
         List<Reserva> reservas = reservaRepository.encontrarReservasEnDia(hab.getId(), dia, EstadoReserva.ACTIVA);
         if (!reservas.isEmpty()) {
             Reserva res = reservas.get(0);
-            detalle.setEstado("RESERVADA");
+            detalle.setEstado(EstadoHabitacion.RESERVADA);
             
             // Lógica para mostrar quién reservó
             detalle.setReservadoPor(res.getNombre() + " " + res.getApellido());
@@ -175,7 +176,7 @@ public class GestorHabitacion {
         }
 
         // 4. DISPONIBLE (Defecto)
-        detalle.setEstado("DISPONIBLE");
+        detalle.setEstado(EstadoHabitacion.DISPONIBLE);
         return detalle;
     }
 

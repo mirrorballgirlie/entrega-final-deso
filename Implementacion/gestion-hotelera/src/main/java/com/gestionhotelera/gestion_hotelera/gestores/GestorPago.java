@@ -20,7 +20,6 @@ public class GestorPago {
         
         return facturaRepository.findFacturasPendientesByNroHabitacionyEstado(nroHabitacion, EstadoFactura.NO_PAGO)
                 .stream()
-                
                 .map(f -> {
                         FacturaDTO dto = new FacturaDTO();
                         dto.setId(f.getId());

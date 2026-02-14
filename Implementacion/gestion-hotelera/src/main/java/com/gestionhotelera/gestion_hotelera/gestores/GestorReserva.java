@@ -21,6 +21,7 @@ import com.gestionhotelera.gestion_hotelera.modelo.Reserva;
 import com.gestionhotelera.gestion_hotelera.repository.HabitacionRepository;
 import com.gestionhotelera.gestion_hotelera.repository.HuespedRepository;
 import com.gestionhotelera.gestion_hotelera.repository.ReservaRepository;
+import com.gestionhotelera.gestion_hotelera.modelo.EstadoHabitacion;
 
 import lombok.RequiredArgsConstructor;
 
@@ -56,7 +57,7 @@ public ValidarSeleccionResponse validarSeleccion(ValidarSeleccionRequest req) {
             continue;
         }
 
-        if ("MANTENIMIENTO".equalsIgnoreCase(h.getEstado()) || "FUERA_SERVICIO".equalsIgnoreCase(h.getEstado())) {
+        if (EstadoHabitacion.MANTENIMIENTO.equals(h.getEstado()) || EstadoHabitacion.MANTENIMIENTO.equals(h.getEstado())) {
             mensajes.add("La habitación " + h.getNumero() + " no está disponible.");
             continue;
         }
@@ -123,7 +124,7 @@ public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
         
         
         // 4. Cambiar el estado de la Habitación
-        hab.setEstado("RESERVADA");
+        hab.setEstado(EstadoHabitacion.RESERVADA);
 
         // 5. Persistir cambios
         habitacionRepository.save(hab);

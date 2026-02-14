@@ -25,7 +25,7 @@ public interface EstadiaRepository extends JpaRepository<Estadia, Long> {
         SELECT e FROM Estadia e 
         WHERE e.habitacion.id = :habitacionId 
         AND :dia BETWEEN e.fechaIngreso AND e.fechaEgreso 
-        AND e.estado = :estado /*fijarse si compara bien y no hay que usar CAST o algo asi*/
+        AND e.estado = :estado 
     """)
     List<Estadia> encontrarEstadiasEnDia(@Param("habitacionId") Long habitacionId, @Param("dia") LocalDate dia, @Param("estado") EstadoEstadia estado);
 
@@ -54,14 +54,14 @@ public interface EstadiaRepository extends JpaRepository<Estadia, Long> {
         JOIN e.habitacion h
         WHERE h.numero = :numero
         AND e.fechaEgreso = :fechaEgreso
-        AND h.estado = 'OCUPADA'
+        AND h.estado = EstadoHabitacion.OCUPADA
         AND e.estado = EstadoEstadia.ACTIVA
     """)
     List<Estadia> buscarEstadiaPorHabitacionYSalida(@Param("numero") Integer numero, @Param("fechaEgreso") LocalDate fechaEgreso);
     
     Optional<Estadia> findByHabitacionAndEstado(Habitacion habitacion, EstadoEstadia estado);
 
-    @Query("SELECT e FROM Estadia e JOIN FETCH e.huespedes WHERE e.habitacion.numero = :numero AND e.fechaEgreso = :fechaEgreso AND e.estado = 0")
+    @Query("SELECT e FROM Estadia e JOIN FETCH e.huespedes WHERE e.habitacion.numero = :numero AND e.fechaEgreso = :fechaEgreso AND e.estado = EstadoEstadia.ACTIVA")
     Optional<Estadia> buscarActivaPorHabitacionYFecha(@Param("numero") Integer numero, @Param("fechaEgreso") LocalDate fechaEgreso);
     
     

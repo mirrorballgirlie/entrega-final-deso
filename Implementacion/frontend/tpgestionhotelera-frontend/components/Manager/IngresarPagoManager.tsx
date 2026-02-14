@@ -21,31 +21,12 @@ export default function IngresarPagoManager() {
       setError("Número de habitación faltante");
       return;
     }
-        //hardcodeando una factura para ver el front
-        const facturasDePrueba = [
-              {
-                id: 1,
-                numeroFactura: "0001-00004582",
-                nombreResponsable: "Juan Pérez",
-                total: 15000,
-                habitacion: nroHabitacion
-              },
-              {
-                id: 2,
-                numeroFactura: "0001-00004583",
-                nombreResponsable: "Marta Gómez",
-                total: 8500,
-                habitacion: nroHabitacion
-              }
-            ];
-        console.log("Modo prueba: Saltando fetch real");
-        setFacturas(facturasDePrueba);
-        setError("");
-        setStep(2);
-        // hay q borrar esto ^^
+       
     try {
       //simulo api
-      const res = await fetch(`http://localhost:8080/api/facturas/pendiente/${nroHabitacion}`);
+      const base = process.env.NEXT_PUBLIC_API_BASE || "";
+      const res = await fetch(`${base}/api/pago/facturas-pendiente/${nroHabitacion}`);
+      
       if (!res.ok) throw new Error();
       const data = await res.json();
 

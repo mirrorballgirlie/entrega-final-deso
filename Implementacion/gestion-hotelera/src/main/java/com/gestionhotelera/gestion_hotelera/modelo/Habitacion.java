@@ -19,6 +19,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString; // <--- Recomendado para evitar errores en logs
+import com.gestionhotelera.gestion_hotelera.modelo.EstadoHabitacion;
 
 @Data
 @NoArgsConstructor
@@ -34,14 +35,14 @@ public class Habitacion {
 
     private int numero;
 
-    @Enumerated(EnumType.ORDINAL)
+    
     
     private TipoHabitacion tipo;
     
     private int capacidad;
     private double precio;
     private String descripcion;
-    private String estado;
+    private EstadoHabitacion estado;
     private TipoHabitacion tipoHabitacion;
 
     // --- CAMBIO PRINCIPAL AQUÍ ---

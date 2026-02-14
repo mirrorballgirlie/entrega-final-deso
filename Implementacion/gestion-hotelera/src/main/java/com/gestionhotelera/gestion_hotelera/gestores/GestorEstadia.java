@@ -33,6 +33,7 @@ import com.gestionhotelera.gestion_hotelera.repository.ReservaRepository;
 import com.gestionhotelera.gestion_hotelera.dto.EstadiaDTO;
 import com.gestionhotelera.gestion_hotelera.modelo.EstadoEstadia; 
 import java.util.Optional;
+import com.gestionhotelera.gestion_hotelera.modelo.EstadoHabitacion;
 
 
 import lombok.RequiredArgsConstructor;
@@ -92,10 +93,10 @@ public class GestorEstadia {
                 // Solo nos importa si está rota/en mantenimiento.
                 // Si dice "OCUPADA" o "RESERVADA" en la DB estática, lo ignoramos,
                 // porque la verdadera validación se hace por fechas más abajo.
-                String estado = h.getEstado();
-                if (estado == null) estado = "DISPONIBLE";
+                EstadoHabitacion estado = h.getEstado();
+                if (estado == null) estado = EstadoHabitacion.DISPONIBLE;
 
-                if ("MANTENIMIENTO".equalsIgnoreCase(estado)) {
+                if (estado == EstadoHabitacion.MANTENIMIENTO) {
                     errores.add("Habitación " + h.getNumero() + " está inhabilitada por mantenimiento.");
                     continue;
                 }
@@ -183,10 +184,10 @@ public class GestorEstadia {
 
                 // --- CORRECCIÓN 2: VALIDACIÓN FÍSICA ---
                 // Solo lanzamos error si la habitación está rota (MANTENIMIENTO).
-                String estado = h.getEstado();
-                if (estado == null) estado = "DISPONIBLE";
+                EstadoHabitacion estado = h.getEstado();
+                if (estado == null) estado = EstadoHabitacion.DISPONIBLE;
                 
-                if ("MANTENIMIENTO".equalsIgnoreCase(estado)) {
+                if (estado == EstadoHabitacion.MANTENIMIENTO) {
                     throw new BadRequestException("Habitación " + h.getNumero() + " está en MANTENIMIENTO y no puede ocuparse.");
                 }
 
@@ -231,7 +232,7 @@ public class GestorEstadia {
                 }
 
             
-                 h.setEstado("OCUPADA"); 
+                 h.setEstado(EstadoHabitacion.OCUPADA); 
                  habitacionRepository.save(h); 
                 
                 

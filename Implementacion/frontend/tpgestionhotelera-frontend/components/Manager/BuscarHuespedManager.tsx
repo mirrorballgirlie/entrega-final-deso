@@ -18,7 +18,7 @@ export default function BuscarHuespedManager({ mode }: Props) {
   
   const [form, setForm] = useState({
     apellido: "",
-    nombre: "", // Ojo: en tu form original usabas "nombres" o "nombre"? Unifiqué a nombre
+    nombre: "", 
     tipoDocumento: "",
     documento: ""
   });
@@ -94,6 +94,7 @@ const handleSearchSubmit = async (e: React.FormEvent) => {
           onSelectionComplete={(huespedes) => handleSelectHuesped(huespedes[0])}
         />
       )}
+      
      {step === 3 && selectedHuesped && (
          <ModificarHuespedManager huesped = {selectedHuesped} />
          )}
