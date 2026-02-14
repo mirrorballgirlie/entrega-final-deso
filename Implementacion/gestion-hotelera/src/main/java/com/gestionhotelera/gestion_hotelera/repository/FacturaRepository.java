@@ -7,6 +7,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import com.gestionhotelera.gestion_hotelera.modelo.Estadia;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import com.gestionhotelera.gestion_hotelera.modelo.EstadoEstadia;
 
@@ -21,6 +22,8 @@ Optional<Estadia> buscarEstadiaPorHabitacionYSalida(
     @Param("numero") Integer numero, 
     @Param("fechaEgreso") LocalDate fechaEgreso
 );
+
+    List<Factura> findAllByCuit(String cuit);
 
 }
 

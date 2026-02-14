@@ -1,4 +1,6 @@
 package com.gestionhotelera.gestion_hotelera.dto;
+import java.time.LocalDateTime;
+
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -15,5 +17,6 @@ public class NotaCreditoDTO extends MetodoDePagoDTO {
     private double monto;
     private double iva;
     private double total;
+    private LocalDateTime fechaEmision;
 
 }

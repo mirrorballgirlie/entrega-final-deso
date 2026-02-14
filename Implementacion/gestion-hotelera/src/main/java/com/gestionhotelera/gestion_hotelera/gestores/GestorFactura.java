@@ -1,9 +1,11 @@
 package com.gestionhotelera.gestion_hotelera.gestores;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import com.gestionhotelera.gestion_hotelera.dto.HuespedDTO;
+import com.gestionhotelera.gestion_hotelera.dto.NotaCreditoDTO;
 import com.gestionhotelera.gestion_hotelera.modelo.Estadia;
 import com.gestionhotelera.gestion_hotelera.repository.EstadiaRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,8 +14,12 @@ import com.gestionhotelera.gestion_hotelera.repository.FacturaRepository;
 import java.util.Optional;
 import com.gestionhotelera.gestion_hotelera.modelo.Factura;
 import com.gestionhotelera.gestion_hotelera.repository.HuespedRepository;
+import com.gestionhotelera.gestion_hotelera.repository.NotaCreditoRepository;
+import com.gestionhotelera.gestion_hotelera.repository.PagoRepository;
 import com.gestionhotelera.gestion_hotelera.modelo.Huesped;
+import com.gestionhotelera.gestion_hotelera.modelo.NotaCredito;
 import com.gestionhotelera.gestion_hotelera.dto.ConsumoDTO;
+import com.gestionhotelera.gestion_hotelera.dto.FacturaDTO;
 import com.gestionhotelera.gestion_hotelera.modelo.Consumo;
 import com.gestionhotelera.gestion_hotelera.repository.ConsumoRepository;
 import java.time.LocalTime;
@@ -29,10 +35,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class GestorFactura {
 
+    private final FacturaRepository facturaRepository;
     private final EstadiaRepository estadiaRepository;
     private final HuespedRepository huespedRepository;
     private final ConsumoRepository consumoRepository;
     private final RecargoCheckoutStrategy recargoStrategy;
+    private final NotaCreditoRepository notaCreditoRepository;
+    private final PagoRepository pagoRepository;
 
     public List<HuespedDTO> obtenerOcupantes(Integer numHab, LocalDate fechaSalida) {
     // 1. Buscamos la estadía activa para esa habitación y fecha
@@ -107,7 +116,79 @@ public class GestorFactura {
 
         return valorEstadia + totalConsumos;
     }
+
+    public List<FacturaDTO> obtenerPendientesByCuit(String cuit) {
+        // Buscamos las facturas para el CUIT dado
+        List<Factura> facturas = facturaRepository.findAllByCuit(cuit);
+        
+        
+
+        //Filtramos solo las facturas que estén pendientes (esto depende de cómo se maneje el estado de la factura, aquí asumimos que el monto pendiente es mayor a 0)
+        List<Factura> facturasPendientes = facturas.stream()
+                .filter(f -> !pagoRepository.existsByFacturaId(f.getId()))
+                .collect(Collectors.toList());
+
+        List<FacturaDTO> facturasPendientesDTO = facturasPendientes.stream().map(f -> {
+            FacturaDTO dto = new FacturaDTO();
+            dto.setId(f.getId());
+            dto.setCuit(f.getCuit());
+            dto.setMonto(f.getMonto());
+            dto.setFechaEmision(f.getFechaEmision());
+            return dto;
+        }).collect(Collectors.toList());
+
+        return facturasPendientesDTO;
+    }
     
+    public NotaCreditoDTO generarNotaCredito(List<Long> facturasIds) {
+        // Aquí iría la lógica para generar la nota de crédito a partir de las facturas
+        // Esto podría incluir cálculos, validaciones, etc.
+        // Por simplicidad, vamos a devolver una nota de crédito con un monto fijo
+
+
+
+        List<Factura> facturas = List.of(); // Inicializamos con una lista vacía
+        
+        
+        // Si se proporcionan IDs de facturas, las buscamos en la base de datos
+        if (facturasIds != null && !facturasIds.isEmpty()) {
+            facturas = facturaRepository.findAllById(facturasIds);
+        }
+
+        NotaCredito notaCredito = new NotaCredito();
+
+        // Calculamos los valores de la nota de crédito sumando los valores de las facturas
+        double monto = facturas.stream()
+                .mapToDouble(Factura::getMonto)
+                .sum();
+        
+        double ivaTotal = facturas.stream()
+                .mapToDouble(Factura::getIva)
+                .sum();
+                
+        double total = facturas.stream()
+                .mapToDouble(Factura::getTotal)
+                .sum();
+        
+        // Configuramos la nota de crédito con los valores calculados
+        notaCredito.setMonto(monto);
+        notaCredito.setIva(ivaTotal);
+        notaCredito.setTotal(total);
+        notaCredito.setFechaEmision(LocalDateTime.now());
+        notaCredito.setFacturas(facturas);
+
+        //Guardamos la nota de crédito en la base de datos
+        notaCreditoRepository.save(notaCredito);
+
+        // Mapeamos la nota de crédito a un DTO para enviar al Front
+        NotaCreditoDTO notaCreditoDTO = new NotaCreditoDTO();
+        notaCreditoDTO.setMonto(notaCredito.getMonto());
+        notaCreditoDTO.setFechaEmision(notaCredito.getFechaEmision());
+        notaCreditoDTO.setIva(notaCredito.getIva());
+        notaCreditoDTO.setTotal(notaCredito.getTotal());
+
+        return notaCreditoDTO;
+    }
 }
     
 
