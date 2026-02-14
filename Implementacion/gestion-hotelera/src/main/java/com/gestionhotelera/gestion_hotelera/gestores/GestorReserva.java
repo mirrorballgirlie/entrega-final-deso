@@ -123,7 +123,7 @@ public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
         
         
         // 4. Cambiar el estado de la Habitación
-        hab.setEstado("RESERVADA"); //DESCOMENTAR!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        hab.setEstado("RESERVADA");
 
         // 5. Persistir cambios
         habitacionRepository.save(hab);

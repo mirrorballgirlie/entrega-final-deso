@@ -1,6 +1,7 @@
 package com.gestionhotelera.gestion_hotelera.modelo;
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import jakarta.persistence.*;
@@ -32,6 +33,7 @@ public class NotaCredito extends MetodoDePago{
     private double monto;
     private double iva;
     private double total;
+    private LocalDateTime fechaEmision;
 
     @OneToMany(mappedBy = "notaCredito")
     @Builder.Default

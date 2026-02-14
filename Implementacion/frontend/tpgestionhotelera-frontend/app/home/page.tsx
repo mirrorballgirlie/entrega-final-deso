@@ -6,7 +6,7 @@ export default function HomePage() {
 
   const handleLogout = () => {
     console.log("Cerrando sesión...");
-    window.location.href = "/login";
+    window.location.href = "/";
   };
 
   return <Home onLogout={handleLogout} />;
