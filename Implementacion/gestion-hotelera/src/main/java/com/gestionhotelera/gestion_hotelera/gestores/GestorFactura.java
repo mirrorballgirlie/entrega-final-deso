@@ -216,6 +216,8 @@ public class GestorFactura {
                         dto.setTipo(f.getTipo());
                         dto.setMonto(f.getMonto());
                         dto.setFechaEmision(f.getFechaEmision());
+                        dto.setEstado(f.getEstado());
+                        dto.setTotal(f.getTotal());
                         return dto;
                     })
                     .collect(Collectors.toList());
