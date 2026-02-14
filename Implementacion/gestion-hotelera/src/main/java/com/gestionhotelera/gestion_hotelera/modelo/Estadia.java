@@ -42,7 +42,7 @@ public class Estadia {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    
+    @Enumerated(EnumType.ORDINAL)
     private EstadoEstadia estado;
     private LocalDate fechaIngreso;
     private LocalDate fechaEgreso;

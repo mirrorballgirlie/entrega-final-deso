@@ -20,6 +20,11 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString; // <--- Recomendado para evitar errores en logs
 import com.gestionhotelera.gestion_hotelera.modelo.EstadoHabitacion;
+import jakarta.persistence.Column;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.EnumType;
+
+
 
 @Data
 @NoArgsConstructor
@@ -36,14 +41,16 @@ public class Habitacion {
     private int numero;
 
     
-    
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "tipo")
     private TipoHabitacion tipo;
     
     private int capacidad;
     private double precio;
     private String descripcion;
+    @Enumerated(EnumType.ORDINAL)
     private EstadoHabitacion estado;
-    private TipoHabitacion tipoHabitacion;
+    
 
     // --- CAMBIO PRINCIPAL AQUÍ ---
     // Antes era @OneToOne. Ahora es @OneToMany para permitir historial.

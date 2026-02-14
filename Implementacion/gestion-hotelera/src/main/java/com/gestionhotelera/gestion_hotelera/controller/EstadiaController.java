@@ -30,7 +30,7 @@ public class EstadiaController {
         return ResponseEntity.ok(gestorEstadia.ocuparHabitaciones(req));
     }
 
-    @GetMapping("/buscar-por-habitacion/{nro}")
+    @GetMapping("/buscar-por-habitacion/{nro}") 
     public ResponseEntity<EstadiaDTO> buscarPorHabitacion(@PathVariable int nro) {
         return ResponseEntity.ok(gestorEstadia.buscarEstadiaActivaPorHabitacion(nro));
     }

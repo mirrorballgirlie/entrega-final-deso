@@ -8,7 +8,7 @@ import Button from "@/components/Button";
 //import ListadoFactura, { hayItemsNoSeleccionados } from "@/components/Listados/ListadoFactura";
 import ListadoFactura from "@/components/Listados/ListadoFactura";
 
-const USE_MOCK = false; // 🔥 CAMBIAR A false PARA USAR BACKEND REAL
+const USE_MOCK = false; // CAMBIAR A false PARA USAR BACKEND REAL
 
 export default function FacturarCheckoutManager() {
   const router = useRouter();

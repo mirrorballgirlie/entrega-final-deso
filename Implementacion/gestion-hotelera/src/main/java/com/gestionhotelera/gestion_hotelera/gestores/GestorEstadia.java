@@ -273,7 +273,7 @@ public EstadiaDTO buscarEstadiaActivaPorHabitacion(Integer numeroHabitacion) {
     Habitacion hab = habitacionRepository
             .findByNumero(numeroHabitacion)
             .orElse(null);
-
+ 
     if (hab == null) return null;
 
     return estadiaRepository
