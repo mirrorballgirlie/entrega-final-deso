@@ -148,7 +148,7 @@ public class GestorFactura {
         long noches = ChronoUnit.DAYS.between(estadia.getFechaIngreso(), estadia.getFechaEgreso());
         if (noches <= 0) noches = 1; // Mínimo se cobra una noche
 
-        double precioNoche = estadia.getHabitacion().getTipoHabitacion().getPrecioNoche();
+        double precioNoche = estadia.getHabitacion().getTipo().getPrecioNoche();
         double subtotalAlojamiento = noches * precioNoche;
 
         // 2. Aplicar Strategy para el recargo por hora de salida
