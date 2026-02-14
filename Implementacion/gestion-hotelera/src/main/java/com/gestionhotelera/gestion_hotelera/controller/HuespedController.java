@@ -201,14 +201,8 @@ public ResponseEntity<?> eliminarHuesped(@PathVariable Long id) {
         return ResponseEntity.ok(
             "Los datos del huésped han sido eliminados del sistema."
         );
-
-    } catch (IllegalStateException e) {
-        // Caso: el huésped tuvo estadías
-        return ResponseEntity.badRequest().body(
-            Map.of("error", e.getMessage())
-        );
-
-    } catch (RuntimeException e) {
+    } 
+    catch (RuntimeException e) {
         // Huésped no encontrado
         return ResponseEntity.notFound().build();
     }

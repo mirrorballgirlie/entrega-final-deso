@@ -164,7 +164,7 @@ export default function ModificarHuespedManager({ huesped }: Props) {
 
 
     const base = process.env.NEXT_PUBLIC_API_BASE || "";
-    const hospedadoAntes = await fetch(`${base}/api/huespedes/existe/${form.id}`, {
+    const hospedadoAntes = await fetch(`${base}/api/huespedes/huesped-previo/${form.id}`, { 
       method: 'GET',
     });
     if (hospedadoAntes.ok) {

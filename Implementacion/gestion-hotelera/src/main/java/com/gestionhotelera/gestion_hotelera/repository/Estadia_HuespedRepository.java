@@ -4,5 +4,5 @@ import org.springframework.stereotype.Repository;
 import com.gestionhotelera.gestion_hotelera.modelo.Estadia_Huesped;
 
 public interface Estadia_HuespedRepository extends JpaRepository<Estadia_Huesped, Long> {
-    Boolean existsByHuesped_idId(Long id);
+    Boolean existsByHuespedId(Long id);
 }

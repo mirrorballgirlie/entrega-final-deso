@@ -7,6 +7,6 @@ public class GestorEstadia_Huesped {
 private Estadia_HuespedRepository estadiaHuespedRepository;
 
     public Boolean verificarHuespedPrevio(Long id) {
-       return estadiaHuespedRepository.existsByHuesped_idId(id);
+       return estadiaHuespedRepository.existsByHuespedId(id);
     }
 }

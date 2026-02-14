@@ -175,14 +175,6 @@ public class GestorHuesped {
     Huesped huesped = huespedRepository.findById(id)
         .orElseThrow(() -> new RuntimeException("Huésped no encontrado con id: " + id));
 
-    // Verificamos si tiene estadías asociadas
-    if (huesped.getEstadias() != null && !huesped.getEstadias().isEmpty()) {
-        throw new IllegalStateException(
-            "No se puede eliminar el huésped porque posee estadías asociadas."
-        );
-    }
-
-    // Si no tiene estadías, se elimina
     huespedRepository.delete(huesped);
 }
 
