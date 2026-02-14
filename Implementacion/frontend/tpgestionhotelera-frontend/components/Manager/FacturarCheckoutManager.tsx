@@ -731,51 +731,95 @@ if (!mostrarGrilla) {
                   router.push("/home");
                 } else {
                   // Generar factura en el backend
+                  // try {
+                  //   const generarRes = await fetch(
+                  //     `http://localhost:8080/api/facturas/generar`,
+                  //     {
+                  //       method: "POST",
+                  //       headers: { "Content-Type": "application/json" },
+                  //       body: JSON.stringify({
+                  //         estadiaId: estadiaId,
+                  //         //cuitResponsable: personaFactura.razonSocial ? cuitTercero : responsableSeleccionado?.dni,
+                  //         // cuitResponsable: personaFactura.razonSocial
+                  //         // ? cuitTercero
+                  //         // : typeof responsableSeleccionado === "object"
+                  //         // ? responsableSeleccionado.dni
+                  //         // : "",
+                  //         // cuitResponsable:
+                  //         // personaFactura.razonSocial
+                  //         // ? cuitTercero
+                  //         // : responsableSeleccionado
+                  //         // ? responsableSeleccionado.dni
+                  //         // : "",
+                  //         cuitResponsable:
+                  //       personaFactura.razonSocial
+                  //       ? cuitTercero
+                  //       : (responsableSeleccionado && responsableSeleccionado !== "TERCERO")
+                  //       ? responsableSeleccionado.dni
+                  //       : "",
+                  //       incluirEstadia: estadiaSeleccionada,
+                  //         idsConsumosSeleccionados: consumosReales
+                  //           .map((c: any, index: number) => seleccionados[c.id] ? c.id : null)
+                  //           .filter((id: any) => id !== null)
+                  //       })
+                  //     }
+                  //   );
+
+                  //   if (generarRes.ok) {
+                  //     alert("Factura generada correctamente ✔");
+                  //     setMostrarModalFactura(false);
+                  //     router.push("/home");
+                  //   } else {
+                  //     alert("Error al generar factura");
+                  //   }
+                  // } catch (error) {
+                  //   console.error(error);
+                  //   alert("Error de conexión al generar factura");
+                  // }
+                  // ✅ Flujo principal - Generar factura en el backend
                   try {
                     const generarRes = await fetch(
-                      `http://localhost:8080/api/facturas/generar`,
+                    `http://localhost:8080/api/facturas/generar`,
                       {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                          estadiaId: estadiaId,
-                          //cuitResponsable: personaFactura.razonSocial ? cuitTercero : responsableSeleccionado?.dni,
-                          // cuitResponsable: personaFactura.razonSocial
-                          // ? cuitTercero
-                          // : typeof responsableSeleccionado === "object"
-                          // ? responsableSeleccionado.dni
-                          // : "",
-                          // cuitResponsable:
-                          // personaFactura.razonSocial
-                          // ? cuitTercero
-                          // : responsableSeleccionado
-                          // ? responsableSeleccionado.dni
-                          // : "",
-                          cuitResponsable:
-                        personaFactura.razonSocial
-                        ? cuitTercero
-                        : (responsableSeleccionado && responsableSeleccionado !== "TERCERO")
-                        ? responsableSeleccionado.dni
-                        : "",
-                        incluirEstadia: estadiaSeleccionada,
-                          idsConsumosSeleccionados: consumosReales
-                            .map((c: any, index: number) => seleccionados[c.id] ? c.id : null)
-                            .filter((id: any) => id !== null)
-                        })
-                      }
-                    );
+                        estadiaId: estadiaId,
 
-                    if (generarRes.ok) {
-                      alert("Factura generada correctamente ✔");
-                      setMostrarModalFactura(false);
-                      router.push("/home");
-                    } else {
-                      alert("Error al generar factura");
-                    }
-                  } catch (error) {
-                    console.error(error);
-                    alert("Error de conexión al generar factura");
-                  }
+                    // 1. Si es un ocupante de la habitación, enviamos su ID de huésped.
+                    // Esto permite que el backend busque en la columna "huesped_id" de la tabla responsable_de_pago.
+                    huespedId: (responsableSeleccionado && responsableSeleccionado !== "TERCERO")
+                    ? responsableSeleccionado.id
+                    : null,
+
+                    // 2. Si es un tercero (Persona Jurídica o alguien externo), enviamos el CUIT.
+                    cuitResponsable: personaFactura.razonSocial 
+                    ? cuitTercero 
+                    : null,
+
+                  incluirEstadia: estadiaSeleccionada,
+
+                    // 3. Mapeo limpio de consumos: filtramos los que no están tildados y extraemos solo el ID.
+                  idsConsumosSeleccionados: consumosReales
+                  .filter(c => seleccionados[c.id]) 
+                  .map(c => c.id)
+                })
+              }
+            );
+
+  if (generarRes.ok) {
+    alert("Factura generada correctamente ✔");
+    setMostrarModalFactura(false);
+    router.push("/home");
+  } else {
+    // Tip de auditor: Sería bueno loguear el error exacto aquí
+    const errorData = await generarRes.json();
+    alert(`Error al generar factura: ${errorData.message || 'Error desconocido'}`);
+  }
+} catch (error) {
+  console.error("Error en la conexión:", error);
+  alert("Error de conexión al generar factura");
+}
                 }
               }}
             />

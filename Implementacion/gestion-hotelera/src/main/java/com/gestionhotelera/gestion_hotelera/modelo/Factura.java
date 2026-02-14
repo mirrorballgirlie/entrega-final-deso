@@ -1,10 +1,13 @@
 package com.gestionhotelera.gestion_hotelera.modelo;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,16 +16,13 @@ import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import java.time.LocalDateTime;
-import com.gestionhotelera.gestion_hotelera.modelo.TipoFactura;
-import com.gestionhotelera.gestion_hotelera.modelo.EstadoFactura;
-import lombok.Builder;
+
+
 
 @Data
 @NoArgsConstructor
@@ -30,7 +30,6 @@ import lombok.Builder;
 @Builder
 @Table(name = "factura")
 @Entity
-
 public class Factura {
     
     @Id
@@ -38,13 +37,21 @@ public class Factura {
     private Long id;
 
     private String nombre;
+
+    // CORRECCIÓN 1: Mapeo de Enum. 
+    // Sin esto, JPA guarda un entero (0, 1) que causa errores si la BD espera String ('A', 'B') o si cambias el orden del Enum.
+    @Enumerated(EnumType.STRING)
     private TipoFactura tipo;
+    
     private String cuit;
     private double monto;
     private double iva;
     private double total;
     private LocalDateTime fechaEmision;
-    EstadoFactura estado;
+
+    // CORRECCIÓN ADICIONAL: También mapear el estado como STRING
+    @Enumerated(EnumType.STRING)
+    private EstadoFactura estado;
 
     @ManyToMany
     @JoinTable(
@@ -52,12 +59,13 @@ public class Factura {
         joinColumns = @JoinColumn(name = "factura_id"),
         inverseJoinColumns = @JoinColumn(name = "impuesto_id")
     )
-
-    @lombok.Builder.Default
-
+    @Builder.Default
     private List<Impuesto> impuestos = new ArrayList<>();
 
-    @OneToOne(optional = false)
+    // CORRECCIÓN 3: Cambio de @OneToOne a @ManyToOne.
+    // Lógica de Negocio: Una estadía podría tener múltiples facturas (ej: pago parcial, facturación dividida, notas de crédito).
+    // Si mantienes OneToOne, el segundo intento de facturar la misma estadía dará Error 500.
+    @ManyToOne(optional = false)
     @JoinColumn(name = "estadia_id", nullable = false)
     private Estadia estadia;
 
@@ -66,59 +74,24 @@ public class Factura {
     private ResponsableDePago responsableDePago;
 
     @OneToMany(
-    mappedBy = "factura",
-    cascade = CascadeType.ALL,
-    orphanRemoval = true)
-
-    @lombok.Builder.Default
-
+        mappedBy = "factura",
+        cascade = CascadeType.ALL,
+        orphanRemoval = true
+    )
+    @Builder.Default
     private List<MetodoDePago> metodosDePago = new ArrayList<>();
 
     @OneToMany(mappedBy = "factura")
-    @lombok.Builder.Default
+    @Builder.Default
     private List<Pago> pagos = new ArrayList<>();
 
     @ManyToOne
     @JoinColumn(name = "nota_credito_id")
     private NotaCredito notaCredito; // opcional
 
-
-
-
-
-
-    private Factura(Builder builder) {
-        this.nombre = builder.nombre;
-        this.tipo = builder.tipo;
-        this.cuit = builder.cuit;
-        this.monto = builder.monto;
-        this.iva = builder.iva;
-        this.total = builder.total;
+    public double getTotal() { 
+        return total; 
     }
-
-    public static class Builder {
-        private String nombre;
-        private TipoFactura tipo;
-        private String cuit;
-        private double monto;
-        private double iva;
-        private double total;
-        private LocalDateTime fechaEmision;
-        private EstadoFactura estado;
-
-        public Builder nombre(String nombre) { this.nombre = nombre; return this; }
-        public Builder tipo(TipoFactura tipo) { this.tipo = tipo; return this; }
-        public Builder cuit(String cuit) { this.cuit = cuit; return this; }
-        public Builder monto(double monto) { this.monto = monto; return this; }
-        public Builder iva(double iva) { this.iva = iva; return this; }
-        public Builder total(double total) { this.total = total; return this; }
-
-        public Factura build() { return new Factura(this); }
-    }
-
-    public double getTotal() { return total; }
-
-  
 
     public void setTipo(String tipo) {
         this.tipo = TipoFactura.valueOf(tipo.toUpperCase());
@@ -127,6 +100,6 @@ public class Factura {
     public void setFechaEmision(LocalDateTime fechaEmision) {
         this.fechaEmision = fechaEmision;   
     }
-
 }
+
 

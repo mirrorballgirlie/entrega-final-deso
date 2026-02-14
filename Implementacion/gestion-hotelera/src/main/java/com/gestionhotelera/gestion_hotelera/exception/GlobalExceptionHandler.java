@@ -22,10 +22,21 @@ public class GlobalExceptionHandler {
         return buildResponse(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 
+    // Línea 23
     @ExceptionHandler(Exception.class)
+    // Línea 24
     public ResponseEntity<?> handleOther(Exception ex) {
-        return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno del servidor");
-    }
+    // 1. ESTO ES LO QUE FALTA: Imprime el error real en tu terminal de VS Code
+    ex.printStackTrace(); 
+    
+    // 2. CAMBIAMOS EL MENSAJE: Para que Postman te diga el error real
+    return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error REAL: " + ex.getMessage());
+}
+
+    // @ExceptionHandler(Exception.class)
+    // public ResponseEntity<?> handleOther(Exception ex) {
+    //     return buildResponse(HttpStatus.INTERNAL_SERVER_ERROR, "Error interno del servidor");
+    // }
 
     private ResponseEntity<Map<String, Object>> buildResponse(HttpStatus status, String message) {
         Map<String, Object> error = new HashMap<>();

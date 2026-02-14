@@ -3,6 +3,8 @@ package com.gestionhotelera.gestion_hotelera.repository;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import com.gestionhotelera.gestion_hotelera.modelo.ResponsableDePago;                                       //agregado luego del analisis de claude
@@ -18,6 +20,11 @@ public interface ResponsableDePagoRepository extends JpaRepository<ResponsableDe
     //     WHERE FUNCTION('REPLACE', r.cuit, '-', '') LIKE CONCAT('%', REPLACE(:cuit, '-', ''), '%')
     // """)
     // List<ResponsableDePago> buscarPorCuit(String cuit);
+
+    // Nueva consulta para encontrar al responsable asociado al huésped
+    @Query("SELECT r FROM ResponsableDePago r WHERE r.huesped.id = :huespedId")
+    Optional<ResponsableDePago> findByHuespedId(@Param("huespedId") Long huespedId);
+    
 }
 
 
