@@ -1,8 +1,6 @@
 package com.gestionhotelera.gestion_hotelera.controller;
-import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,14 +27,23 @@ import lombok.RequiredArgsConstructor;
 public class FacturarController {
     private final GestorFactura gestorFactura;
     
+    // @GetMapping("/buscar-ocupantes")                         //estamos buscando por fecha, cuando en el modelo existe una unica estadia activa por fecha
+    // public ResponseEntity<List<HuespedDTO>> buscarOcupantes(
+    //     @RequestParam Integer habitacion, 
+    //     @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate salida) {
+        
+    //     List<HuespedDTO> ocupantes = gestorFactura.obtenerOcupantes(habitacion, salida);
+    //     return ResponseEntity.ok(ocupantes);
+    // }
+
     @GetMapping("/buscar-ocupantes")
     public ResponseEntity<List<HuespedDTO>> buscarOcupantes(
-        @RequestParam Integer habitacion, 
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate salida) {
-        
-        List<HuespedDTO> ocupantes = gestorFactura.obtenerOcupantes(habitacion, salida);
-        return ResponseEntity.ok(ocupantes);
-    }
+    @RequestParam Integer habitacion) {
+
+    List<HuespedDTO> ocupantes = gestorFactura.obtenerOcupantes(habitacion);
+    return ResponseEntity.ok(ocupantes);
+}
+
 
     //selecciono un ocupante y veo si es mayor
     @GetMapping("/verificar-mayor/{huespedId}")

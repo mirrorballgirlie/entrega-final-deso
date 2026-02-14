@@ -222,7 +222,8 @@ const handleCancel = () => {
       setEstadiaId(estadia.id);
 
       const resOcupantes = await fetch(
-        `http://localhost:8080/api/facturas/buscar-ocupantes?habitacion=${numero}&salida=${new Date().toISOString().split("T")[0]}`
+        // `http://localhost:8080/api/facturas/buscar-ocupantes?habitacion=${numero}&salida=${new Date().toISOString().split("T")[0]}`
+        `http://localhost:8080/api/facturas/buscar-ocupantes?habitacion=${numero}`
       );
 
       if (!resOcupantes.ok) {

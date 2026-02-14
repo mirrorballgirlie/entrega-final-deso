@@ -3,17 +3,16 @@ package com.gestionhotelera.gestion_hotelera.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+
 import com.gestionhotelera.gestion_hotelera.modelo.Estadia;
-import com.gestionhotelera.gestion_hotelera.modelo.Habitacion;
-import java.util.Optional;
 import com.gestionhotelera.gestion_hotelera.modelo.EstadoEstadia;
-import com.gestionhotelera.gestion_hotelera.dto.EstadiaDTO; // Importa tu DTO para usarlo en el método de consulta
-import com.gestionhotelera.gestion_hotelera.modelo.Estadia; // Importa tu entidad para usarla en el método de consulta
-import com.gestionhotelera.gestion_hotelera.modelo.Habitacion; // Importa tu entidad para usarla en el método de consulta
+import com.gestionhotelera.gestion_hotelera.modelo.Habitacion;
 
 
 
@@ -60,5 +59,16 @@ public interface EstadiaRepository extends JpaRepository<Estadia, Long> {
     List<Estadia> buscarEstadiaPorHabitacionYSalida(@Param("numero") Integer numero, @Param("fechaEgreso") LocalDate fechaEgreso);
     
     Optional<Estadia> findByHabitacionAndEstado(Habitacion habitacion, EstadoEstadia estado);
+
+    Optional<Estadia> findByHabitacionNumeroAndEstado(Integer numeroHabitacion, Integer estado);
+
+    @Query("""
+    SELECT e FROM Estadia e
+    WHERE e.habitacion.numero = :numero
+    AND e.estado = com.gestionhotelera.gestion_hotelera.modelo.EstadoEstadia.OCUPADA
+    """)
+    List<Estadia> buscarEstadiaOcupadaPorHabitacion(Integer numero);
+
+
 
 }

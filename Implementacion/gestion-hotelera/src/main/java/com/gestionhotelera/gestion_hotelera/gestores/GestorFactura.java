@@ -42,18 +42,70 @@ public class GestorFactura {
     private final FacturaRepository facturaRepository;
     private final ResponsableDePagoRepository responsableRepository;
 
-    public List<HuespedDTO> obtenerOcupantes(Integer numHab, LocalDate fechaSalida) {
-    // 1. Buscamos la estadía activa para esa habitación y fecha
-    List<Estadia> estadiaOpt = estadiaRepository.buscarEstadiaPorHabitacionYSalida(numHab, fechaSalida);
-    if (estadiaOpt.isEmpty()) {
-        throw new ResourceNotFoundException("No se encontró una estadía activa para la habitación " + numHab + " con fecha de salida " + fechaSalida);
-    }
-    Estadia estadia = estadiaOpt.get(0); // Suponemos que solo hay una estadia activa para esa habitación y fecha
+    //esto esta MAL, no hay que buscar estadias activas por fecha, hay que buscarlas por habitacion y por estado = ACTIVA (0 EN LA BDD)
 
-    // 2. Mapeamos los huéspedes a un DTO para enviar al Front
+    // public List<HuespedDTO> obtenerOcupantes(Integer numHab, LocalDate fechaSalida) {
+    // // 1. Buscamos la estadía activa para esa habitación y fecha
+    // List<Estadia> estadiaOpt = estadiaRepository.buscarEstadiaPorHabitacionYSalida(numHab, fechaSalida);
+    // if (estadiaOpt.isEmpty()) {
+    //     throw new ResourceNotFoundException("No se encontró una estadía activa para la habitación " + numHab + " con fecha de salida " + fechaSalida);
+    // }
+    // Estadia estadia = estadiaOpt.get(0); // Suponemos que solo hay una estadia activa para esa habitación y fecha
+
+    // // 2. Mapeamos los huéspedes a un DTO para enviar al Front
+    // return estadia.getHuespedes().stream()
+    //         .map(h -> {
+    //             // Asegurate que HuespedDTO tenga un constructor que acepte estos campos
+    //             HuespedDTO dto = new HuespedDTO();
+    //             dto.setId(h.getId());
+    //             dto.setNombre(h.getNombre());
+    //             dto.setApellido(h.getApellido());
+    //             dto.setDocumento(h.getDocumento());
+    //             dto.setFechaNacimiento(h.getFechaNacimiento());
+    //             return dto;
+    //         })
+    //         .collect(Collectors.toList());
+    // }
+
+    //public List<HuespedDTO> obtenerOcupantes(Integer numHab) {
+
+    // 1. Buscamos la estadía ACTIVA de esa habitación
+//     Estadia estadia = estadiaRepository
+//         //.findByHabitacionNumeroAndEstado(numHab, 0)
+//         .buscarEstadiaOcupadaPorHabitacion(numHab);
+
+//         .orElseThrow(() -> new ResourceNotFoundException(
+//             "No se encontró una estadía activa para la habitación " + numHab));
+
+//     // 2. Mapear huéspedes a DTO
+//     return estadia.getHuespedes().stream()
+//             .map(h -> {
+//                 HuespedDTO dto = new HuespedDTO();
+//                 dto.setId(h.getId());
+//                 dto.setNombre(h.getNombre());
+//                 dto.setApellido(h.getApellido());
+//                 dto.setDocumento(h.getDocumento());
+//                 dto.setFechaNacimiento(h.getFechaNacimiento());
+//                 return dto;
+//             })
+//             .collect(Collectors.toList());
+// }
+
+    public List<HuespedDTO> obtenerOcupantes(Integer numHab) {
+
+    List<Estadia> estadias = estadiaRepository
+            .buscarEstadiaOcupadaPorHabitacion(numHab);
+
+    if (estadias.isEmpty()) {
+        throw new ResourceNotFoundException(
+            "No se encontró una estadía ocupada para la habitación " + numHab
+        );
+    }
+
+    Estadia estadia = estadias.get(0);
+
     return estadia.getHuespedes().stream()
             .map(h -> {
-                // Asegurate que HuespedDTO tenga un constructor que acepte estos campos
                 HuespedDTO dto = new HuespedDTO();
                 dto.setId(h.getId());
                 dto.setNombre(h.getNombre());
@@ -63,7 +115,9 @@ public class GestorFactura {
                 return dto;
             })
             .collect(Collectors.toList());
-    }
+}
+
+
 
     public boolean esMayorDeEdad(Long huespedId) {
             Huesped huesped = huespedRepository.findById(huespedId)
