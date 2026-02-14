@@ -1,4 +1,4 @@
-/*package com.gestionhotelera.gestion_hotelera.gestores;
+package com.gestionhotelera.gestion_hotelera.gestores;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,13 +29,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import com.gestionhotelera.gestion_hotelera.dto.FacturaDTO;
 import java.time.LocalDateTime;
-
+import com.gestionhotelera.gestion_hotelera.modelo.EstadoFactura;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import com.gestionhotelera.gestion_hotelera.modelo.Factura;
+import com.gestionhotelera.gestion_hotelera.repository.FacturaRepository;
+import com.gestionhotelera.gestion_hotelera.repository.HuespedRepository;
 
 
 
 @Service
 @RequiredArgsConstructor
-
 
 
 public class GestorFactura {
@@ -47,7 +56,7 @@ public class GestorFactura {
     private final RecargoCheckoutStrategy recargoStrategy;
     private final NotaCreditoRepository notaCreditoRepository;
     private final PagoRepository pagoRepository;
-    private final FacturaRepository facturaRepository;
+    
 
     public List<HuespedDTO> obtenerOcupantes(Integer numHab, LocalDate fechaSalida) {
     // 1. Buscamos la estadía activa para esa habitación y fecha
@@ -79,7 +88,7 @@ public class GestorFactura {
             return java.time.Period.between(huesped.getFechaNacimiento(), LocalDate.now()).getYears() >= 18;
     }
 
-    public List<ConsumoDTO> obtenerItemsPendientes(Long estadiaId) {
+    /*public List<ConsumoDTO> obtenerItemsPendientes(Long estadiaId) {
         List<Consumo> pendientes = consumoRepository.findPendientesByEstadiaId(estadiaId);
         
         return pendientes.stream().map(c -> {
@@ -89,7 +98,7 @@ public class GestorFactura {
             dto.setPrecio(c.getPrecio());
             return dto;
         }).collect(Collectors.toList());
-    }
+    }*/
 
     public double obtenerValorEstadia(Long estadiaId) {
         Estadia estadia = estadiaRepository.findById(estadiaId)
@@ -110,7 +119,7 @@ public class GestorFactura {
         return subtotalAlojamiento + recargo;
     }
 
-    public double calcularMontoTotalPendiente(Long estadiaId) {
+    /*public double calcularMontoTotalPendiente(Long estadiaId) {
             
         List<ConsumoDTO> items = this.obtenerItemsPendientes(estadiaId); 
 
@@ -121,7 +130,7 @@ public class GestorFactura {
         double valorEstadia = this.obtenerValorEstadia(estadiaId);
 
         return valorEstadia + totalConsumos;
-    }
+    }*/
 
     @Transactional
     public Long crearFactura(FacturaDTO dto, Long estadiaId, List<Long> itemsFacturadosIds) {
@@ -146,11 +155,9 @@ public class GestorFactura {
             consumoRepository.marcarComoFacturados(itemsFacturadosIds, guardada.getId());
         }*/
 
-        //return guardada.getId();
-   // }
-
-
-  //}
+        return guardada.getId();
+    }
+   //}
 
     public List<FacturaDTO> obtenerPendientesByCuit(String cuit) {
         // Buscamos las facturas para el CUIT dado
@@ -158,7 +165,7 @@ public class GestorFactura {
         
         
 
-        //Filtramos solo las facturas que estén pendientes (esto depende de cómo se maneje el estado de la factura, aquí asumimos que el monto pendiente es mayor a 0)
+        //Filtramos solo las facturas que estén pendientes 
         List<Factura> facturasPendientes = facturas.stream()
                 .filter(f -> !pagoRepository.existsByFacturaId(f.getId()))
                 .collect(Collectors.toList());
@@ -173,6 +180,46 @@ public class GestorFactura {
         }).collect(Collectors.toList());
 
         return facturasPendientesDTO;
+    }
+
+    private Huesped buscarHuespedPorDocumento(String tipoDocumento, String numeroDocumento) {
+                return huespedRepository.findByTipoDocumentoAndDocumento(tipoDocumento, numeroDocumento)
+                        .orElseThrow(() -> new ResourceNotFoundException("Huésped no encontrado con tipo de documento " + tipoDocumento + " y número de documento " + numeroDocumento));
+            }
+
+    public List<FacturaDTO> obtenerPendientesBytipoDocumentoandnumeroDocumentoorcuit(String tipoDocumento, String numeroDocumento, String cuit) {
+        String buscador = null;
+       if (cuit == null || cuit.isEmpty()) {
+            // Si no se proporciona CUIT, buscamos por tipo y número de documento
+            // buscar huesped por tipo y numero de documento
+            
+            buscador = buscarHuespedPorDocumento(tipoDocumento, numeroDocumento).getCuit();
+            
+        }
+        else {
+            // Si se proporciona CUIT, buscamos por CUIT
+            buscador = cuit;
+        }
+            List<Factura> facturas = facturaRepository.findAllByCuit(buscador);
+            
+            return facturas.stream()
+                    .filter(f -> f.getEstado() == EstadoFactura.NO_PAGO || f.getEstado() == EstadoFactura.PAGO_PARCIAL) // Filtrar solo facturas pendientes
+                    .map(f -> {
+                        FacturaDTO dto = new FacturaDTO();
+                        dto.setId(f.getId());
+                        dto.setCuit(f.getCuit());
+                        dto.setIva(f.getIva());
+                        dto.setNombre(f.getNombre());
+                        //dto.setEstadia_id(f.getEstadia().getId());
+                        //dto.setTotalnota_credito_id(f.getTotalnota_credito_id());
+                        //dto.setRespondable_id(f.getRespondable_id());
+                        dto.setTipo(f.getTipo());
+                        dto.setMonto(f.getMonto());
+                        dto.setFechaEmision(f.getFechaEmision());
+                        return dto;
+                    })
+                    .collect(Collectors.toList());
+        
     }
     
     public NotaCreditoDTO generarNotaCredito(List<Long> facturasIds) {

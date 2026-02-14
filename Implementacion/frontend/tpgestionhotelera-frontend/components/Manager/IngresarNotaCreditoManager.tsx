@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import FormularioBuscarFactura from "@/components/Formularios/FormularioBuscarFactura";
 import ListadoFacturasNC from "@/components/Listados/ListadoFacturasNC";
 import DetalleNotaCredito from "@/components/Listados/DetalleNotaCredito";
+//import  triggerToast from "@/utils/ToastUtils";
 
 export default function IngresarNotaCreditoManager() {
   const router = useRouter();
@@ -14,36 +15,69 @@ export default function IngresarNotaCreditoManager() {
   const [step, setStep] = useState(1); // 1: Buscar, 2: Listado, 3: Detalle
   const [facturasPendientes, setFacturasPendientes] = useState([]);
   const [facturasSeleccionadas, setFacturasSeleccionadas] = useState([]);
-  const [notaCreditoGenerada, setNotaCreditoGenerada] = useState(null);
+  const [notaCreditoGenerada, setNotaCreditoGenerada] = useState<any>({
+    nroNotaCredito: "",
+    responsablePago: "",
+    importeNeto: 0,
+    iva: 0,
+    importeTotal: 0
+});
+  const [toastMsg, setToastMsg] = useState("");
+  const [showToast, setShowToast] = useState(false);
+const triggerToast = (msg: string, type: string) => {
+    setToastMsg(msg);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
 
-  const handleBuscar = (filtros: any) => {
-    const mockFacturas = [
-      { id: 1, numeroFactura: "001-00542", fechaDeConfeccion: "2024-05-10", importeNeto: 10000, iva: 2100, total: 12100 },
-      { id: 2, numeroFactura: "001-00545", fechaDeConfeccion: "2024-05-12", importeNeto: 5000, iva: 1050, total: 6050 },
-    ];
+  const handleBuscar = async (filtros: any) => {
+    const base = process.env.NEXT_PUBLIC_API_BASE || "";
+    const response = await fetch(`${base}/api/facturas/facturas-pendiente/${filtros.cuit}/${filtros.tipoDocumento}/${filtros.numeroDocumento}`);
 
-    if (mockFacturas.length > 0) {
-      setFacturasPendientes(mockFacturas);
-      setStep(2);
+    if (response.ok) {
+      const data = await response.json();
+      setFacturasPendientes(data);
+      setStep(2); 
     } else {
       alert("No hay facturas pendientes para los datos ingresados.");
     }
   };
 
-  const handleGenerarNC = (seleccionadas: any[]) => {
+  const handleGenerarNC = async (seleccionadas: any[]) => {
+  try {
+    const base = process.env.NEXT_PUBLIC_API_BASE || "";
+    
+    // 1. Extraemos solo los IDs de las facturas seleccionadas
+    const facturasIds = seleccionadas.map(f => f.id);
 
-    const totalNeto = seleccionadas.reduce((acc, f) => acc + f.importeNeto, 0);
-    const totalIVA = seleccionadas.reduce((acc, f) => acc + (f.iva || 0), 0);
-
-    setNotaCreditoGenerada({
-      nroNotaCredito: "NC-0001-000045",
-      responsablePago: "Juan Pérez",
-      importeNeto: totalNeto,
-      iva: totalIVA,
-      importeTotal: totalNeto + totalIVA
+    // 2. LLAMADA AL BACKEND (Controller)
+    const response = await fetch(`${base}/api/facturas/generar-notacredito`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(facturasIds) // Enviamos la lista de IDs al backend
     });
-    setStep(3);
-  };
+
+    if (response.ok) {
+      const data = await response.json(); // La NotaCreditoDTO que devuelve Java
+
+      // 3. ACTUALIZAMOS EL ESTADO con datos REALES del servidor
+      setNotaCreditoGenerada({
+        nroNotaCredito: data.numero || "NC-GENERADA", // Usamos lo que viene de Java
+        //responsablePago: form.nombre + " " + form.apellido, // O el dato que tengas en el form
+        importeNeto: data.monto,
+        iva: data.iva,
+        importeTotal: data.total
+      });
+
+      // 4. PASAMOS AL PASO DE VISUALIZACIÓN
+      setStep(3);
+    } else {
+      triggerToast("Error al generar la Nota de Crédito en el servidor", "error");
+    }
+  } catch (error) {
+    triggerToast("Error de conexión", "error");
+  }
+};
 
   return (
     <div>

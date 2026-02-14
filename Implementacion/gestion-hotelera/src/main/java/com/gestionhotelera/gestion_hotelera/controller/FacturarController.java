@@ -25,6 +25,8 @@ import com.gestionhotelera.gestion_hotelera.dto.FacturaDTO;
 @RestController
 @RequiredArgsConstructor
 
+@RequestMapping("/api/facturas")
+
  
 public class FacturarController {
     private final GestorFactura gestorFactura;
@@ -82,10 +84,10 @@ public class FacturarController {
 
 
     
-@GetMapping("/factura-pendiente/{cuit}")
-public ResponseEntity<List<FacturaDTO>> obtenerFacturaPendiente(@PathVariable String cuit) {
+@GetMapping("/facturas-pendiente/{cuit}/{tipoDocumento}/{numeroDocumento}")
+public ResponseEntity<List<FacturaDTO>> obtenerFacturaPendiente(@PathVariable String cuit, @PathVariable String tipoDocumento, @PathVariable String numeroDocumento) {
     
-    List<FacturaDTO> facturasPendientes = gestorFactura.obtenerPendientesByCuit(cuit);
+    List<FacturaDTO> facturasPendientes = gestorFactura.obtenerPendientesBytipoDocumentoandnumeroDocumentoorcuit(tipoDocumento, numeroDocumento, cuit);
 
     if(facturasPendientes.isEmpty()) {
         return ResponseEntity.noContent().build();

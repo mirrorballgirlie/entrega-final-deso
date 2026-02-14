@@ -12,7 +12,7 @@ import com.gestionhotelera.gestion_hotelera.modelo.Huesped;
 @Repository
 public interface HuespedRepository extends JpaRepository<Huesped, Long> {
 
-    
+
     //busqueda realizada por tipo y numero de documento
     Optional <Huesped> findByTipoDocumentoAndDocumento(String tipoDocumento, String documento);
     
