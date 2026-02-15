@@ -86,7 +86,7 @@ export default function ModificarHuespedManager({ huesped }: Props) {
     return newErrors;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     const validationErrors = validateForm();
@@ -106,9 +106,30 @@ export default function ModificarHuespedManager({ huesped }: Props) {
       return;
     }
 
-    // flujo principal: actualizar huésped (mock)
+    
     const updatedGuests = guests.map(g => (g.id === form.id ? form : g));
     sessionStorage.setItem("guestData", JSON.stringify(updatedGuests));
+
+    try {
+    const base = process.env.NEXT_PUBLIC_API_BASE || "";
+    const response = await fetch(`${base}/api/huespedes/actualizar/${form.id}`, {
+      method: 'PUT', // O POST según cómo lo tengas en Java
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(form), // Enviamos los datos del formulario
+    });
+
+    if (response.ok) {
+      console.log("¡Datos actualizados en la BDD!");
+      // Aquí podés navegar a la siguiente pantalla
+    } else {
+      alert("Error al guardar en el servidor");
+    }
+  } catch (error) {
+    console.error("Error de conexión:", error);
+  }
+
 
     // mostrar toast de éxito y volver al home
     setToastMsg("La operación ha culminado con éxito");

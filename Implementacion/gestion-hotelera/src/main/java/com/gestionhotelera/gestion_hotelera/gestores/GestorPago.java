@@ -21,14 +21,14 @@ public class GestorPago {
         return facturaRepository.findFacturasPendientesByNroHabitacionyEstado(nroHabitacion, EstadoFactura.NO_PAGO)
                 .stream()
                 .map(f -> {
-                        FacturaDTO dto = new FacturaDTO();
+                        FacturaDTO dto = new FacturaDTO(); 
                         dto.setId(f.getId());
                         dto.setCuit(f.getCuit());
                         dto.setIva(f.getIva());
                         dto.setNombre(f.getNombre());
-                        //dto.setEstadia_id(f.getEstadia().getId());
+                        dto.setEstadiaId(f.getEstadia().getId());
                         //dto.setTotalnota_credito_id(f.getTotalnota_credito_id());
-                        //dto.setRespondable_id(f.getRespondable_id());
+                        //dto.setResponsable_id(f.getResponsable_id());
                         dto.setTipo(f.getTipo());
                         dto.setMonto(f.getMonto());
                         dto.setFechaEmision(f.getFechaEmision());

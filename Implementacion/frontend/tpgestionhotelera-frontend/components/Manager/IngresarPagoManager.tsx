@@ -25,7 +25,7 @@ export default function IngresarPagoManager() {
     try {
       //simulo api
       const base = process.env.NEXT_PUBLIC_API_BASE || "";
-      const res = await fetch(`${base}/api/pago/facturas-pendiente/${nroHabitacion}`);
+      const res = await fetch(`${base}/api/pago/facturas-pendiente/${nroHabitacion}`); 
       
       if (!res.ok) throw new Error();
       const data = await res.json();
@@ -47,6 +47,18 @@ export default function IngresarPagoManager() {
     setFacturaSeleccionada(factura);
     setStep(3);
   };
+
+  const pagarFactura = async (factura: any) => {
+    try {
+      const base = process.env.NEXT_PUBLIC_API_BASE || "";
+      const res = await fetch(`${base}/api/pagar/${factura.monto}/de/${factura.id}`, {
+        method: "POST",
+      });
+      if (!res.ok) throw new Error();}
+     catch (err) {
+      alert("Error al procesar el pago. Intente nuevamente.");
+    }
+     }
 
   return (
     <div style={{
@@ -135,7 +147,10 @@ export default function IngresarPagoManager() {
           <div style={{ width: "100%", maxWidth: "1100px", marginTop: "20px" }}>
             <FormularioIngresarPago
               factura={facturaSeleccionada}
-              onSuccess={() => router.push("/home")}
+              onSuccess={() => {
+                pagarFactura(facturaSeleccionada);
+                router.push("/home");
+              }}
               onCancel={() => setStep(2)}
             />
           </div>

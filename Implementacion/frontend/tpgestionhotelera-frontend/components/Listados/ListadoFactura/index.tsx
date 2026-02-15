@@ -27,7 +27,10 @@ type ListadoFacturaProps = {
   persona: Persona;
   estadia: number;               // monto de la estadía
   consumos?: Consumo[];
-  onAceptar: (hayItemsNoSeleccionados: boolean) => void;
+  onAceptar: (hayItemsNoSeleccionados: boolean,
+                estadiaSeleccionada: boolean,
+                seleccionados: Record<number, boolean>
+  ) => void;
 };
 
 
@@ -123,7 +126,7 @@ const hayItemsNoSeleccionados =
 
           <span>Estadía</span>
 
-          <span>${estadia.toLocaleString("es-AR")}</span>
+          <span>${(estadia ?? 0).toLocaleString("es-AR")}</span>
         </div>
 
 
@@ -147,7 +150,7 @@ const hayItemsNoSeleccionados =
             <span>
               {/* ${c.monto.toLocaleString("es-AR")} */}
               {/* ${(c.monto ?? 0).toLocaleString("es-AR")} */}
-              ${c.subtotal.toLocaleString("es-AR")}
+              ${(c.subtotal ?? 0).toLocaleString("es-AR")}
 
             </span>
           </div>

@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 @Entity
-@Table(name = "metodoDePago")
+@Table(name = "metodo_De_Pago")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -42,30 +42,4 @@ public abstract class MetodoDePago {
     @JoinColumn(name = "factura_id")
     private Factura factura; // opcional
 
-    /*public MetodoDePago(double monto, Date fechaPago) {
-        this.monto = monto;
-        this.fechaPago = fechaPago;
-    }
-
-    // getters y setters
-    public double getMonto() {
-        return monto;
-    }
-
-    public void setMonto(double monto) {
-        this.monto = monto;
-    }
-
-    public Date getFechaPago() {
-        return fechaPago;
-    }
-
-    public void setFechaPago(Date fechaPago) {
-        this.fechaPago = fechaPago;
-    }
-
-    // método abstracto
-    //public abstract void procesarPago();
-    
-    */
 }

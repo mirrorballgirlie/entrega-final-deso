@@ -34,6 +34,7 @@ import jakarta.validation.Valid;
 
 
 @CrossOrigin(origins = "http://localhost:3000")
+
 @RestController
 @RequestMapping("/api/huespedes")
 public class HuespedController {

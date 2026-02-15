@@ -138,6 +138,9 @@ public class GestorHuesped {
 
         // 2. Actualizamos Datos Personales
         existente.setApellido(dto.getApellido());
+        existente.setTipoDocumento(dto.getTipoDocumento());
+        existente.setDocumento(dto.getDocumento());
+        existente.setCuit(dto.getCuit());
         existente.setNombre(dto.getNombre()); 
         existente.setFechaNacimiento(dto.getFechaNacimiento());
         existente.setNacionalidad(dto.getNacionalidad());
@@ -167,7 +170,8 @@ public class GestorHuesped {
         }
 
         // 4. Guardamos los cambios
-        return huespedRepository.save(existente);
+        Huesped guardado = huespedRepository.saveAndFlush(existente); 
+    return guardado;
     }
 
     public void eliminarHuesped(Long id) {                 //cu11

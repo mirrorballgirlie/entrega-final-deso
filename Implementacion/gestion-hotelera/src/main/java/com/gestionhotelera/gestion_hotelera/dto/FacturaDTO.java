@@ -25,6 +25,10 @@ public class FacturaDTO {
     private double total;
     LocalDateTime fechaEmision;
     EstadoFactura estado;
+    private Long estadiaId;
+    private Long totalnota_credito_id;
+    private Long responsable_id;
+
     
 
 

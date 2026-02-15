@@ -26,7 +26,7 @@ public class PagoController {
 
     @GetMapping("/facturas-pendiente/{nroHabitacion}")
     public ResponseEntity<List<FacturaDTO>> obtenerFacturasPendientes(@PathVariable Integer nroHabitacion) {
-        List<FacturaDTO> facturas = gestorPago.obtenerFacturasPendientes(nroHabitacion);
+        List<FacturaDTO> facturas = gestorPago.obtenerFacturasPendientes(nroHabitacion); 
         return ResponseEntity.ok(facturas);
     }
 
