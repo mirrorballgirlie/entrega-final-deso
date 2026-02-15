@@ -1,28 +1,27 @@
-/*package com.gestionhotelera.gestion_hotelera.controller;
-import java.time.LocalDate;
+package com.gestionhotelera.gestion_hotelera.controller;
 import java.util.List;
-import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-//import org.springframework.web.bind.annotation.GetMapping;
-//import org.springframework.web.bind.annotation.PostMapping;
-//import org.springframework.web.bind.annotation.RequestParam;
-//import org.springframework.web.bind.annotation.RestController;
-import com.gestionhotelera.gestion_hotelera.dto.HuespedDTO;
-import com.gestionhotelera.gestion_hotelera.dto.NotaCreditoDTO;
 
-import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.gestionhotelera.gestion_hotelera.dto.ConsumoDTO;
+import com.gestionhotelera.gestion_hotelera.dto.FacturaResponseDTO;
+import com.gestionhotelera.gestion_hotelera.dto.GenerarFacturaRequest;
+import com.gestionhotelera.gestion_hotelera.dto.HuespedDTO;
 import com.gestionhotelera.gestion_hotelera.gestores.GestorFactura;
 import com.gestionhotelera.gestion_hotelera.modelo.Factura;
 
-import org.springframework.web.bind.annotation.PathVariable;
-import java.util.stream.Collectors;
-import com.gestionhotelera.gestion_hotelera.dto.ConsumoDTO;
-import com.gestionhotelera.gestion_hotelera.dto.FacturaDTO;
+import lombok.RequiredArgsConstructor;
 @CrossOrigin(origins = "http://localhost:3000")
 @RestController
+@RequestMapping("/api/facturas")
 @RequiredArgsConstructor
 
 @RequestMapping("/api/facturas")
@@ -30,15 +29,30 @@ import com.gestionhotelera.gestion_hotelera.dto.FacturaDTO;
  
 public class FacturarController {
     private final GestorFactura gestorFactura;
+    
+    // @GetMapping("/buscar-ocupantes")                         //estamos buscando por fecha, cuando en el modelo existe una unica estadia activa por fecha
+    // public ResponseEntity<List<HuespedDTO>> buscarOcupantes(
+    //     @RequestParam Integer habitacion, 
+    //     @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate salida) {
+        
+    //     List<HuespedDTO> ocupantes = gestorFactura.obtenerOcupantes(habitacion, salida);
+    //     return ResponseEntity.ok(ocupantes);
+    // }
+
+    @GetMapping("/test")
+    public String test() {
+    System.out.println(">>> EL CONTROLADOR ESTÁ VIVO");
+    return "Hola";
+    }
 
     @GetMapping("/buscar-ocupantes")
     public ResponseEntity<List<HuespedDTO>> buscarOcupantes(
-        @RequestParam Integer habitacion,
-        @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate salida) {
+    @RequestParam Integer habitacion) {
 
-        List<HuespedDTO> ocupantes = gestorFactura.obtenerOcupantes(habitacion, salida);
-        return ResponseEntity.ok(ocupantes);
-    }
+    List<HuespedDTO> ocupantes = gestorFactura.obtenerOcupantes(habitacion);
+    return ResponseEntity.ok(ocupantes);
+}
+
 
     //selecciono un ocupante y veo si es mayor
     @GetMapping("/verificar-mayor/{huespedId}")
@@ -82,19 +96,61 @@ public class FacturarController {
         return (valorEstadia != null ? valorEstadia : 0) + totalConsumos;
     }
 
+    // @PostMapping("/generar")
+    // public ResponseEntity<Factura> generarFactura(@RequestBody GenerarFacturaRequest request) {
+    //     Factura factura = gestorFactura.generarFactura(request);
+    //     return ResponseEntity.ok(factura);
+    // }
 
+//     @PostMapping("/generar")
+// public ResponseEntity<FacturaResponseDTO> generarFactura(@RequestBody GenerarFacturaRequest request) {
+//     // 1. Ejecutar lógica de negocio
+//     Factura factura = gestorFactura.generarFactura(request);
     
-@GetMapping("/facturas-pendiente/{cuit}/{tipoDocumento}/{numeroDocumento}")
-public ResponseEntity<List<FacturaDTO>> obtenerFacturaPendiente(@PathVariable String cuit, @PathVariable String tipoDocumento, @PathVariable String numeroDocumento) {
-    
-    List<FacturaDTO> facturasPendientes = gestorFactura.obtenerPendientesBytipoDocumentoandnumeroDocumentoorcuit(tipoDocumento, numeroDocumento, cuit);
+//     // 2. Mapear a DTO de forma manual (o con MapStruct si lo usas)
+//     FacturaResponseDTO response = FacturaResponseDTO.builder()
+//             .id(factura.getId())
+//             .tipo(factura.getTipo().name())
+//             .cuit(factura.getCuit())
+//             .nombreResponsable(factura.getNombre())
+//             .monto(factura.getMonto())
+//             .iva(factura.getIva())
+//             .total(factura.getTotal())
+//             .fechaEmision(factura.getFechaEmision())
+//             .estado(factura.getEstado().name())
+//             // Aquí evitamos el NPE con un chequeo de nulidad
+//             .estado(factura.getEstado() != null ? factura.getEstado().name() : "NO_PAGO")
+//             .build();
 
-    if(facturasPendientes.isEmpty()) {
-        return ResponseEntity.noContent().build();
-    }else {
-        return ResponseEntity.ok(facturasPendientes);
+//     return ResponseEntity.ok(response);
+// }
+// 
+@PostMapping("/generar")
+public ResponseEntity<?> generarFactura(@RequestBody GenerarFacturaRequest request) {
+    try {
+        System.out.println(">>> RECIBIENDO PETICIÓN POSTMAN"); // Log manual
+        Factura factura = gestorFactura.generarFactura(request);
+        
+        FacturaResponseDTO response = FacturaResponseDTO.builder()
+                .id(factura.getId())
+                .tipo(factura.getTipo() != null ? factura.getTipo().name() : "B")
+                .cuit(factura.getCuit())
+                .nombreResponsable(factura.getNombre())
+                .monto(factura.getMonto())
+                .iva(factura.getIva())
+                .total(factura.getTotal())
+                .fechaEmision(factura.getFechaEmision())
+                .estado(factura.getEstado() != null ? factura.getEstado().name() : "NO_PAGO")
+                .build();
 
+        return ResponseEntity.ok(response);
+    } catch (Exception e) {
+        // ESTO VA A IMPRIMIR EL ERROR REAL EN TU TERMINAL
+        System.out.println("!!! ERROR DETECTADO !!!");
+        e.printStackTrace(); 
+        return ResponseEntity.status(500).body("Error real: " + e.getMessage());
     }
+}
     
 }
 

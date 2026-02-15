@@ -8,6 +8,8 @@ import java.util.List;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -25,8 +27,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.EnumType;
 
 
 @Getter
@@ -80,10 +80,18 @@ public class Estadia {
     @EqualsAndHashCode.Exclude
     private List<Consumo> consumos = new ArrayList<>();
 
-    @OneToOne(mappedBy = "estadia")
-    @ToString.Exclude            // <--- NUEVO
+    // @OneToOne(mappedBy = "estadia")
+    // @ToString.Exclude            // <--- NUEVO
+    // @EqualsAndHashCode.Exclude
+    // private Factura factura;
+
+    // CAMBIO CRÍTICO: Una factura tiene ManyToOne, así que acá va OneToMany
+    // Esto arregla el conflicto de mapeo que causa el 500
+    @OneToMany(mappedBy = "estadia")
+    @Builder.Default
+    @ToString.Exclude
     @EqualsAndHashCode.Exclude
-    private Factura factura;
+    private List<Factura> facturas = new ArrayList<>();
 
     public double calcularTotal() {
         double total = 0.0;

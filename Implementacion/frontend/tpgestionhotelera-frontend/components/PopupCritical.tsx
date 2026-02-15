@@ -3,35 +3,17 @@ import Button from "./Button";
 
 interface Props {
   message: string;
-  primaryText?: string;
+  primaryText?: string;    
   secondaryText?: string;
-  onPrimary?: () => void;
+  onPrimary?: () => void;  
   onSecondary?: () => void;
-  type?: "default" | "anyKey"; // <-- nuevo prop
+  hideButtons?: boolean;   // 👈 AGREGAR ESTO
+  
+  //onAccept: () => void;
+  //onCancel: () => void;
 }
 
-export default function PopupCritical({
-  message,
-  primaryText,
-  secondaryText,
-  onPrimary,
-  onSecondary,
-  type = "default",
-}: Props) {
-
-  // Escuchar cualquier tecla solo en modo "anyKey"
-  useEffect(() => {
-    if (type !== "anyKey" || !onPrimary) return;
-
-    const handleKeyDown = () => {
-      onPrimary();
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [type, onPrimary]);
-
+export default function PopupCritical({ message, primaryText, secondaryText, onPrimary, onSecondary, hideButtons }: Props) {
   return (
     <div style={{
       position: "fixed",
@@ -69,29 +51,46 @@ export default function PopupCritical({
           justifyContent: "center",
           alignItems: "center",
           padding: "5rem",
+          // width: "auto",
+          // height: "200px",
+      }}> 
+        <p style={{
+          color: "#000",
+          fontFamily: "Open Sans",
+          fontSize: "32px",
+          fontStyle: "normal",
+          fontWeight: 400,
+          lineHeight: "normal",
+          
+      
+        }}>{message}</p>
+      </div>
+        
+        {/* <div style={{
+          padding: "2rem",
+          display:"flex",
+          justifyContent:"space-between",
+          alignContent:"flex-end",
+          // width: "auto",
+          // height: "auto",
+          
         }}>
-          <p style={{
-            color: "#000",
-            fontFamily: "Open Sans",
-            fontSize: "32px",
-            fontStyle: "normal",
-            fontWeight: 400,
-            lineHeight: "normal",
-          }}>{message}</p>
-        </div>
+          <Button onClick={onPrimary} >{primaryText}</Button>
+          <Button onClick={onSecondary}>{secondaryText}</Button >
+        </div> */}
+        {!hideButtons && primaryText && secondaryText && onPrimary && onSecondary && (
+        <div style={{
+        padding: "2rem",
+        display:"flex",
+        justifyContent:"space-between",
+        alignContent:"flex-end",
+      }}>
+    <Button onClick={onPrimary}>{primaryText}</Button>
+    <Button onClick={onSecondary}>{secondaryText}</Button>
+  </div>
+)}
 
-        {/* Solo mostramos botones si no es modo anyKey */}
-        {type !== "anyKey" && (
-          <div style={{
-            padding: "2rem",
-            display:"flex",
-            justifyContent:"space-between",
-            alignContent:"flex-end",
-          }}>
-            {primaryText && <Button onClick={onPrimary}>{primaryText}</Button>}
-            {secondaryText && <Button onClick={onSecondary}>{secondaryText}</Button>}
-          </div>
-        )}
+        
       </main>
     </div>
   );

@@ -4,6 +4,7 @@ public enum EstadoEstadia {
 
     ACTIVA,     //0
     CANCELADA,   //1
-    FACTURADA   //2
+    FACTURADA,   //2
+    OCUPADA,     //3
 
 }

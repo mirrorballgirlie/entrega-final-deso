@@ -42,6 +42,12 @@ public class Consumo {
     //private boolean facturado = false;
     //el efecto: si el builder no lo setea, pondra el valor false por defecto
 
+    // @Builder.Default
+    // @Column(nullable = false)
+    // private boolean facturado = false;
+
+    // CORRECCIÓN 4: El error de Lombok.
+    // Para que @Builder funcione con valores por defecto, SIEMPRE usa @Builder.Default e inicializa la variable.
     @Builder.Default
     @Column(nullable = false)
     private boolean facturado = false;
