@@ -32,8 +32,7 @@ const triggerToast = (msg: string, type: string) => {
 
   const handleBuscar = async (filtros: any) => {
     const base = process.env.NEXT_PUBLIC_API_BASE || "";
-    const response = await fetch(`${base}/api/facturas/facturas-pendiente/${filtros.cuit}/${filtros.tipoDocumento}/${filtros.numeroDocumento}`);
-
+    const response = await fetch(`${base}/api/facturas/facturas-pendiente?cuit=${filtros.cuit}&tipoDocumento=${filtros.tipoDocumento}&documento=${filtros.numeroDocumento}`);
     if (response.ok) {
       const data = await response.json();
       setFacturasPendientes(data);

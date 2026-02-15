@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import com.gestionhotelera.gestion_hotelera.gestores.GestorFactura;
 import com.gestionhotelera.gestion_hotelera.modelo.Factura;
+import com.gestionhotelera.gestion_hotelera.gestores.GestorPago;
 
 import org.springframework.web.bind.annotation.PathVariable;
 import java.util.stream.Collectors;
@@ -31,6 +32,8 @@ import com.gestionhotelera.gestion_hotelera.dto.FacturaDTO;
 public class FacturarController {
     private final GestorFactura gestorFactura;
 
+private final GestorFactura gestorPago;
+    
     @GetMapping("/buscar-ocupantes")
     public ResponseEntity<List<HuespedDTO>> buscarOcupantes(
         @RequestParam Integer habitacion,
@@ -84,10 +87,14 @@ public class FacturarController {
 
 
     
-@GetMapping("/facturas-pendiente/{cuit}/{tipoDocumento}/{numeroDocumento}")
-public ResponseEntity<List<FacturaDTO>> obtenerFacturaPendiente(@PathVariable String cuit, @PathVariable String tipoDocumento, @PathVariable String numeroDocumento) {
+@GetMapping("/facturas-pendiente")
+public ResponseEntity<List<FacturaDTO>> obtenerFacturaPendiente(
+    @RequestParam(required = false) String cuit,
+    @RequestParam(required = false) String tipoDocumento,
+    @RequestParam(required = false) String documento
+    ) {
     
-    List<FacturaDTO> facturasPendientes = gestorFactura.obtenerPendientesBytipoDocumentoandnumeroDocumentoorcuit(tipoDocumento, numeroDocumento, cuit);
+    List<FacturaDTO> facturasPendientes = gestorPago.obtenerPendientesBytipoDocumentoandnumeroDocumentoorcuit(tipoDocumento, documento, cuit);
 
     if(facturasPendientes.isEmpty()) {
         return ResponseEntity.noContent().build();
