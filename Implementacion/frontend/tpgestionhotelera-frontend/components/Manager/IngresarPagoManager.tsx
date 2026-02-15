@@ -22,10 +22,10 @@ export default function IngresarPagoManager() {
       return;
     }
        
-    try {
+    try { 
       //simulo api
       const base = process.env.NEXT_PUBLIC_API_BASE || "";
-      const res = await fetch(`${base}/api/pago/facturas-pendiente/${nroHabitacion}`); 
+      const res = await fetch(`http://localhost:8080/api/pago/facturas-pendientes/${nroHabitacion}`); 
       
       if (!res.ok) throw new Error();
       const data = await res.json();
@@ -51,7 +51,7 @@ export default function IngresarPagoManager() {
   const pagarFactura = async (factura: any) => {
     try {
       const base = process.env.NEXT_PUBLIC_API_BASE || "";
-      const res = await fetch(`${base}/api/pagar/${factura.monto}/de/${factura.id}`, {
+      const res = await fetch(`${base}/api/pago/pagar/${factura.monto}/de/${factura.id}`, {
         method: "POST",
       });
       if (!res.ok) throw new Error();}

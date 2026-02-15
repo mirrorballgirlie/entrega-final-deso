@@ -15,9 +15,10 @@ public interface ResponsableDePagoRepository extends JpaRepository<ResponsableDe
     @Query("SELECT r FROM ResponsableDePago r " +
             "LEFT JOIN PersonaJuridica pj ON r.id = pj.id " +
             "LEFT JOIN PersonaFisica pf ON r.id = pf.id " +
-            "WHERE (:razon IS NULL OR :razon = '' OR UPPER(pj.nombreRazonSocial) LIKE UPPER(CONCAT('%', :razon, '%'))) " +
+            "WHERE (:razonSocial IS NULL OR :razonSocial = '' OR UPPER(pj.nombreRazonSocial) LIKE UPPER(CONCAT('%', :razonSocial, '%'))) " +
             "AND (:cuit IS NULL OR :cuit = '' OR r.cuit LIKE CONCAT('%', :cuit, '%'))")
-    List<ResponsableDePago> buscarPorCriterios(@Param("razon") String razon, @Param("cuit") String cuit);
+    List<ResponsableDePago> buscarPorCriterios(@Param("razonSocial") String razonSocial, @Param("cuit") String cuit);
 }
 
 
+ 

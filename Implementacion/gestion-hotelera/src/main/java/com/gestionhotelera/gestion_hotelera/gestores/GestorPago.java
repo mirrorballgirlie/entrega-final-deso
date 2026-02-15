@@ -8,14 +8,16 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.*;
 import com.gestionhotelera.gestion_hotelera.modelo.Factura;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor 
 
 
 public class GestorPago {
     private final FacturaRepository facturaRepository;
 
+    @Transactional(readOnly = true)
     public List<FacturaDTO> obtenerFacturasPendientes(Integer nroHabitacion) {
         
         return facturaRepository.findFacturasPendientesByNroHabitacionyEstado(nroHabitacion, EstadoFactura.NO_PAGO)

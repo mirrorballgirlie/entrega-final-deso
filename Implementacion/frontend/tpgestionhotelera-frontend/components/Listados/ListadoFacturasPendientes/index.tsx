@@ -36,7 +36,7 @@ export default function ListadoFacturasPendientes({ facturas, onSeleccionar, onB
         <tbody>
           {facturas.map((f) => (
             <tr key={f.id} className={styles.row}>
-              <td className={styles.cell}>{f.numeroFactura}</td>
+              <td className={styles.cell}>{f.nombre}</td>
               <td className={styles.cell}>{f.nombreResponsable}</td>
               <td className={styles.cell} style={{ fontWeight: "bold" }}>
                 ${f.total.toLocaleString()}

@@ -13,7 +13,7 @@ import lombok.experimental.SuperBuilder;
 @Entity
 @Getter
 @Setter
-@DiscriminatorValue("persona_fisica")
+@DiscriminatorValue("PERSONA_FISICA")
 @PrimaryKeyJoinColumn(name = "id")
 @SuperBuilder
 @NoArgsConstructor
@@ -24,6 +24,8 @@ public class PersonaFisica extends ResponsableDePago {
     @OneToOne
     @JoinColumn(name = "huesped_id")
     private Huesped huesped; // opcional
+
+    @Column(name = "nombre_razon_social")
     private String nombreRazonSocial; // el nombre completo de la persona física, se setea automáticamente a partir del nombre y apellido del huésped asociado
 
     @Override

@@ -96,11 +96,10 @@ public class GestorResponsableDePagoFacade {
         }
     }
     private PersonaJuridica crearPersonaJuridica(AltaResponsableDePagoRequest request) {
-        PersonaJuridica pj = PersonaJuridica.builder()
-                .cuit(request.getCuit())
-                .nombreRazonSocial(request.getRazonSocial().toUpperCase())
-                .telefono(request.getTelefono())
-                .build();
+        PersonaJuridica pj = new PersonaJuridica();
+        pj.setCuit(request.getCuit());
+        pj.setNombreRazonSocial(request.getRazonSocial().toUpperCase());
+        pj.setTelefono(request.getTelefono()); 
 
         pj.setDireccion(mapearDireccion(request, pj, null));
         return personaJuridicaRepository.save(pj);
@@ -111,13 +110,14 @@ public class GestorResponsableDePagoFacade {
         pf.setCuit(request.getCuit());
         pf.setTelefono(request.getTelefono());
         pf.setNombreRazonSocial(request.getRazonSocial().toUpperCase());
-        pf.setHuesped(null); // SIEMPRE null, porque es un TERCERO
+        pf.setHuesped(null); 
 
-        PersonaFisica pfGuardada = personaFisicaRepository.save(pf);
-
+         PersonaFisica pfGuardada = personaFisicaRepository.save(pf);
 
         Direccion dir = mapearDireccion(request, null, pfGuardada);
         direccionRepository.save(dir);
+
+       
 
         return pfGuardada;
     }

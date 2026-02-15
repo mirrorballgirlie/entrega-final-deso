@@ -13,11 +13,12 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "responsable_de_pago")
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "dtype", discriminatorType = DiscriminatorType.STRING)
 @SuperBuilder
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor 
 
 public abstract class ResponsableDePago {
 

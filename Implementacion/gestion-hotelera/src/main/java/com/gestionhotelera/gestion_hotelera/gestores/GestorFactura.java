@@ -136,6 +136,7 @@ public class GestorFactura {
         /*if (itemsFacturadosIds != null && !itemsFacturadosIds.isEmpty()) {
             consumoRepository.marcarComoFacturados(itemsFacturadosIds, guardada.getId());
         }*/
+    
 
 //return guardada.getId();
 // }

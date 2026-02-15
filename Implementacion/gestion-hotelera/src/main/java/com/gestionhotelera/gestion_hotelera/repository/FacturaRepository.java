@@ -12,11 +12,35 @@ import java.util.Optional;
 import com.gestionhotelera.gestion_hotelera.modelo.EstadoEstadia;
 import com.gestionhotelera.gestion_hotelera.modelo.EstadoFactura;
 import java.util.List;
-
+ 
 public interface FacturaRepository extends JpaRepository<Factura, Long> {
 
-    @Query("SELECT f FROM Factura f JOIN f.estadia e WHERE e.habitacion.numero = :nroHabitacion AND f.estado = :estado")
-    List<Factura> findFacturasPendientesByNroHabitacionyEstado(@Param("nroHabitacion") Integer nroHabitacion, @Param("estado") EstadoFactura estado);
+   @Query("SELECT f FROM Factura f " +
+       "JOIN f.estadia e " +
+       "JOIN e.habitacion h " +
+       "WHERE h.numero = :nroHabitacion " +
+       "AND f.estado = :estado")
+List<Factura> findFacturasPendientesByNroHabitacionyEstado(
+    @Param("nroHabitacion") Integer nroHabitacion, 
+    @Param("estado") EstadoFactura estado
+);
+
+
+@Query("SELECT f FROM Factura f " +
+       "JOIN f.estadia e " +
+       "JOIN f.responsableDePago r " + 
+       "WHERE f.estado = :estado " +
+       "AND (" +
+       "  (:cuit IS NULL OR r.cuit = :cuit) OR " +
+       "  ((:tipoDoc IS NULL OR r.tipoDocumento = :tipoDoc) AND (:numDoc IS NULL OR r.numeroDocumento = :numDoc))" +
+       ")")
+List<Factura> findFacturasPendientesByTipoDocumentoyNumeroDocumentooCuit(
+    @Param("cuit") String cuit, 
+    @Param("tipoDoc") String tipoDoc, 
+    @Param("numDoc") String numDoc,
+    @Param("estado") EstadoFactura estado
+);
+
 
     List<Factura> findAllByCuit(String cuit);
 
