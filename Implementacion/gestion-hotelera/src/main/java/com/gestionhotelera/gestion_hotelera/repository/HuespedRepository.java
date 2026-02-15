@@ -43,7 +43,7 @@ public interface HuespedRepository extends JpaRepository<Huesped, Long> {
         //         String tipoDocumento,
         //         String documento
         // );
-       
+
         @Query("""
             SELECT h FROM Huesped h
             WHERE (:apellido IS NULL OR LOWER(h.apellido) LIKE LOWER(CONCAT(CAST(:apellido AS string), '%')))

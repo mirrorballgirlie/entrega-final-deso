@@ -31,7 +31,13 @@ public class Direccion {
 
     @OneToOne
     @JoinColumn(name = "persona_juridica_id")
+    @JsonIgnore
     private PersonaJuridica personaJuridica;
+
+    @OneToOne
+    @JoinColumn(name = "persona_fisica_id")
+    @JsonIgnore
+    private PersonaFisica personaFisica;
 
     @OneToOne(mappedBy = "direccion")
     @JsonIgnore

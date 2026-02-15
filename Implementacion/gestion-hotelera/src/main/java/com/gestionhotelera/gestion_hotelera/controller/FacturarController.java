@@ -30,12 +30,12 @@ import com.gestionhotelera.gestion_hotelera.dto.FacturaDTO;
  
 public class FacturarController {
     private final GestorFactura gestorFactura;
-    
+
     @GetMapping("/buscar-ocupantes")
     public ResponseEntity<List<HuespedDTO>> buscarOcupantes(
-        @RequestParam Integer habitacion, 
+        @RequestParam Integer habitacion,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate salida) {
-        
+
         List<HuespedDTO> ocupantes = gestorFactura.obtenerOcupantes(habitacion, salida);
         return ResponseEntity.ok(ocupantes);
     }
@@ -70,7 +70,7 @@ public class FacturarController {
         Double valorEstadia = this.obtenerValorEstadia(estadiaId).getBody();
 
         List<ConsumoDTO> lista = this.obtenerItemsPendientes(estadiaId).getBody();
-        
+
         double totalConsumos = 0;
         if (lista != null) {
             totalConsumos = lista.stream()

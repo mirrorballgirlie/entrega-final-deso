@@ -38,7 +38,7 @@ public interface EstadiaRepository extends JpaRepository<Estadia, Long> {
         AND e.estado = EstadoEstadia.ACTIVA
     """)
     boolean existeEstadiaEnDia(@Param("idHabitacion") Long idHabitacion, @Param("dia") LocalDate dia);
-    
+
     // Método para detectar solapamientos al crear nueva estadía (importante para tu validación anterior)
     @Query("""
         SELECT e FROM Estadia e

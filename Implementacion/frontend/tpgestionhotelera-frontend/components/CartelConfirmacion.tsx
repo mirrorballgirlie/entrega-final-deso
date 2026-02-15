@@ -3,9 +3,11 @@ import { useEffect } from "react";
 
 interface Props {
   onContinue: () => void;
+  message?: string;
+
 }
 
-export default function CartelConfirmacion({ onContinue }: Props) {
+export default function CartelConfirmacion({ onContinue, message }: Props) {
   useEffect(() => {
     const handleKeyDown = () => onContinue();
     window.addEventListener("keydown", handleKeyDown);
@@ -36,6 +38,21 @@ export default function CartelConfirmacion({ onContinue }: Props) {
         }}
       >
         <p>Reservas cancelada/s</p>
+        <div style={{
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  padding: "5rem",
+                }}>
+                  <p style={{
+                    color: "#000",
+                    fontFamily: "Open Sans",
+                    fontSize: "32px",
+                    fontStyle: "normal",
+                    fontWeight: 400,
+                    lineHeight: "normal",
+                  }}>{message}</p>
+                </div>
         <span
           style={{
             display: "block",

@@ -23,3 +23,4 @@ public interface ConsumoRepository extends JpaRepository<Consumo, Long> {
 
 }
 
+}

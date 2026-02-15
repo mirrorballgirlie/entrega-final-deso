@@ -7,8 +7,8 @@ import Button from "./Button";
 interface Props {
   message: string;
   option1Text: string;
-  option2Text: string;
-  option3Text: string;
+  option2Text?: string;
+  option3Text?: string;
   onOption1: () => void;
   onOption2: () => void;
   onOption3: () => void;
@@ -71,8 +71,8 @@ export default function PopupThreeOptions({
           justifyContent: "space-between"
         }}>
           <Button onClick={onOption1}>{option1Text}</Button>
-          <Button onClick={onOption2}>{option2Text}</Button>
-          <Button onClick={onOption3}>{option3Text}</Button>
+          {option2Text && onOption2 && ( <Button onClick={onOption2}>{option2Text}</Button> )}
+          {option3Text && onOption3 &&( <Button onClick={onOption3}>{option3Text}</Button> )}
         </div>
       </main>
     </div>

@@ -1,13 +1,7 @@
 package com.gestionhotelera.gestion_hotelera.modelo;
 import java.util.List;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
@@ -16,8 +10,9 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 @Data
-@Table(name = "responsableDePago")
+@Table(name = "responsable_de_pago")
 @Entity
+@Inheritance(strategy = InheritanceType.JOINED)
 @SuperBuilder
 @Getter
 @Setter
@@ -27,11 +22,12 @@ import lombok.experimental.SuperBuilder;
 public abstract class ResponsableDePago {
 
     @Column(unique = true, nullable = false)
-    private String cuit;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    private String cuit;
+    //private String razonSocial;
 
     @OneToMany(mappedBy = "responsableDePago")
     private List<Factura> facturas;
@@ -39,5 +35,5 @@ public abstract class ResponsableDePago {
     @Column(nullable = false)
     private String telefono; // <-- agregado, obligatorio
 
-
+    public abstract String getRazonSocial();
 }

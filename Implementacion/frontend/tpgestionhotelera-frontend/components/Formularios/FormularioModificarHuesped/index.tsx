@@ -52,7 +52,6 @@ export default function FormularioModificarHuesped({
       <main className={styles.mainContent}>
         <form id="formHuesped" className={styles.form} onSubmit={onSubmit}>
 
-          {/* --- DATOS PERSONALES --- */}
           <h2 className={styles.sectionTitle}> Datos Personales</h2>
           <div className={styles.row}>
             <FormField label="Apellido *">
@@ -151,7 +150,6 @@ export default function FormularioModificarHuesped({
             </FormField>
           </div>
 
-          {/* --- DIRECCIÓN --- */}
           <h2 className={styles.sectionTitle}> Dirección </h2>
           <div className={styles.row}>
             <FormField label="Pais *">
@@ -253,7 +251,6 @@ export default function FormularioModificarHuesped({
             </FormField>
           </div>
 
-          {/* --- INFORMACIÓN LABORAL --- */}
           <h2 className={styles.sectionTitle}> Información Laboral </h2>
           <div className={styles.row}>
             <FormField label="Posición Frente al IVA *">
@@ -279,7 +276,6 @@ export default function FormularioModificarHuesped({
             </FormField>
           </div>
 
-          {/* --- CONTACTO --- */}
           <h2 className={styles.sectionTitle}> Contacto </h2>
           <div className={styles.row}>
             <FormField label="Teléfono *">
