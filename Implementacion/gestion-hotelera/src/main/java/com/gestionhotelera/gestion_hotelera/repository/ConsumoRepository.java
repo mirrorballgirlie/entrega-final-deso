@@ -1,6 +1,7 @@
 package com.gestionhotelera.gestion_hotelera.repository;
 
 import com.gestionhotelera.gestion_hotelera.modelo.Consumo;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;
@@ -20,7 +21,5 @@ public interface ConsumoRepository extends JpaRepository<Consumo, Long> {
     @Transactional //la hace atomica
     @Query("UPDATE Consumo c SET c.factura.id = :facturaId WHERE c.id IN :ids")
     void marcarComoFacturados(@Param("ids") List<Long> ids, @Param("facturaId") Long facturaId);*/
-
-}
 
 }
