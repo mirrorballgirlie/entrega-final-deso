@@ -1,4 +1,4 @@
-package com.gestionhotelera.gestion_hotelera.gestores;
+/*package com.gestionhotelera.gestion_hotelera.gestores;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,6 +20,11 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import com.gestionhotelera.gestion_hotelera.gestores.strategy.RecargoCheckoutStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import com.gestionhotelera.gestion_hotelera.dto.FacturaDTO;
+import java.time.LocalDateTime;
+
+
 
 
 @Service
@@ -61,13 +66,13 @@ public class GestorFactura {
     public boolean esMayorDeEdad(Long huespedId) {
             Huesped huesped = huespedRepository.findById(huespedId)
                 .orElseThrow(() -> new ResourceNotFoundException("Huésped no encontrado"));
-            
+
             return java.time.Period.between(huesped.getFechaNacimiento(), LocalDate.now()).getYears() >= 18;
     }
 
     public List<ConsumoDTO> obtenerItemsPendientes(Long estadiaId) {
         List<Consumo> pendientes = consumoRepository.findPendientesByEstadiaId(estadiaId);
-        
+
         return pendientes.stream().map(c -> {
             ConsumoDTO dto = new ConsumoDTO();
             dto.setNombre(c.getNombre());
@@ -90,18 +95,18 @@ public class GestorFactura {
 
         // 2. Aplicar Strategy para el recargo por hora de salida
         // Supongamos que la hora actual es la de salida
-        LocalTime horaSalidaActual = LocalTime.now(); 
+        LocalTime horaSalidaActual = LocalTime.now();
         double recargo = recargoStrategy.calcularRecargo(horaSalidaActual, precioNoche);
 
         return subtotalAlojamiento + recargo;
     }
 
     public double calcularMontoTotalPendiente(Long estadiaId) {
-            
-        List<ConsumoDTO> items = this.obtenerItemsPendientes(estadiaId); 
+
+        List<ConsumoDTO> items = this.obtenerItemsPendientes(estadiaId);
 
         double totalConsumos = items.stream()
-                .mapToDouble(dto -> dto.getSubtotal()) 
+                .mapToDouble(dto -> dto.getSubtotal())
                 .sum();
 
         double valorEstadia = this.obtenerValorEstadia(estadiaId);
@@ -112,7 +117,7 @@ public class GestorFactura {
     @Transactional
     public Long crearFactura(FacturaDTO dto, Long estadiaId, List<Long> itemsFacturadosIds) {
         Estadia estadia = estadiaRepository.findById(estadiaId).orElseThrow();
-        
+
         Factura factura = Factura.builder()
             .nombre(dto.getNombre())
             .tipo(dto.getTipo())
@@ -128,26 +133,12 @@ public class GestorFactura {
         Factura guardada = facturaRepository.save(factura);
 
         // 2. Marcar consumos como FACTURADOS para que no aparezcan de nuevo
-        if (itemsFacturadosIds != null && !itemsFacturadosIds.isEmpty()) {
+        /*if (itemsFacturadosIds != null && !itemsFacturadosIds.isEmpty()) {
             consumoRepository.marcarComoFacturados(itemsFacturadosIds, guardada.getId());
-        }
+        }*/
 
-        return guardada.getId();
-    }
+//return guardada.getId();
+// }
 
-3. El Controlador (FacturarController.java)
-Agregamos el @PostMapping para que React pueda enviar la factura final.
 
-Java
-
-@PostMapping("/generar")
-public ResponseEntity<Long> generarFactura(@RequestBody FacturaDTO facturaDto, 
-                                           @RequestParam Long estadiaId,
-                                           @RequestBody List<Long> itemsIds) {
-    Long id = gestorFactura.crearFactura(facturaDto, estadiaId, itemsIds);
-    return ResponseEntity.ok(id);
-}
-    
-}
-    
-
+//}

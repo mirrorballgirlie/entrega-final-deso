@@ -14,13 +14,6 @@
   align-items: center;
   height: 60px;
 
-  /* color: #FFFCF5;
-  font-family: "Mate SC";
-  font-size: 48px;
-  font-style: normal;
-  font-weight: 400;
-  line-height: normal; */
-
 }
 
 .title {
@@ -37,7 +30,7 @@
 }
 
 .nav a:hover {
-  color: #FFD700; /* dorado suave al pasar el mouse */
+  color: #FFD700;
 }
 
 .main {
@@ -71,6 +64,7 @@ header .hotelpremier {
 .navbar {
     margin-top: 20px;
     display: flex;
+    align-items: center; /*para q no se mueva el molesto del cerrar sesion!!!!*/
     justify-content: flex-end ;
     gap: 20px;
     width: 1920px;

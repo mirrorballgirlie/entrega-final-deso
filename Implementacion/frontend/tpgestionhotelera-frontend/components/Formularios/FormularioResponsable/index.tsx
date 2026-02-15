@@ -9,6 +9,7 @@ export default function FormularioResponsablePago({
   const cuitRef = useRef<HTMLInputElement>(null);
   const [errores, setErrores] = useState<string[]>([]);
   const [form, setForm] = useState({
+      tipoPersona: "JURIDICA", huespedId: 0,
     razonSocial: "", cuit: "", telefono: "",
     calle: "", numero: "", depto: "", piso: "",
     cp: "", localidad: "", provincia: "", pais: "Argentina"
@@ -22,12 +23,13 @@ export default function FormularioResponsablePago({
     if(errores.length > 0) setErrores([]);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async (e: React.FormEvent) => {
+      e.preventDefault();
     const nuevosErrores: string[] = [];
     const camposOpcionales = ["piso", "depto"];
     // validación
     Object.entries(form).forEach(([key, value]) => {
-      if (!camposOpcionales.includes(key) && !value.trim()) {
+      if (!camposOpcionales.includes(key) && typeof value === 'string' && !value.trim ()) {
           nuevosErrores.push(`EL CAMPO ${key.toUpperCase()} ES OBLIGATORIO`);
       }
 
@@ -37,12 +39,32 @@ export default function FormularioResponsablePago({
       setErrores(nuevosErrores);
       return;
     }
+        const dataParaEnviar = { //porque direccion es compuesta
+              tipoPersona: form.tipoPersona,
+              razonSocial: form.razonSocial,
+              cuit: form.cuit,
+              telefono: form.telefono,
+              huespedId: null, // Como es alta de tercero, va null
+              direccion: {
+                calle: form.calle,
+                numero: form.numero,
+                piso: form.piso,
+                departamento: form.depto, //en back es 'departamento'
+                codigoPostal: form.cp,    //enback es 'codigoPostal'
+                ciudad: form.localidad,   //en back es 'ciudad'
+                provincia: form.provincia,
+                pais: form.pais
+              }
+          };
 
-    const resultado = onGuardar(form);
+    const resultado = await onGuardar(dataParaEnviar);
+
     if (resultado === "EXISTE") {
       setErrores(["¡CUIDADO! EL CUIT YA EXISTE EN EL SISTEMA"]);
       cuitRef.current?.focus();
-    }
+    } else if (resultado === "ERROR") {
+        setErrores(["Hubo un error con el servidor"]);
+        }
   };
 
   return (
@@ -53,23 +75,43 @@ export default function FormularioResponsablePago({
             </div>
 
       <div className={styles.formCard}>
-        <div className={styles.sectionTitle}>Datos Fiscales</div>
+        <div className={styles.sectionTitle}>Datos Fiscales / Personales</div>
         <div className={styles.verticalFields}>
           <div className={styles.field}>
-            <label>Razón Social</label>
+            <label>Razón Social / Nombre y Apellido *</label>
             <input name="razonSocial" placeholder="Ej: Hotel Premier S.A." className={styles.input} value={form.razonSocial} onChange={handleChange} />
           </div>
 
           <div className={styles.field}>
-            <label>CUIT</label>
+            <label>CUIT*</label>
             <input name="cuit" ref={cuitRef} placeholder="00-00000000-0" className={styles.input} value={form.cuit} onChange={handleChange} />
           </div>
 
           <div className={styles.field}>
-            <label>Teléfono</label>
+            <label>Teléfono*</label>
             <input name="telefono" placeholder="Ej: +54 9 11 ..." className={styles.input} value={form.telefono} onChange={handleChange} />
           </div>
         </div>
+
+        <div className={styles.radio}>
+          <label>
+            <input
+              type="radio"
+              value="FISICA"
+              checked={form.tipoPersona === "FISICA"}
+              onChange={(e) => setForm({...form, tipoPersona: e.target.value})}
+            /> Persona Física
+          </label>
+          <label style={{ marginLeft: '20px' }}>
+            <input
+              type="radio"
+              value="JURIDICA"
+              checked={form.tipoPersona === "JURIDICA"}
+              onChange={(e) => setForm({...form, tipoPersona: e.target.value})}
+            /> Persona Jurídica
+          </label>
+        </div>
+
 
         <div className={styles.sectionTitle}>Dirección</div>
         <div className={styles.gridDir}>

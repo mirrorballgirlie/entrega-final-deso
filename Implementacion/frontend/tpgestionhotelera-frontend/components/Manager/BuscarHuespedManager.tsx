@@ -7,7 +7,7 @@ import ModificarHuespedManager from "@/components/Manager/ModificarHuespedManage
 
 interface Props {
   mode: "reservar" | "ocupar" | "buscar";
- 
+
 }
 
 export default function BuscarHuespedManager({ mode }: Props) {

@@ -1,4 +1,4 @@
-package com.gestionhotelera.gestion_hotelera.controller;
+/*package com.gestionhotelera.gestion_hotelera.controller;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -21,12 +21,12 @@ import com.gestionhotelera.gestion_hotelera.dto.ConsumoDTO;
 
 public class FacturarController {
     private final GestorFactura gestorFactura;
-    
+
     @GetMapping("/buscar-ocupantes")
     public ResponseEntity<List<HuespedDTO>> buscarOcupantes(
-        @RequestParam Integer habitacion, 
+        @RequestParam Integer habitacion,
         @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate salida) {
-        
+
         List<HuespedDTO> ocupantes = gestorFactura.obtenerOcupantes(habitacion, salida);
         return ResponseEntity.ok(ocupantes);
     }
@@ -61,7 +61,7 @@ public class FacturarController {
         Double valorEstadia = this.obtenerValorEstadia(estadiaId).getBody();
 
         List<ConsumoDTO> lista = this.obtenerItemsPendientes(estadiaId).getBody();
-        
+
         double totalConsumos = 0;
         if (lista != null) {
             totalConsumos = lista.stream()
@@ -73,12 +73,7 @@ public class FacturarController {
         return (valorEstadia != null ? valorEstadia : 0) + totalConsumos;
     }
 
-    @PostMapping("/generar")
-public ResponseEntity<Long> generarFactura(@RequestBody FacturaDTO facturaDto, 
-                                           @RequestParam Long estadiaId,
-                                           @RequestBody List<Long> itemsIds) {
-    Long id = gestorFactura.crearFactura(facturaDto, estadiaId, itemsIds);
-    return ResponseEntity.ok(id);
+
+
 }
-    
-}
+*/

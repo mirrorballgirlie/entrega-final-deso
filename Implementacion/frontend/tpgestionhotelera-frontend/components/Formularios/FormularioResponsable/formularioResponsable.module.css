@@ -2,7 +2,10 @@
   max-width: 900px;
   margin: 0 auto;
 }
-
+.radio{
+color: #000;
+margin-top: 20px;
+}
 .formCard {
   background: white;
   padding: 35px;
@@ -12,7 +15,7 @@
 .titleWrapper {
   width: 100%;
   display: flex;
-  justify-content: center; /* Lo centra horizontalmente */
+  justify-content: center;
   align-items: center;
   margin-bottom: 10px;
 }
