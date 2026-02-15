@@ -64,6 +64,7 @@ public class GestorResponsableDePagoFacade {
         return responsableRepository.buscarPorCriterios(razonSocial, cuit);
     }
 //dar alta
+    @Transactional
     public ResponsableDePago darAltaResponsableDePago(AltaResponsableDePagoRequest request){
         validarCamposObligatoriosAlta(request);
         verificarCuitDuplicado(request.getCuit());
@@ -133,7 +134,7 @@ public class GestorResponsableDePagoFacade {
                 .personaFisica(pf)
                 .build();
     }
-
+    @Transactional
     public void modificarResponsableDePago(Long id, ModificarResponsableDePagoRequest request){
         ResponsableDePago responsable = buscarPorId(id);
 
@@ -154,7 +155,11 @@ public class GestorResponsableDePagoFacade {
                         .orElseThrow(() -> new RuntimeException("Responsable de Pago no encontrado con ID: " + id)));
     }
 
-
+    public ResponsableDePago obtenerResponsablePorId(Long id) {
+        return responsableRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Responsable no encontrado"));
+    }
+    @Transactional
     public void darBajaResponsableDePago(Long id) {
         ResponsableDePago responsable = buscarPorId(id);
         validarSiPuedeEliminarse(responsable);

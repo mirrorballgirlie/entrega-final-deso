@@ -23,16 +23,6 @@ public class ResponsableDePagoController {
 
     private final GestorResponsableDePagoFacade gestorResponsableDePagoFacade;
 
-    // ------------------- BUSCAR -------------------
-    // @GetMapping
-    // public ResponseEntity<List<ResponsableDePago>> buscarResponsables(
-    //         @RequestParam(required = false) String razonSocial,
-    //         @RequestParam(required = false) String cuit) {
-
-    //     List<ResponsableDePago> resultados = gestorResponsableDePagoFacade.buscarResponsableDePago(razonSocial, cuit);
-    //     return ResponseEntity.ok(resultados);
-    // }
-
     @GetMapping("/buscar")
     public ResponseEntity<?> buscarResponsables(
             @RequestParam(required = false) String razonSocial,
@@ -69,6 +59,16 @@ public class ResponsableDePagoController {
             return ResponseEntity.status(HttpStatus.CREATED).body(nuevo);
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
+    }
+    // ---obtener por id---
+    @GetMapping("/{id}")
+    public ResponseEntity<?> obtenerResponsablePorId(@PathVariable Long id) {
+        try {
+            ResponsableDePago responsable = gestorResponsableDePagoFacade.obtenerResponsablePorId(id);
+            return ResponseEntity.ok(responsable);
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("No se encontró el responsable con ID: " + id);
         }
     }
 

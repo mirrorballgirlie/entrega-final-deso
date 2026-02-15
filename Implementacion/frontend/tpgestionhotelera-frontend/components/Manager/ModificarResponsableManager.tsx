@@ -17,48 +17,98 @@ export default function ModificarResponsableManager({ id }: { id: string }) {
   const [mostrarCartelImposible, setMostrarCartelImposible] = useState(false);
   const [mostrarCartelExitoBaja, setMostrarCartelExitoBaja] = useState(false);
 
-  useEffect(() => {
-    //mockeo un resp
-    const responsableDummy = {
-      razonSocial: "TECH SOLUTIONS S.A.",
-      cuit: "30-12345678-9",
-      telefono: "4455-6677",
-      calle: "Av. Corrientes",
-      numero: "1234",
-      piso: "5",
-      depto: "A",
-      cp: "1000",
-      localidad: "CABA",
-      provincia: "Buenos Aires",
-      pais: "Argentina"
+    useEffect(() => {
+        if (!id) return;
+
+        fetch(`http://localhost:8080/api/responsablesdepago/${id}`)
+          .then((res) => {
+              if (!res.ok) throw new Error("Error en el servidor");
+              return res.json();
+          })
+          .then((data) => {
+
+            setDatosIniciales({
+              ...data, //trae todo lo del back
+              //por las dudas
+              calle: data.direccion?.calle,
+              numero: data.direccion?.numero,
+              piso: data.direccion?.piso,
+              depto: data.direccion?.departamento,
+              cp: data.direccion?.codigoPostal,
+              localidad: data.direccion?.ciudad,
+              provincia: data.direccion?.provincia,
+              pais: data.direccion?.pais,
+              razonSocial: data.nombreRazonSocial || data.razonSocial
+            });
+          })
+          .catch((err) => console.error("Error cargando:", err));
+      }, [id]);
+
+  const handleBorrar = async () => {
+
+      try {
+        const response = await fetch(`http://localhost:8080/api/responsablesdepago/baja/${id}`, {
+          method: "DELETE"
+        });
+
+        if (response.ok) {
+
+          setMostrarCartelExitoBaja(true);
+        } else {
+          // error posiblemente por facturas checkear!!!
+          setMostrarCartelImposible(true);
+        }
+      } catch (error) {
+        console.error("Error en la baja", error);
+        setMostrarCartelImposible(true);
+      }
     };
-    setDatosIniciales(responsableDummy);
-  }, [id]);
 
-  const handleBorrar = () => {
-       const tieneFacturas = false; //mockeado para ver el flujo del front!!!
+  const ejecutarEliminacion = async () => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/responsablesdepago/baja/${id}`, {
+          method: "DELETE",
+        });
 
-       if (tieneFacturas) {
-         setMostrarCartelImposible(true);
-       } else {
-         setMostrarPopUpEliminar(true);
-       }
-  };
+        setMostrarPopUpEliminar(false);
 
-  const ejecutarEliminacion = () => {
-      setMostrarPopUpEliminar(false);
-      setMostrarCartelExitoBaja(true);
-  }
+        if (response.ok) {
+          setMostrarCartelExitoBaja(true);
+        } else if (response.status === 409 || response.status === 400) {
+          // NO se puede (por facturas u otra razón)
+          setMostrarCartelImposible(true);
+        } else {
+          alert("Error inesperado al intentar eliminar.");
+        }
+      } catch (error) {
+        console.error("Error de red:", error);
+        alert("No se pudo conectar con el servidor.");
+      }
+    };
 
-  const handleModificar = (datos: any) => {
-    //mockeo cuit existente
-    if (datos.cuit === "20-99999999-9") return "EXISTE";
+  const handleModificar = async (datos: any) => {
+      try {
+        const response = await fetch(`http://localhost:8080/api/responsablesdepago/modificar/${id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(datos)
+        });
 
-    setMensajeExito("La operación ha culminado con éxito");
-    setMostrarToast(true);
-    setTimeout(() => router.push("/home"), 2000);
-    return "OK";
-  };
+        if (response.ok) {
+          setMensajeExito("La operación ha culminado con éxito");
+          setMostrarToast(true);
+          setTimeout(() => router.push("/home"), 2000);
+          return "OK";
+        } else {
+          const errorText = await response.text();
+          console.error("respuesta error back", errorText);
+          return "ERROR";
+        }
+      } catch (error) {
+        console.error("error de red", error);
+        return "ERROR";
+      }
+    };
 
   if (!datosIniciales) return <p>Cargando datos del responsable...</p>;
 

@@ -15,8 +15,24 @@ export default function FormularioResponsablePago({
     cp: "", localidad: "", provincia: "", pais: "Argentina"
   });
   useEffect(() => {
-      if(initialData) setForm(initialData);
-  }, [initialData]);
+      if (initialData) {
+          console.log("seteando el from con:", initialData);
+        setForm({
+          tipoPersona: initialData.tipoPersona || (initialData.huesped ? "FISICA" : "JURIDICA"),
+          razonSocial: initialData.razonSocial || initialData.nombreRazonSocial || initialData.nombre || "",
+          cuit: initialData.cuit || "",
+          telefono: initialData.telefono || "",
+          calle: initialData.calle || initialData.direccion?.calle || "",
+          numero: initialData.numero || initialData.direccion?.numero || "",
+          depto: initialData.depto || initialData.direccion?.departamento || "",
+          piso: initialData.piso || initialData.direccion?.piso || "",
+          cp: initialData.cp || initialData.direccion?.codigoPostal || "",
+          localidad: initialData.localidad || initialData.direccion?.ciudad || "",
+          provincia: initialData.provincia || initialData.direccion?.provincia || "",
+          pais: initialData.pais || initialData.direccion?.pais || "Argentina"
+        });
+      }
+    }, [initialData]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -40,6 +56,7 @@ export default function FormularioResponsablePago({
       return;
     }
         const dataParaEnviar = { //porque direccion es compuesta
+              id: initialData?.id, //porque aparentemente  no sabe que id modificar
               tipoPersona: form.tipoPersona,
               razonSocial: form.razonSocial,
               cuit: form.cuit,
@@ -66,7 +83,7 @@ export default function FormularioResponsablePago({
         setErrores(["Hubo un error con el servidor"]);
         }
   };
-
+  console.log("¿Qué me llegó en initialData?:", initialData);
   return (
     <div className={styles.container}>
       <div className={styles.titleWrapper}>
@@ -79,17 +96,21 @@ export default function FormularioResponsablePago({
         <div className={styles.verticalFields}>
           <div className={styles.field}>
             <label>Razón Social / Nombre y Apellido *</label>
-            <input name="razonSocial" placeholder="Ej: Hotel Premier S.A." className={styles.input} value={form.razonSocial} onChange={handleChange} />
+            <input name="razonSocial" placeholder="Ej: Hotel Premier S.A." className={styles.input}
+            value={form.razonSocial || ""}  //si es null se enloquece
+            onChange={handleChange} />
           </div>
 
           <div className={styles.field}>
             <label>CUIT*</label>
-            <input name="cuit" ref={cuitRef} placeholder="00-00000000-0" className={styles.input} value={form.cuit} onChange={handleChange} />
+            <input name="cuit" ref={cuitRef} placeholder="00-00000000-0"
+            className={styles.input} value={form.cuit || ""} onChange={handleChange} />
           </div>
 
           <div className={styles.field}>
             <label>Teléfono*</label>
-            <input name="telefono" placeholder="Ej: +54 9 11 ..." className={styles.input} value={form.telefono} onChange={handleChange} />
+            <input name="telefono" placeholder="Ej: +54 9 11 ..."
+            className={styles.input} value={form.telefono || ""} onChange={handleChange} />
           </div>
         </div>
 
@@ -115,14 +136,14 @@ export default function FormularioResponsablePago({
 
         <div className={styles.sectionTitle}>Dirección</div>
         <div className={styles.gridDir}>
-          <div className={styles.field}><label>Calle*</label><input name="calle" className={styles.input} value={form.calle} onChange={handleChange} /></div>
-          <div className={styles.field}><label>Numero*</label><input name="numero" className={styles.input} value={form.numero} onChange={handleChange} /></div>
-          <div className={styles.field}><label>Piso</label><input name="piso" className={styles.input} value={form.piso} onChange={handleChange} /></div>
-          <div className={styles.field}><label>Depto</label><input name="depto" className={styles.input} value={form.depto} onChange={handleChange} /></div>
-          <div className={styles.field}><label>C.P.*</label><input name="cp" className={styles.input} value={form.cp} onChange={handleChange} /></div>
-          <div className={styles.field}><label>Localidad*</label><input name="localidad" className={styles.input} value={form.localidad} onChange={handleChange} /></div>
-          <div className={styles.field}><label>Provincia*</label><input name="provincia" className={styles.input} value={form.provincia} onChange={handleChange} /></div>
-          <div className={styles.field}><label>País*</label><input name="pais" className={styles.input} value={form.pais} onChange={handleChange} /></div>
+          <div className={styles.field}><label>Calle*</label><input name="calle" className={styles.input} value={form.calle || ""} onChange={handleChange} /></div>
+          <div className={styles.field}><label>Numero*</label><input name="numero" className={styles.input} value={form.numero || ""} onChange={handleChange} /></div>
+          <div className={styles.field}><label>Piso</label><input name="piso" className={styles.input} value={form.piso || ""} onChange={handleChange} /></div>
+          <div className={styles.field}><label>Depto</label><input name="depto" className={styles.input} value={form.depto || ""} onChange={handleChange} /></div>
+          <div className={styles.field}><label>C.P.*</label><input name="cp" className={styles.input} value={form.cp || ""} onChange={handleChange} /></div>
+          <div className={styles.field}><label>Localidad*</label><input name="localidad" className={styles.input} value={form.localidad || ""} onChange={handleChange} /></div>
+          <div className={styles.field}><label>Provincia*</label><input name="provincia" className={styles.input} value={form.provincia || ""} onChange={handleChange} /></div>
+          <div className={styles.field}><label>País*</label><input name="pais" className={styles.input} value={form.pais || ""} onChange={handleChange} /></div>
         </div>
 
         {errores.length > 0 &&  (
