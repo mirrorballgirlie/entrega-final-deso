@@ -24,13 +24,13 @@ import jakarta.persistence.Inheritance;
 @Data
 @Table(name = "responsable_de_pago")
 @Entity
-//@Inheritance(strategy = InheritanceType.JOINED)
+@Inheritance(strategy = InheritanceType.JOINED)
 @SuperBuilder
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // Indica que todos van a una sola tabla
+//@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // Indica que todos van a una sola tabla
 @DiscriminatorColumn(name = "dtype", discriminatorType = DiscriminatorType.STRING) // Nombre de la columna de la imagen
 
 public abstract class ResponsableDePago {

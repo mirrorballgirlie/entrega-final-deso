@@ -18,7 +18,9 @@ export default function Home({ onLogout }: Props) {
           <Link href="/ocupar-habitacion">Ocupar Habitación</Link>
           <Link href="/cancelar-reserva">Cancelar Reserva</Link>
           <Link href="/facturar-checkout">Facturar Checkout</Link>
-          {/* ✨ AGREGAMOS LA NUEVA OPCIÓN PARA EL CU19 ✨ */}
+          <Link href="/facturar-checkout">Facturar Checkout</Link>
+          <Link href="/buscar-responsable">Buscar Responsable</Link>
+          <Link href="/ingresar-pago">Ingresar Pago</Link>
           <Link href="/ingresar-nota-credito">Ingresar Nota de Crédito</Link>
 
           <button

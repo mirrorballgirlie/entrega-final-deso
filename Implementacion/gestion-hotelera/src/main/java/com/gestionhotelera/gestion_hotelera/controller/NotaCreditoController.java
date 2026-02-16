@@ -29,7 +29,7 @@ public class NotaCreditoController {
      * Paso 4 del CU: Lista facturas pendientes de pago (PAGADAS o con deuda)
      * para el responsable ingresado (CUIT o Doc).
      */
-    @PostMapping("/buscar-facturas")
+    @PostMapping("/buscar-facturas") 
     public ResponseEntity<List<FacturaPendienteResponseDTO>> buscarFacturas(@RequestBody BusquedaFacturaRequestDTO filtros) {
         System.out.println(">>> BUSCANDO FACTURAS PARA NC - FILTROS: " + filtros);
         List<FacturaPendienteResponseDTO> facturas = gestorNotaCredito.buscarFacturasParaNC(filtros);

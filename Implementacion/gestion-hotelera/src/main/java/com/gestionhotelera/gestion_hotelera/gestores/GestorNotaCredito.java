@@ -47,7 +47,7 @@ import lombok.RequiredArgsConstructor;
 //         } else {
 //             String cleanDoc = filtros.getNroDoc().replaceAll("[^a-zA-Z0-9]", "");
 //             resultados = facturaRepository.findByDocRobust(filtros.getTipoDoc(), cleanDoc, estadoBuscado);
-//         }
+//         } 
 
 //         return resultados.stream().map(f -> FacturaPendienteResponseDTO.builder()
 //                 .id(f.getId())

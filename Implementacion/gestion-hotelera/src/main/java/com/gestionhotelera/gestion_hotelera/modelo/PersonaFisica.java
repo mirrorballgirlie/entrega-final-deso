@@ -33,7 +33,7 @@ public class PersonaFisica extends ResponsableDePago {
     @Column(name = "nombre_razon_social") // 👈 Agregá esto para que coincida con la imagen
     private String nombreRazonSocial; // el nombre completo de la persona física, se setea automáticamente a partir del nombre y apellido del huésped asociado
 
-    @Override
+    //@Override
     public String getRazonSocial() {
         return nombreRazonSocial;
     }

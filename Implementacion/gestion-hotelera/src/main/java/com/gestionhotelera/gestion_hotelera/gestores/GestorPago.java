@@ -44,7 +44,7 @@ public class GestorPago {
     public void pagar(Double monto, Long idFactura) {
         
         Factura factura = facturaRepository.findById(idFactura).orElse(null);
-        factura.setEstado(EstadoFactura.PAGO);
+        factura.setEstado(EstadoFactura.PAGADO);
         factura.setTotal(factura.getTotal() - monto);
         facturaRepository.save(factura);
     }

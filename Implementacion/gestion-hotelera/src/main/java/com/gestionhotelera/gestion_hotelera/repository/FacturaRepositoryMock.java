@@ -1,4 +1,4 @@
-package com.gestionhotelera.gestion_hotelera.repository;
+/*package com.gestionhotelera.gestion_hotelera.repository;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ import com.gestionhotelera.gestion_hotelera.modelo.PersonaJuridica;
 import com.gestionhotelera.gestion_hotelera.modelo.ResponsableDePago;
 import com.gestionhotelera.gestion_hotelera.modelo.TipoRazonSocial;
 
-@Primary
+//@Primary
 // TODO: COMENTAR EL PRIMARY CUANDO SE PRUEBE CON LA BDD REAL. YO LO TENGO ASI PORQUE SE ME MURIO POSTGRE JAJA
 @Repository
 public class FacturaRepositoryMock implements FacturaRepository {
@@ -78,6 +78,8 @@ public class FacturaRepositoryMock implements FacturaRepository {
         // Para probar multiselección con documentos tipo LE
         baseDeDatosFicticia.add(createFactura(108L, "FAC-008", pf3.getCuit(), 2200.0, pf3));
     }
+
+    
 
     // --- MÉTODOS DE BÚSQUEDA ROBUSTA ---
 
@@ -171,3 +173,4 @@ public class FacturaRepositoryMock implements FacturaRepository {
                 .build();
     }
 }
+*/
