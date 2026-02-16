@@ -1,4 +1,5 @@
 package com.gestionhotelera.gestion_hotelera.modelo;
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -24,6 +25,7 @@ import lombok.experimental.SuperBuilder;
 
 public class PersonaJuridica  extends ResponsableDePago {
 
+    @Column(name = "nombre_razon_social") // 👈 Agregá esto para que coincida con la imagen
     private String nombreRazonSocial; // el nombre real de la empresa
 
     @Enumerated(EnumType.ORDINAL) // 0=persona juridica, 1=monotributista, 2=responsable inscripto, 3=exento

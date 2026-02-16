@@ -1,5 +1,6 @@
 package com.gestionhotelera.gestion_hotelera.modelo;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -26,6 +27,8 @@ public class PersonaFisica extends ResponsableDePago {
     @OneToOne
     @JoinColumn(name = "huesped_id")
     private Huesped huesped; // opcional
+
+    @Column(name = "nombre_razon_social") // 👈 Agregá esto para que coincida con la imagen
     private String nombreRazonSocial; // el nombre completo de la persona física, se setea automáticamente a partir del nombre y apellido del huésped asociado
 
 

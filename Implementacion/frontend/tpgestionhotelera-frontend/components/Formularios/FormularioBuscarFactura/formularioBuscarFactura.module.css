@@ -1,0 +1,94 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+}
+
+.formCard {
+  margin-top: 45px;
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 600px;
+}
+
+.instruction {
+  font-family: 'Open Sans', sans-serif;
+  color: #666;
+  margin-bottom: 25px;
+  font-size: 20px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.label {
+  font-weight: bold;
+  font-size: 13px;
+  color: #374375;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+.input, .select {
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 16px;
+  outline: none;
+  color: #000;
+}
+
+.input:focus {
+  border-color: #374375;
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 10px 0 25px 0;
+  color: #999;
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  border-bottom: 1px solid #eee;
+}
+
+.divider span {
+  padding: 0 10px;
+}
+
+.row {
+  display: flex;
+  gap: 15px;
+}
+
+.errorMessage {
+  background-color: #fff5f5;
+  color: #c53030;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #feb2b2;
+  font-size: 13px;
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  margin-top: 10px;
+}
