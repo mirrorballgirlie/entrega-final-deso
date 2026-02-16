@@ -70,7 +70,10 @@ export default function FormularioBuscarFactura({ onBuscar, onCancelar }: Props)
             >
               <option value="DNI">DNI</option>
               <option value="PASAPORTE">PASAPORTE</option>
-              <option value="CEDULA">CÉDULA</option>
+              {/* <option value="CEDULA">CÉDULA</option> */}
+              <option value="LE">LIBRETA ELECTORAL</option>
+              <option value="LC">LIBRETA CIVICA</option>
+              <option value="OTRO">OTRO</option>
             </select>
           </div>
 

@@ -1,3 +1,5 @@
+//import IngresarNotaCreditoManager from "@/components/Manager/IngresarNotaCreditoManager";
+
 import IngresarNotaCreditoManager from "@/components/Manager/IngresarNotaCreditoManager";
 
 export default function IngresarNotaCreditoPage() {

@@ -4,6 +4,7 @@ public enum EstadoFactura {
 
     NO_PAGO,     //0
     PAGO_PARCIAL,   //1
-    PAGO   //2
+    PAGADO,   //2
+    ANULADA  //3
 
 }
