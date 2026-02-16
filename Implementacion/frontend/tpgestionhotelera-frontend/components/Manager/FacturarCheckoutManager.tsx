@@ -480,6 +480,9 @@ if (!mostrarGrilla) {
 
                   if (res.ok) {
                     alert("Factura generada e impresa correctamente ✔");
+                    fetch (`http://localhost:8080/api/estadias/checkout/${estadiaId}`, { method: "POST" }); // Marcar estadía como finalizada
+                    fetch (`http://localhost:8080/api/habitaciones/liberar/${form.numeroHabitacion}`, { method: "POST" }); // Liberar habitación
+                    
                     router.push("/home");
                   } else {
                     alert("Error al procesar la factura en el servidor.");

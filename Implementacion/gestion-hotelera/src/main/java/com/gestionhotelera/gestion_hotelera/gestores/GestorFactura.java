@@ -451,8 +451,7 @@ public Factura generarFactura(GenerarFacturaRequest request) {
 
         // Extraemos el CUIT de forma segura para satisfacer al compilador y evitar NPE
         String cuitSeguro = (responsable != null && responsable.getCuit() != null) 
-                    ? responsable.getCuit() 
-                    : "00-00000000-0"; // O puedes lanzar una excepción si es obligatorio
+                    ? responsable.getCuit() : "00-00000000-0"; // O puedes lanzar una excepción si es obligatorio
 
         if (cuitSeguro.equals("00-00000000-0")) {
             log.warn("⚠️ El responsable ID {} no tiene un CUIT válido. Se usará uno genérico.", responsable.getId());

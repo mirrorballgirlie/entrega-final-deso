@@ -32,8 +32,8 @@ import jakarta.persistence.Inheritance;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-//@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // Indica que todos van a una sola tabla
-//@DiscriminatorColumn(name = "dtype", discriminatorType = DiscriminatorType.STRING) // Nombre de la columna de la imagen
+//@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // Indicsa que todos van a una sola tabla
+@DiscriminatorColumn(name = "dtype", discriminatorType = DiscriminatorType.STRING) // Nombre de la columna de la imagen
 
 public abstract class ResponsableDePago {
 

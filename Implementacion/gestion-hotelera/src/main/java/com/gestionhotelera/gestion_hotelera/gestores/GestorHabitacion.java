@@ -183,4 +183,17 @@ public class GestorHabitacion {
     private Boolean safeBoolean(Boolean b) {
         return b != null && b;
     }
+
+    public void liberarHabitacion(int numeroHabitacion) {
+        Habitacion hab = habitacionRepository.findByNumero(numeroHabitacion)
+                .orElseThrow(() -> new ResourceNotFoundException("Habitación no encontrada con número: " + numeroHabitacion));
+        
+        // Solo liberamos si está ocupada
+        if (hab.getEstado() == EstadoHabitacion.OCUPADA) {
+            hab.setEstado(EstadoHabitacion.DISPONIBLE);
+            habitacionRepository.save(hab);
+        } else {
+            throw new IllegalArgumentException("La habitación no está ocupada ni reservada, no se puede liberar.");
+        }
+    }
 }

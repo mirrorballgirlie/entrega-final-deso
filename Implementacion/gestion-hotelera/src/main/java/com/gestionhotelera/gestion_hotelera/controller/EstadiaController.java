@@ -35,4 +35,10 @@ public class EstadiaController {
         return ResponseEntity.ok(gestorEstadia.buscarEstadiaActivaPorHabitacion(nro));
     }
 
+    @PostMapping("/checkout/{estadiaId}")
+    public ResponseEntity<String> checkout(@PathVariable Long estadiaId) {
+        gestorEstadia.checkout(estadiaId);
+        return ResponseEntity.ok("Estadía finalizada correctamente.");
+    }
+
 }

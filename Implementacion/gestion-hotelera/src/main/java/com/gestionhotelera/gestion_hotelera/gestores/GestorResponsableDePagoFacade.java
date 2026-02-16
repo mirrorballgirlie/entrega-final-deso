@@ -209,11 +209,12 @@ public class GestorResponsableDePagoFacade {
 
         // creamos la nueva PersonaFisica
         // usamos el documento como CUIT si no tiene uno
-        PersonaFisica nuevaPf = new PersonaFisica();
-        nuevaPf.setCuit(huesped.getDocumento());
-        nuevaPf.setNombreRazonSocial((huesped.getNombre() + " " + huesped.getApellido()).toUpperCase());
-        nuevaPf.setTelefono(huesped.getTelefono() != null ? huesped.getTelefono() : "S/N");
-        nuevaPf.setHuesped(huesped); // IMPORTANTE: Mantenemos la relación
+        PersonaFisica nuevaPf = PersonaFisica.builder()
+        .cuit(huesped.getDocumento())
+        .nombreRazonSocial((huesped.getNombre() + " " + huesped.getApellido()).toUpperCase())
+        .telefono(huesped.getTelefono() != null ? huesped.getTelefono() : "S/N")
+        .huesped(huesped)
+        .build();
 
         PersonaFisica guardada = personaFisicaRepository.save(nuevaPf);
 

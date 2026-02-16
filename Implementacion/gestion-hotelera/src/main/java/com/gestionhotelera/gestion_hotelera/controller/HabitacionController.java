@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.gestionhotelera.gestion_hotelera.dto.EstadoHabitacionesResponse;
 import com.gestionhotelera.gestion_hotelera.gestores.GestorHabitacion;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 
 import lombok.RequiredArgsConstructor;
 
@@ -51,6 +53,20 @@ public class HabitacionController {
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
                     .body("Error inesperado al obtener el estado de habitaciones.");
+        }
+    }
+
+    //liberar
+    @PostMapping("/liberar/{numeroHabitacion}")
+    public ResponseEntity<?> liberarHabitacion(@PathVariable int numeroHabitacion) {
+        try {
+            gestorHabitacion.liberarHabitacion(numeroHabitacion);
+            return ResponseEntity.ok("Habitación liberada correctamente.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity.internalServerError()
+                    .body("Error inesperado al liberar la habitación.");
         }
     }
 

@@ -268,20 +268,27 @@ public class GestorEstadia {
 
     
 
-public EstadiaDTO buscarEstadiaActivaPorHabitacion(Integer numeroHabitacion) {
+    public EstadiaDTO buscarEstadiaActivaPorHabitacion(Integer numeroHabitacion) {
 
-    Habitacion hab = habitacionRepository
-            .findByNumero(numeroHabitacion)
-            .orElse(null);
- 
-    if (hab == null) return null;
+        Habitacion hab = habitacionRepository
+                .findByNumero(numeroHabitacion)
+                .orElse(null);
+    
+        if (hab == null) return null;
 
-    return estadiaRepository
-            .findByHabitacionAndEstado(hab, EstadoEstadia.ACTIVA)
-            .map(EstadiaDTO::from)
-            .orElse(null);
+        return estadiaRepository
+                .findByHabitacionAndEstado(hab, EstadoEstadia.ACTIVA)
+                .map(EstadiaDTO::from)
+                .orElse(null);
     }
 
 
+    @Transactional
+    public void checkout(Long estadiaId) {
+        Estadia estadia = estadiaRepository.findById(estadiaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Estadía no encontrada con id: " + estadiaId));
+        estadia.setEstado(EstadoEstadia.FACTURADA);
+        estadiaRepository.save(estadia);
+    }
 
 }
