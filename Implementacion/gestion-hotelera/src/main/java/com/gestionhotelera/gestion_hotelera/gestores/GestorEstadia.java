@@ -262,7 +262,7 @@ public class GestorEstadia {
         } catch (Exception e) {
             return false;
         }
-    }
+    } 
 
  
 
@@ -280,7 +280,7 @@ public EstadiaDTO buscarEstadiaActivaPorHabitacion(Integer numeroHabitacion) {
             .findByHabitacionAndEstado(hab, EstadoEstadia.ACTIVA)
             .map(EstadiaDTO::from)
             .orElse(null);
-}
+    }
 
 
 

@@ -1,4 +1,4 @@
-/*package com.gestionhotelera.gestion_hotelera.gestores;
+package com.gestionhotelera.gestion_hotelera.gestores;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -131,13 +131,13 @@ public class GestorFactura {
     public boolean esMayorDeEdad(Long huespedId) {
             Huesped huesped = huespedRepository.findById(huespedId)
                 .orElseThrow(() -> new ResourceNotFoundException("Huésped no encontrado"));
-
+            
             return java.time.Period.between(huesped.getFechaNacimiento(), LocalDate.now()).getYears() >= 18;
     }
 
     public List<ConsumoDTO> obtenerItemsPendientes(Long estadiaId) {
         List<Consumo> pendientes = consumoRepository.findPendientesByEstadiaId(estadiaId);
-
+        
         return pendientes.stream().map(c -> {
             ConsumoDTO dto = new ConsumoDTO();
             dto.setId(c.getId());
@@ -162,18 +162,18 @@ public class GestorFactura {
 
         // 2. Aplicar Strategy para el recargo por hora de salida
         // Supongamos que la hora actual es la de salida
-        LocalTime horaSalidaActual = LocalTime.now();
+        LocalTime horaSalidaActual = LocalTime.now(); 
         double recargo = recargoStrategy.calcularRecargo(horaSalidaActual, precioNoche);
 
         return subtotalAlojamiento + recargo;
     }
 
     public double calcularMontoTotalPendiente(Long estadiaId) {
-
-        List<ConsumoDTO> items = this.obtenerItemsPendientes(estadiaId);
+            
+        List<ConsumoDTO> items = this.obtenerItemsPendientes(estadiaId); 
 
         double totalConsumos = items.stream()
-                .mapToDouble(dto -> dto.getSubtotal())
+                .mapToDouble(dto -> dto.getSubtotal()) 
                 .sum();
 
         double valorEstadia = this.obtenerValorEstadia(estadiaId);
@@ -433,7 +433,7 @@ public Factura generarFactura(GenerarFacturaRequest request) {
         if (responsable instanceof PersonaJuridica pj) {
             nombreFactura = pj.getNombreRazonSocial();
             // Comparación segura de Enum
-            if (pj.getRazonSocial() != null && pj.getRazonSocial() == TipoRazonSocial.RESPONSABLE_INSCRIPTO) {
+            if (pj.getRazonSocial() != null && pj.getRazonSocial() == "RESPONSABLE_INSCRIPTO") {
                 tipoFactura = TipoFactura.A;
                 iva = subtotal * 0.21;
             }
@@ -490,4 +490,3 @@ public Factura generarFactura(GenerarFacturaRequest request) {
 
 
 }
-

@@ -100,7 +100,8 @@ public ConfirmarReservaResponse confirmarReservas(ConfirmarReservaRequest req) {
                 .orElseThrow(() -> new ResourceNotFoundException("Habitación no encontrada con id: " + habId));
 
         // Regla de negocio: Solo reservar si está disponible
-        if (!hab.getEstado().equals("DISPONIBLE")) {
+        System.out.println("Estado de la habitación " + hab.getNumero() + ": " + hab.getEstado()); // Debug
+        if (!hab.getEstado().equals(EstadoHabitacion.DISPONIBLE)) {
             throw new BadRequestException("La habitación " + hab.getNumero() + " no está disponible.");
         }
 

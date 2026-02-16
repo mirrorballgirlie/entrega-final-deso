@@ -209,7 +209,7 @@ const handleCancel = () => {
 
     // 🔴 MODO REAL BDD
     try {
-      const resEstadia = await fetch(
+      const resEstadia = await fetch( 
         `http://localhost:8080/api/estadias/buscar-por-habitacion/${numero}`    //url chequeada, deberia estar bien
       );
 

@@ -24,8 +24,6 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/facturas")
 @RequiredArgsConstructor
 
-@RequestMapping("/api/facturas")
-
  
 public class FacturarController {
     private final GestorFactura gestorFactura;
@@ -84,7 +82,7 @@ public class FacturarController {
         Double valorEstadia = this.obtenerValorEstadia(estadiaId).getBody();
 
         List<ConsumoDTO> lista = this.obtenerItemsPendientes(estadiaId).getBody();
-
+        
         double totalConsumos = 0;
         if (lista != null) {
             totalConsumos = lista.stream()
@@ -153,12 +151,3 @@ public ResponseEntity<?> generarFactura(@RequestBody GenerarFacturaRequest reque
 }
     
 }
-
-@PostMapping("/generar-notacredito")
-public ResponseEntity<NotaCreditoDTO> generarNotaCredito(@RequestBody List<Long> facturasIds) {
-    NotaCreditoDTO notaCredito = gestorFactura.generarNotaCredito(facturasIds);
-    return ResponseEntity.ok(notaCredito);
-}
-
-}
-*/

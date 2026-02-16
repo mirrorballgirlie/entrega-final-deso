@@ -1,4 +1,5 @@
 "use client";
+
 import { useState } from "react";
 import React from "react";
 import Button from "@/components/Button";
@@ -89,19 +90,6 @@ const subtotal =
 
 const iva = esResponsableInscripto ? subtotal * 0.21 : 0;
 const total = subtotal + iva;
-
-const handleFinalizar = () => {
-    const dataParaFactura = {
-        nombre: persona.razonSocial || persona.nombre,
-        tipo: tipoFactura,
-        cuit: persona.cuit || cuitTercero,
-        monto: subtotal,
-        iva: iva,
-        total: total,
-        itemsIds: Object.keys(seleccionados).filter(id => seleccionados[id])
-    };
-    onAceptar(dataParaFactura, hayItemsNoSeleccionados);
-};
 
 const hayItemsNoSeleccionados =
   !estadiaSeleccionada ||

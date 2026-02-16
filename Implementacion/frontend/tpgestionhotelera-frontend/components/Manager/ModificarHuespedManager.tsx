@@ -313,7 +313,7 @@ export default function ModificarHuespedManager({ huesped }: Props) {
       {popupAnyKey && (
         <PopupCritical
           message="El huésped no puede ser eliminado / Los datos han sido eliminados. Presione cualquier tecla para continuar..."
-          type="anyKey"
+          //type="anyKey"
           onPrimary={() => {
             setPopupAnyKey(false);
             router.push("/home");

@@ -62,14 +62,16 @@ public interface EstadiaRepository extends JpaRepository<Estadia, Long> {
     """)
     List<Estadia> buscarEstadiaPorHabitacionYSalida(@Param("numero") Integer numero, @Param("fechaEgreso") LocalDate fechaEgreso);
     
-    @Query("""
-        SELECT e FROM Estadia e
-        JOIN e.habitacion h
-        WHERE h.numero = :numero
-        AND e.fechaEgreso = :fechaEgreso
-        AND e.estado = EstadoEstadia.ACTIVA
-    """)
-    Optional<Estadia> findByHabitacionAndEstado(Habitacion habitacion, EstadoEstadia estado);
+   
+    @Query("SELECT e FROM Estadia e JOIN e.habitacion h WHERE e.habitacion = :habitacion AND e.estado = :estado")
+    Optional<Estadia> findByHabitacionAndEstado(
+    @Param("habitacion") Habitacion habitacion, 
+    @Param("estado") EstadoEstadia estado
+);
+
+
+
+
  
     @Query("SELECT e FROM Estadia e JOIN FETCH e.huespedes WHERE e.habitacion.numero = :numero AND e.fechaEgreso = :fechaEgreso AND e.estado = EstadoEstadia.ACTIVA")
     Optional<Estadia> buscarActivaPorHabitacionYFecha(@Param("numero") Integer numero, @Param("fechaEgreso") LocalDate fechaEgreso);
@@ -78,10 +80,12 @@ public interface EstadiaRepository extends JpaRepository<Estadia, Long> {
 
     Optional<Estadia> findByHabitacionNumeroAndEstado(Integer numeroHabitacion, Integer estado);
 
+
+
     @Query("""
     SELECT e FROM Estadia e
     WHERE e.habitacion.numero = :numero
-    AND e.estado = com.gestionhotelera.gestion_hotelera.modelo.EstadoEstadia.OCUPADA
+    AND e.estado = EstadoEstadia.ACTIVA
     """)
     List<Estadia> buscarEstadiaOcupadaPorHabitacion(Integer numero);
 

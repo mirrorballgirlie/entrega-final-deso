@@ -26,20 +26,7 @@ List<Factura> findFacturasPendientesByNroHabitacionyEstado(
 );
 
 
-@Query("SELECT f FROM Factura f " +
-       "JOIN f.estadia e " +
-       "JOIN f.responsableDePago r " + 
-       "WHERE f.estado = :estado " +
-       "AND (" +
-       "  (:cuit IS NULL OR r.cuit = :cuit) OR " +
-       "  ((:tipoDoc IS NULL OR r.tipoDocumento = :tipoDoc) AND (:numDoc IS NULL OR r.numeroDocumento = :numDoc))" +
-       ")")
-List<Factura> findFacturasPendientesByTipoDocumentoyNumeroDocumentooCuit(
-    @Param("cuit") String cuit, 
-    @Param("tipoDoc") String tipoDoc, 
-    @Param("numDoc") String numDoc,
-    @Param("estado") EstadoFactura estado
-);
+
 
 
     List<Factura> findAllByCuit(String cuit);
