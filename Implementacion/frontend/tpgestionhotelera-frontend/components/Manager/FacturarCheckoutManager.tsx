@@ -113,56 +113,6 @@ const handleCancel = () => {
 
   
 
-  // const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-  //   e.preventDefault();
-
-  //   const nuevosErrores: {
-  //     numeroHabitacion?: string;
-  //     horaSalida?: string;
-  //   } = {};
-
-  //   // validar habitación
-  //   if (!form.numeroHabitacion.trim()) {
-  //     nuevosErrores.numeroHabitacion = "Número de habitación faltante";
-  //   } else {
-  //     const numero = Number(form.numeroHabitacion);
-
-  //     if (isNaN(numero) || numero <= 0) {
-  //       nuevosErrores.numeroHabitacion = "Número de habitación incorrecto";
-  //     } 
-  //     else if (!habitacionesExistentes.includes(numero)) {
-  //       nuevosErrores.numeroHabitacion = "La habitación no existe";
-  //     } 
-  //     else if (habitacionesOcupadas.includes(numero)) {
-  //       nuevosErrores.numeroHabitacion = "La habitación está ocupada";
-  //     }
-  //   }
-
-  //   // validar hora
-  //   if (!form.horaSalida.trim()) {
-  //     nuevosErrores.horaSalida = "Hora de salida faltante";
-  //   } else if (esHoraFutura(form.horaSalida)) {
-  //     nuevosErrores.horaSalida = "La hora no puede ser futura";
-  //   }
-
-  //   // si hay errores
-  //   if (Object.keys(nuevosErrores).length > 0) {
-  //     setErrors(nuevosErrores);
-  //     return;
-  //   }
-
-  //   // si no
-  //   setErrors({});
-  //   //console.log("Checkout facturado", form);
-  //   setOcupantes(ocupantesMock);
-  //   setMostrarGrilla(true);
-
-  // };
-
-  // const handleCancel = () => {
-  //   router.push("/home");
-  // };
-
 
   //=======================================SUBMIT========================================
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -247,78 +197,11 @@ const handleCancel = () => {
     }
   };
 
-//======================================ACEPTAR OCUPANTE==========================================
 
-  // const handleAcceptOcupante = () => {
-  //   if(responsableSeleccionado === "TERCERO") { // es tercero
-  //   setErrorSeleccion("");
-  //   setMostrarModalFactura(false);
-  //   setMostrarInputCUIT(true); //muestra cuit tercero
-  //   return;
-  //   }
-  //   if (responsableSeleccionado ){ // //=! tercero
-  //       if(responsableSeleccionado.edad < 18){
-  //       setErrorSeleccion("La persona seleccionada es menor de edad. Por favor elija otra.");
-  //       setResponsableSeleccionado(null);
-  //       return;
-  //       }
 
-  //       setPersonaFactura({
-  //           nombre: responsableSeleccionado.nombre,
-  //           condicionIVA: "CF",
-  //       });
 
-  //       setErrorSeleccion("");
-  //       setMostrarInputCUIT(false);
-  //       setMostrarModalFactura(true);
-  //   }
 
-  // };
 
-  // const handleAcceptOcupante = async () => {
-  //   //if (!responsableSeleccionado) return;
-  //   if (!responsableSeleccionado || responsableSeleccionado === "TERCERO") return;
-
-  //   // 🔵 MOCK
-  //   if (USE_MOCK) {
-  //     if (responsableSeleccionado.edad < 18) {
-  //       setErrorSeleccion("La persona seleccionada es menor de edad.");
-  //       setResponsableSeleccionado(null);
-  //       return;
-  //     }
-  //   } 
-  //   // 🔴 REAL
-  //   else {
-  //     const resMayor = await fetch(
-  //       `http://localhost:8080/verificar-mayor/${responsableSeleccionado.id}`
-  //     );
-  //     const esMayor = await resMayor.json();
-
-  //     if (!esMayor) {
-  //       setErrorSeleccion("La persona seleccionada es menor de edad.");
-  //       setResponsableSeleccionado(null);
-  //       return;
-  //     }
-
-  //     if (estadiaId) {
-  //       const resValor = await fetch(`http://localhost:8080/${estadiaId}/valor-estadia`);
-  //       const valor = await resValor.json();
-  //       setValorEstadia(valor);
-
-  //       const resConsumos = await fetch(`http://localhost:8080/${estadiaId}/items-pendientes`);
-  //       const consumos = await resConsumos.json();
-  //       setConsumosReales(consumos);
-  //     }
-  //   }
-
-  //   setPersonaFactura({
-  //     nombre: responsableSeleccionado.nombre,
-  //     condicionIVA: "CF",
-  //   });
-
-  //   setErrorSeleccion("");
-  //   setMostrarModalFactura(true);
-  // };
 
   const handleAcceptOcupante = async () => {
   if (!responsableSeleccionado) return;
@@ -332,138 +215,124 @@ const handleCancel = () => {
 
   // 🔵 CASO 5.A — OCUPANTE
 
-  if (USE_MOCK) {
-    if (responsableSeleccionado.edad < 18) {
-      setErrorSeleccion(
-        "La persona seleccionada es menor de edad. Por favor elija otra."
-      );
-      setResponsableSeleccionado(null);
-      return;
-    }
-  } else {
-    const resMayor = await fetch(
-      `http://localhost:8080/api/facturas/verificar-mayor/${responsableSeleccionado.id}`
-    );
+  if (!USE_MOCK) {
+    try {
+      // si es mayor de edad
+      const resMayor = await fetch(`http://localhost:8080/api/facturas/verificar-mayor/${responsableSeleccionado.id}`);
+      const esMayor = await resMayor.json();
 
-    const esMayor = await resMayor.json();
+      if (!esMayor) {
+        setErrorSeleccion("La persona seleccionada es menor de edad. Por favor elija otra.");
+        setResponsableSeleccionado(null);
+        return;
+      }
 
-    if (!esMayor) {
-      setErrorSeleccion(
-        "La persona seleccionada es menor de edad. Por favor elija otra."
-      );
-      setResponsableSeleccionado(null);
-      return;
-    }
+      // Huésped a Responsable de Pago en la DB
+      const resAsegurar = await fetch(`http://localhost:8080/api/responsablesdepago/asegurar-huesped/${responsableSeleccionado.id}`, {
+        method: 'POST'
+      });
 
-    if (estadiaId) {
-      const resValor = await fetch(
-        `http://localhost:8080/api/facturas/${estadiaId}/valor-estadia`
-      );
-      const valor = await resValor.json();
-      setValorEstadia(valor);
+      if (!resAsegurar.ok) throw new Error("Error al asegurar responsable");
+      const responsableFinal = await resAsegurar.json();
 
-      const resConsumos = await fetch(
-        `http://localhost:8080/api/facturas/${estadiaId}/items-pendientes`
-      );
-      const consumos = await resConsumos.json();
-      // ConsumoDTO ya tiene el formato correcto (id, nombre, cantidad, precio, subtotal)
-      setConsumosReales(consumos);
+      // cargamos datos de la estadía
+      if (estadiaId) {
+        await cargarDatosFacturaReal();
+      }
+
+      // seteamos la persona para la factura usando el ID del nuevo ResponsableDePago
+      setPersonaFactura({
+        id: responsableFinal.id, // ID de la tabla responsable_de_pago
+        nombre: responsableSeleccionado.nombre,
+        condicionIVA: "CF",
+      });
+
+      setMostrarModalFactura(true);
+
+    } catch (error) {
+      console.error(error);
+      alert("Error al procesar el ocupante");
     }
   }
+}
 
-  // 👉 Punto 6 del CU
-  setPersonaFactura({
-    nombre: responsableSeleccionado.nombre,
-    condicionIVA: "CF",
-  });
-
-  setMostrarModalFactura(true);
-};
-
-
-
-  //=====================================CUIT===============================================
-  // const handleCUITAceptar = () => {
-  //     if(!razonSocial) {
-  //       if (!cuitTercero.trim()){
-  //         alert("Ingrese un CUIT valido");
-  //         return;
-  //       }
-  //       const razon = tercerosMock[cuitTercero] ?? "Razon social no encontrada";
-  //       setRazonSocial(razon);
-  //       return;
-  //     }
-
-  //     setPersonaFactura({
-  //       razonSocial,
-  //       condicionIVA: "RI",
-  //     });
-  //     setMostrarModalFactura(true);
-  //     setMostrarInputCUIT(false);
-  // };
-
-  // const handleCUITCancelar = () => {
-  //     if(razonSocial){
-  //         setRazonSocial(null); //vuelve a ingreso cuit
-  //     } else {
-  //   setCuitTercero("");
-  //   setMostrarInputCUIT(false);
-  //   setResponsableSeleccionado(null);
-  //   }
-  // };
-
-  const handleCUITAceptar = async () => {
-    if (!razonSocial) {
-      if (!cuitTercero.trim()) {
-        // 5.C - Si CUIT vacío, debería ir a CU03 (Alta de Responsable)
-        // TODO: Implementar navegación a CU03 o modal de alta
-        alert("CUIT vacío. Debe crear un nuevoResponsable (CU03 - No implementado aún)");
-        return;
-      }
-
-      // MOCK
-      if (USE_MOCK) {
-        const razon = tercerosMock[cuitTercero] ?? null;
-        if (!razon) {
-          alert("CUIT no encontrado");
-          return;
-        }
-        setRazonSocial(razon);
-        return;
-      }
-
-      // REAL
-      const res = await fetch(
-        `http://localhost:8080/responsablesdepago?cuit=${cuitTercero}`
-      );
-
-      if (!res.ok) {
-        alert("Error al buscar CUIT");
-        return;
-      }
-
-      const data = await res.json();
-      if (!data || data.length === 0) {
-        alert("CUIT no encontrado");
-        return;
-      }
-
-      // El servidor retorna ResponsableDePagoDTO con razón social
-      const razonSocial = data[0].personaJuridica?.nombreRazonSocial || 
-                          data[0].personaFisica?.nombreRazonSocial || 
-                          data[0].cuit;
-      setRazonSocial(razonSocial);
+const handleCUITAceptar = async () => {
+  // Caso A: Todavía no buscamos la Razón Social (Primer clic)
+  if (!razonSocial) {
+    if (!cuitTercero.trim()) {
+      alert("Por favor, ingrese un CUIT.");
       return;
     }
 
-    setPersonaFactura({
-      razonSocial,
-      condicionIVA: "RI",
-    });
+    try {
+      // Llamamos al nuevo endpoint que creaste
+      const res = await fetch(
+        `http://localhost:8080/api/responsablesdepago/por-cuit/${cuitTercero.trim()}`
+      );
 
-    setMostrarModalFactura(true);
-    setMostrarInputCUIT(false);
-  };
+      if (res.status === 404) {
+        alert("El CUIT no existe. Debe registrarlo como nuevo responsable.");
+        return;
+      }
+
+      if (!res.ok) {
+        alert("Error en el servidor. Revisá la consola de Java.");
+        return;
+      }
+
+      const responsable = await res.json();
+            console.log("Objeto responsable recibido:", responsable);
+        //setRazonSocial(responsable.nombreAMostrar);
+
+      // Mapeamos el nombre buscando en las posibles estructuras (Juridica/Fisica/Atributo directo)
+      const nombreEncontrado =
+        responsable.nombreAMostrar ||
+        responsable.nombreRazonSocial ||
+        responsable.razonSocial ||
+        (responsable.huesped ? `${responsable.huesped.nombre} ${responsable.huesped.apellido}` : null) ||
+        responsable.nombre ||
+        "Responsable sin Nombre";
+
+      setRazonSocial(nombreEncontrado);
+
+    } catch (error) {
+      console.error("Error de conexión:", error);
+      alert("No se pudo conectar con el servidor.");
+    }
+    return; // Sale aquí para que el usuario vea el nombre y el botón cambie
+  }
+
+  // Caso B: Ya tenemos la Razón Social y el usuario confirmó (Segundo clic)
+  setPersonaFactura({
+    razonSocial: razonSocial,
+    condicionIVA: "RI", // Responsable Inscripto por defecto para terceros con CUIT
+  });
+
+  // Si no es MOCK, cargamos los datos reales de la estadía para el modal
+  if (!USE_MOCK && estadiaId) {
+    cargarDatosFacturaReal();
+  }
+
+  setMostrarModalFactura(true);
+  setMostrarInputCUIT(false);
+};
+
+const cargarDatosFacturaReal = async () => {
+  try {
+    // 1. Traer valor de estadía
+    const resValor = await fetch(`http://localhost:8080/api/facturas/${estadiaId}/valor-estadia`);
+    const valor = await resValor.json();
+    setValorEstadia(valor);
+
+    // 2. Traer consumos pendientes
+    const resConsumos = await fetch(`http://localhost:8080/api/facturas/${estadiaId}/items-pendientes`);
+    const consumos = await resConsumos.json();
+    setConsumosReales(consumos);
+  } catch (error) {
+    console.error("Error cargando detalles de factura:", error);
+  }
+};
+
 
   const handleCUITCancelar = () => {
     if (razonSocial) {
@@ -475,175 +344,6 @@ const handleCancel = () => {
     }
   };
 
-
-//==========================================UI===========================================
-
-//   if (!mostrarGrilla) {
-//     return (
-//       <FormularioFacturarCheckout
-//         form={form}
-//         errors={errors}
-//         onChange={handleChange}
-//         onSubmit={handleSubmit}
-//         onCancel={handleCancel}
-//       />
-//     );
-//   }
-
-//   return (
-//     <div>
-//       <ListadoOcupantes
-//         ocupantes={ocupantes}
-//         seleccionado={responsableSeleccionado}
-//         onSelect={setResponsableSeleccionado}
-//         onCancel={handleCancel}
-//         onAccept={handleAcceptOcupante}
-//         mostrarBotones={!mostrarInputCUIT && !mostrarFormularioResponsable}
-//       >
-
-//       {errorSeleccion && (
-//         <div style={{ color: "red", marginTop: "10px", fontWeight: "bold" }}>
-//           {errorSeleccion}
-//         </div>
-//       )}
-
-//       {mostrarInputCUIT && (
-//             <div
-//               style={{
-//                   display: "flex",
-//                   margin: "0 auto",
-//                   flexDirection: "column",
-//                   gap: "12px",
-//                   alignSelf: "center",
-//                   width: "100%",
-//                   maxWidth: "420px",
-//                   padding: "16px",
-//                   border: "1px solid #ccc",
-//                   borderRadius: "8px",
-//                   backgroundColor: "#fafafa",
-//                   marginTop: "-20px"
-//               }}
-//             >
-//               <label style={{
-//                   display: "block",
-//                   color: "black",
-//                   marginBottom: "8px"
-//                   }}
-//               >
-//               CUIT del tercero
-//               </label>
-
-//               <input
-//                 type="text"
-//                 value={cuitTercero}
-//                 onChange={(e) => setCuitTercero(e.target.value)}
-//                 placeholder="Ingrese CUIT"
-//                 style={{ width: "100%", color: "black" }}
-//               />
-
-
-//                 {razonSocial && (
-//                       <div
-//                         style={{
-//                           backgroundColor: "#eee",
-//                           padding: "10px",
-//                           borderRadius: "6px",
-//                           color: "black",
-//                           fontSize: "14px",
-//                         }}
-//                       >
-//                         <strong>Razón social:</strong> {razonSocial}
-//                       </div>
-//                     )}
-
-
-//               <div style={{
-//                   marginTop: "10px",
-//                   display: "flex",
-//                   gap: "8px"
-//                   }}
-//               >
-//                 <Button type="button" onClick={handleCUITCancelar}>
-//                   Cancelar
-//                 </Button>
-//                 <Button type="button" onClick={handleCUITAceptar}>
-//                   Aceptar
-//                 </Button>
-//               </div>
-//             </div>
-//           )
-//       }
-
-//      </ListadoOcupantes>
-
-//        {mostrarModalFactura && personaFactura && (
-//          <div
-//            style={{
-//              position: "fixed",
-//              color: "black",
-//              inset: 0,
-//              backgroundColor: "rgba(0,0,0,0.5)",
-//              display: "flex",
-//              alignItems: "center",
-//              justifyContent: "center",
-//              zIndex: 1000,
-//            }}
-//          >
-//            <div
-//              style={{
-//                  position: "relative",
-//                backgroundColor: "white",
-//                padding: "24px",
-//                borderRadius: "12px",
-//                width: "100%",
-//                maxWidth: "600px",
-//                maxHeight: "90vh",
-//                overflowY: "auto",
-//              }}
-//            >
-//             <button
-//               onClick={() => setMostrarModalFactura(false)}
-//               style={{
-//                 position: "absolute",
-//                 top: "12px",
-//                 right: "12px",
-//                 border: "none",
-//                 background: "transparent",
-//                 fontSize: "20px",
-//                 cursor: "pointer",
-//                 color: "#555",
-//               }}
-//               aria-label="Cerrar"
-//             >
-//                ✕
-//             </button>
-
-//              <ListadoFactura
-//                persona={personaFactura}
-//                estadia={facturaMock.estadia}
-//                consumos={consumosDisponiblesMock}
-//                onAceptar={(hayItemsNoSeleccionados) => {
-//                    if(hayItemsNoSeleccionados){
-//                        setMostrarModalFactura(false);
-//                        setResponsableSeleccionado(null);
-//                        setRazonSocial(null);
-//                        setCuitTercero("");
-//                        return;}
-//                  alert("Factura confirmada ✔");
-//                  setMostrarModalFactura(false);
-//                  router.push("/home");
-//                }}
-//              />
-
-//            </div>
-//          </div>
-//        )}
-
-
-//     </div>
-//   );
-
-// }
 
 if (!mostrarGrilla) {
     return (
@@ -658,40 +358,74 @@ if (!mostrarGrilla) {
   }
 
   return (
-    <div>
+
+    <div className="container mx-auto p-4 max-w-6xl">
+        {errorSeleccion && (
+                 <div style={{ color: "red",
+                     marginTop: "30px",
+                     display: "flex",
+                     alignItems: "center",
+                     justifyContent: "center",
+                     fontWeight: "bold" }}>
+                   {errorSeleccion}
+                 </div>
+        )}
+
       <ListadoOcupantes
-        ocupantes={ocupantes}
-        seleccionado={responsableSeleccionado}
-        onSelect={setResponsableSeleccionado}
-        onCancel={handleCancel}
-        onAccept={handleAcceptOcupante}
-      />
+            ocupantes={ocupantes}
+            seleccionado={responsableSeleccionado}
+            onSelect={(val) => {
+              setResponsableSeleccionado(val);
+              // Si cambia de selección mientras ve el CUIT, reseteamos
+              if (val !== "TERCERO") {
+                setMostrarInputCUIT(false);
+                setRazonSocial(null);
+              }
+            }}
+            onCancel={handleCancel}
+            onAccept={handleAcceptOcupante}
+            // 🟢 Prop clave: Si estamos en modo CUIT, el componente Listado NO debe renderizar sus botones
+            mostrarBotones={!mostrarInputCUIT}
+          />
 
-      {mostrarInputCUIT && (
-  <div style={{ marginTop: "20px" }}>
-    <label>CUIT del tercero</label>
-    <input
-      type="text"
-      value={cuitTercero}
-      onChange={(e) => setCuitTercero(e.target.value)}
-    />
-
-    {razonSocial && (
-      <div>
-        <strong>Razón social:</strong> {razonSocial}
+{mostrarInputCUIT && (
+    <div style={{
+      marginTop: "5px",
+          padding: "15px",
+          border: "2px solid",
+          borderRadius: "4px",
+          backgroundColor: "#fff",
+          maxWidth: "750px",
+          marginLeft: "auto",
+          marginRight: "auto",
+          boxShadow: "4px 4px 0px rgba(0,0,0,0.1)",
+      }}>
+      <label style={{ display: "block", marginBottom: "5px", color: "#333", fontWeight: "bold" }}>
+        CUIT del tercero
+      </label>
+      <div style={{ display: "flex", gap: "10px", border: "2px solid", }}>
+        <input
+          type="text"
+          value={cuitTercero}
+          onChange={(e) => setCuitTercero(e.target.value)}
+          placeholder="Ingrese CUIT"
+          style={{ flex: 1, padding: "8px", border: "2px solid", borderRadius: "4px", color: "black" }}
+        />
+        <Button type="button" onClick={handleCUITAceptar}>
+          {razonSocial ? "Confirmar" : "Buscar"}
+        </Button>
+        <Button type="button" onClick={handleCUITCancelar}>
+          Cancelar
+        </Button>
       </div>
-    )}
 
-    <div style={{ marginTop: "10px" }}>
-      <Button type="button" onClick={handleCUITCancelar}>
-        Cancelar
-      </Button>
-      <Button type="button" onClick={handleCUITAceptar}>
-        Aceptar
-      </Button>
+      {razonSocial && (
+        <div style={{ marginTop: "10px", color: "green", fontWeight: "bold" }}>
+          Razón social: {razonSocial}
+        </div>
+      )}
     </div>
-  </div>
-)}
+      )  }
 
 
       {mostrarModalFactura && personaFactura && (
@@ -703,6 +437,7 @@ if (!mostrarGrilla) {
           alignItems: "center",
           justifyContent: "center",
         }}>
+
           <div style={{
             backgroundColor: "white",
             padding: "24px",
@@ -710,124 +445,54 @@ if (!mostrarGrilla) {
             width: "100%",
             maxWidth: "600px",
           }}>
-            <ListadoFactura
-              persona={personaFactura}
-              estadia={USE_MOCK ? facturaMock.estadia : valorEstadia}
-              consumos={USE_MOCK ? consumosDisponiblesMock : consumosReales}
-              //onAceptar={() => {
-              onAceptar={ async (hayItemsNoSeleccionados: boolean, estadiaSeleccionada: boolean, seleccionados: Record<number, boolean>) => {
 
+
+               <ListadoFactura
+                  persona={personaFactura}
+                  // Usamos el mock o lo real según la bandera
+                  estadia={USE_MOCK ? facturaMock.estadia : valorEstadia}
+                  consumos={USE_MOCK ? consumosDisponiblesMock : consumosReales}
+                  onAceptar={async (hayItemsNoSeleccionados, estadiaSeleccionada, seleccionados) => {
 
                 if (hayItemsNoSeleccionados) {
-                // 🔁 Flujo alternativo 9.A
-                setMostrarModalFactura(false);
-                setResponsableSeleccionado(null);
-                return; // vuelve al punto 4
-                }
-                // ✅ Flujo principal - Generar factura
-                if (USE_MOCK) {
-                  alert("Factura confirmada ✔ (MOCK)");
                   setMostrarModalFactura(false);
-                  router.push("/home");
-                } else {
-                  // Generar factura en el backend
-                  // try {
-                  //   const generarRes = await fetch(
-                  //     `http://localhost:8080/api/facturas/generar`,
-                  //     {
-                  //       method: "POST",
-                  //       headers: { "Content-Type": "application/json" },
-                  //       body: JSON.stringify({
-                  //         estadiaId: estadiaId,
-                  //         //cuitResponsable: personaFactura.razonSocial ? cuitTercero : responsableSeleccionado?.dni,
-                  //         // cuitResponsable: personaFactura.razonSocial
-                  //         // ? cuitTercero
-                  //         // : typeof responsableSeleccionado === "object"
-                  //         // ? responsableSeleccionado.dni
-                  //         // : "",
-                  //         // cuitResponsable:
-                  //         // personaFactura.razonSocial
-                  //         // ? cuitTercero
-                  //         // : responsableSeleccionado
-                  //         // ? responsableSeleccionado.dni
-                  //         // : "",
-                  //         cuitResponsable:
-                  //       personaFactura.razonSocial
-                  //       ? cuitTercero
-                  //       : (responsableSeleccionado && responsableSeleccionado !== "TERCERO")
-                  //       ? responsableSeleccionado.dni
-                  //       : "",
-                  //       incluirEstadia: estadiaSeleccionada,
-                  //         idsConsumosSeleccionados: consumosReales
-                  //           .map((c: any, index: number) => seleccionados[c.id] ? c.id : null)
-                  //           .filter((id: any) => id !== null)
-                  //       })
-                  //     }
-                  //   );
-
-                  //   if (generarRes.ok) {
-                  //     alert("Factura generada correctamente ✔");
-                  //     setMostrarModalFactura(false);
-                  //     router.push("/home");
-                  //   } else {
-                  //     alert("Error al generar factura");
-                  //   }
-                  // } catch (error) {
-                  //   console.error(error);
-                  //   alert("Error de conexión al generar factura");
-                  // }
-                  // ✅ Flujo principal - Generar factura en el backend
-                  try {
-                    const generarRes = await fetch(
-                    `http://localhost:8080/api/facturas/generar`,
-                      {
-                        method: "POST",
-                        headers: { "Content-Type": "application/json" },
-                        body: JSON.stringify({
-                        estadiaId: estadiaId,
-
-                    // 1. Si es un ocupante de la habitación, enviamos su ID de huésped.
-                    // Esto permite que el backend busque en la columna "huesped_id" de la tabla responsable_de_pago.
-                    huespedId: (responsableSeleccionado && responsableSeleccionado !== "TERCERO")
-                    ? responsableSeleccionado.id
-                    : null,
-
-                    // 2. Si es un tercero (Persona Jurídica o alguien externo), enviamos el CUIT.
-                    cuitResponsable: personaFactura.razonSocial 
-                    ? cuitTercero 
-                    : null,
-
-                  incluirEstadia: estadiaSeleccionada,
-
-                    // 3. Mapeo limpio de consumos: filtramos los que no están tildados y extraemos solo el ID.
-                  idsConsumosSeleccionados: consumosReales
-                  .filter(c => seleccionados[c.id]) 
-                  .map(c => c.id)
-                })
-              }
-            );
-
-  if (generarRes.ok) {
-    alert("Factura generada correctamente ✔");
-    setMostrarModalFactura(false);
-    router.push("/home");
-  } else {
-    // Tip de auditor: Sería bueno loguear el error exacto aquí
-    const errorData = await generarRes.json();
-    alert(`Error al generar factura: ${errorData.message || 'Error desconocido'}`);
-  }
-} catch (error) {
-  console.error("Error en la conexión:", error);
-  alert("Error de conexión al generar factura");
-}
+                  setResponsableSeleccionado(null);
+                  return;
                 }
+
+                // --- PUNTO 6: GENERAR FACTURA REAL ---
+                try {
+                  const bodyFactura = {
+                    estadiaId: estadiaId,
+                    huespedId: (responsableSeleccionado && responsableSeleccionado !== "TERCERO") ? responsableSeleccionado.id : null,
+                    cuitResponsable: personaFactura.razonSocial ? cuitTercero : null,
+                    incluirEstadia: estadiaSeleccionada,
+                    idsConsumosSeleccionados: consumosReales
+                      .filter(c => seleccionados[c.id])
+                      .map(c => c.id)
+                  };
+
+                  const res = await fetch(`http://localhost:8080/api/facturas/generar`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(bodyFactura)
+                  });
+
+                  if (res.ok) {
+                    alert("Factura generada e impresa correctamente ✔");
+                    router.push("/home");
+                  } else {
+                    alert("Error al procesar la factura en el servidor.");
+                  }
+                } catch (error) {
+                  alert("Error crítico al generar factura.");
+                }
+
               }}
-            />
+               />
           </div>
         </div>
       )}
     </div>
-  );
+);
 }
-
-

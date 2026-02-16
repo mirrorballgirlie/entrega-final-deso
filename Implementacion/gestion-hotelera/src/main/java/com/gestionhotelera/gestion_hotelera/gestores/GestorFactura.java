@@ -154,8 +154,12 @@ public class GestorFactura {
             .orElseThrow(() -> new ResourceNotFoundException("Estadía no encontrada"));
 
         // 1. Calcular cantidad de noches
-        long noches = ChronoUnit.DAYS.between(estadia.getFechaIngreso(), estadia.getFechaEgreso());
-        if (noches <= 0) noches = 1; // Mínimo se cobra una noche
+        long noches = 1; //por defecto porq aparentemente a veces la fecha viaja como null
+
+        if (estadia.getFechaIngreso() != null && estadia.getFechaEgreso() != null) {
+            noches = ChronoUnit.DAYS.between(estadia.getFechaIngreso(), estadia.getFechaEgreso());
+            if (noches <= 0) noches = 1; // Minimo se cobra una noche
+        }
 
         double precioNoche = estadia.getHabitacion().getTipo().getPrecioNoche();
         double subtotalAlojamiento = noches * precioNoche;

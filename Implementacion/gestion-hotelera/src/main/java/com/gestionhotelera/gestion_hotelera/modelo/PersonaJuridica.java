@@ -38,7 +38,7 @@ public class PersonaJuridica  extends ResponsableDePago {
     @OneToOne(mappedBy = "personaJuridica", cascade = CascadeType.ALL)
     private Direccion direccion;
 
-    //@Override
+    @Override
     public String getRazonSocial() {
         return this.nombreRazonSocial;
     }

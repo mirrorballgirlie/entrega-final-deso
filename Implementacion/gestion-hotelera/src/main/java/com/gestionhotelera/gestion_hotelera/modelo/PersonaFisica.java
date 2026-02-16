@@ -10,7 +10,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-import jakarta.persistence.Table;
 import jakarta.persistence.*;
 
 
@@ -19,6 +18,7 @@ import jakarta.persistence.*;
 @Getter
 @Setter
 @DiscriminatorValue("PERSONA_FISICA")
+@Table(name = "persona_fisica")
 @PrimaryKeyJoinColumn(name = "id")
 @SuperBuilder
 @NoArgsConstructor
@@ -30,11 +30,15 @@ public class PersonaFisica extends ResponsableDePago {
     @JoinColumn(name = "huesped_id")
     private Huesped huesped; // opcional
 
-    @Column(name = "nombre_razon_social") // 👈 Agregá esto para que coincida con la imagen
+    @Column(name = "nombre_razon_social")
     private String nombreRazonSocial; // el nombre completo de la persona física, se setea automáticamente a partir del nombre y apellido del huésped asociado
 
-    //@Override
+    @Override
     public String getRazonSocial() {
+        // Si el campo está vacío, intentamos sacarlo del huésped asociado (si existe)
+        if ((nombreRazonSocial == null || nombreRazonSocial.isBlank()) && huesped != null) {
+            return huesped.getNombre() + " " + huesped.getApellido();
+        }
         return nombreRazonSocial;
     }
    

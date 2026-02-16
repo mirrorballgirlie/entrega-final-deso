@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.gestionhotelera.gestion_hotelera.modelo.PersonaJuridica;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -96,6 +97,34 @@ public class ResponsableDePagoController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
+    }
+
+    //--------------- para facturar
+
+    @GetMapping("/por-cuit/{cuit}")
+    public ResponseEntity<?> obtenerPorCuit(@PathVariable String cuit) {
+        try {
+            ResponsableDePago r = gestorResponsableDePagoFacade.buscarUnicoPorCuit(cuit);
+
+            if (r == null) return ResponseEntity.notFound().build();
+
+            // Creamos un mapa manual. NO DEVOLVEMOS EL OBJETO 'r' DIRECTO.
+            // Esto evita que Jackson intente cargar las facturas y explote por el error de Postgres.
+            Map<String, Object> simple = new HashMap<>();
+            simple.put("id", r.getId());
+            simple.put("cuit", r.getCuit());
+            simple.put("nombreAMostrar", r.getNombreRazonSocial());
+
+            return ResponseEntity.ok(simple);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error en BD: " + e.getMessage());
+        }
+    }
+    @PostMapping("/asegurar-huesped/{id}")
+    public ResponseEntity<ResponsableDePago> asegurarHuesped(@PathVariable Long id) {
+        // llena metodo facade
+        ResponsableDePago responsable = gestorResponsableDePagoFacade.asegurarHuespedComoResponsable(id);
+        return ResponseEntity.ok(responsable);
     }
 }
 

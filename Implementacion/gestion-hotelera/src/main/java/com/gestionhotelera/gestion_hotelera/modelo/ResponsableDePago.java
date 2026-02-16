@@ -1,6 +1,8 @@
 package com.gestionhotelera.gestion_hotelera.modelo;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorColumn;
 import jakarta.persistence.DiscriminatorType;
@@ -31,7 +33,7 @@ import jakarta.persistence.Inheritance;
 @NoArgsConstructor
 @AllArgsConstructor
 //@Inheritance(strategy = InheritanceType.SINGLE_TABLE) // Indica que todos van a una sola tabla
-@DiscriminatorColumn(name = "dtype", discriminatorType = DiscriminatorType.STRING) // Nombre de la columna de la imagen
+//@DiscriminatorColumn(name = "dtype", discriminatorType = DiscriminatorType.STRING) // Nombre de la columna de la imagen
 
 public abstract class ResponsableDePago {
 
@@ -43,6 +45,7 @@ public abstract class ResponsableDePago {
     private String cuit;
     //private String razonSocial;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "responsableDePago")
     private List<Factura> facturas;
 
@@ -53,4 +56,10 @@ public abstract class ResponsableDePago {
     public abstract String getNombreRazonSocial();
 
 
+    public abstract String getRazonSocial();
+
+    @JsonProperty("nombreAMostrar") // Esto obliga a que el JSON siempre tenga este campo
+    public String getNombreAMostrar() {
+        return getRazonSocial();
+    }
 }

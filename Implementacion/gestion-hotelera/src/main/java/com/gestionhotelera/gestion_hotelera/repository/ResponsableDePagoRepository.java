@@ -33,7 +33,10 @@ public interface ResponsableDePagoRepository extends JpaRepository<ResponsableDe
             "WHERE (:razonSocial IS NULL OR :razonSocial = '' OR UPPER(pj.nombreRazonSocial) LIKE UPPER(CONCAT('%', :razonSocial, '%'))) " +
             "AND (:cuit IS NULL OR :cuit = '' OR r.cuit LIKE CONCAT('%', :cuit, '%'))")
     List<ResponsableDePago> buscarPorCriterios(@Param("razonSocial") String razonSocial, @Param("cuit") String cuit);
-    
+
+    @Query(value = "SELECT * FROM responsable_de_pago WHERE cuit = :cuit LIMIT 1", nativeQuery = true)
+    Optional<ResponsableDePago> buscarPorCuitNativo(@Param("cuit") String cuit);
+
 }
 
 

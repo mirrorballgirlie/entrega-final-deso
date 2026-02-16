@@ -77,7 +77,9 @@ export default function ListadoOcupantes({
         </tbody>
       </table>
 
-      {children}
+      <div className={styles.childrenContainer}>
+            {children}
+          </div>
 
       {mostrarBotones && (
         <div className={styles.buttonContainer}>

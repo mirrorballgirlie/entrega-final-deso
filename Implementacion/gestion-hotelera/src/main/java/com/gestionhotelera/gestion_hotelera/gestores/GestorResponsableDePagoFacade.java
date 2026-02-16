@@ -2,6 +2,7 @@ package com.gestionhotelera.gestion_hotelera.gestores;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import com.gestionhotelera.gestion_hotelera.repository.*;
 import org.springframework.stereotype.Service;
@@ -32,8 +33,8 @@ public class GestorResponsableDePagoFacade {
 
     private final PersonaJuridicaRepository personaJuridicaRepository;
     private final PersonaFisicaRepository personaFisicaRepository;
-    //private final HuespedRepository huespedRepository;
-    //NO pienso usar el huesped, me rindo
+    private final HuespedRepository huespedRepository;
+    //NO pienso usar el huesped, me rindo - edit: no quedo de otra
     private final ResponsableDePagoRepository responsableRepository;
     //estrategias aca
     private final DarBajaPersonaJuridicaStrategy darBajaPersonaJuridicaStrategy;
@@ -41,6 +42,9 @@ public class GestorResponsableDePagoFacade {
     private final ModificarPersonaJuridicaStrategy modificarPersonaJuridicaStrategy;
     private final ModificarPersonaFisicaStrategy modificarPersonaFisicaStrategy;
     private final DireccionRepository direccionRepository;
+
+    private final ResponsableDePagoRepository responsableDePagoRepository;
+
 
     /*
      * CU03 - Buscar Responsable de Pago
@@ -176,6 +180,59 @@ public class GestorResponsableDePagoFacade {
         if (responsable.getFacturas() != null && !responsable.getFacturas().isEmpty()) {
             throw new RuntimeException("La firma no puede ser eliminada pues posee facturas confeccionadas.");
         }
+    }
+
+
+    //para facturar
+
+    public ResponsableDePago buscarUnicoPorCuit(String cuit) {
+        // Buscamos en el repositorio
+        return responsableDePagoRepository.findByCuit(cuit)
+                .orElse(null); // Si no lo encuentra, devuelve null (el Controller enviará el 404)
+    }
+
+    //toma un huesped y lo asegura como responsable de pago (persona fisica)
+    //si ya existe lo devuelve, si no lo crea copiando datos
+
+    @Transactional
+    public ResponsableDePago asegurarHuespedComoResponsable(Long huespedId) {
+        // buscamos si ya existe una PersonaFisica vinculada a este Huésped
+        Optional<PersonaFisica> existente = personaFisicaRepository.findByHuespedId(huespedId);
+
+        if (existente.isPresent()) {
+            return existente.get();
+        }
+
+        // no existe, buscamos el huésped para obtener sus datos
+        Huesped huesped = huespedRepository.findById(huespedId)
+                .orElseThrow(() -> new RuntimeException("Huésped no encontrado con ID: " + huespedId));
+
+        // creamos la nueva PersonaFisica
+        // usamos el documento como CUIT si no tiene uno
+        PersonaFisica nuevaPf = new PersonaFisica();
+        nuevaPf.setCuit(huesped.getDocumento());
+        nuevaPf.setNombreRazonSocial((huesped.getNombre() + " " + huesped.getApellido()).toUpperCase());
+        nuevaPf.setTelefono(huesped.getTelefono() != null ? huesped.getTelefono() : "S/N");
+        nuevaPf.setHuesped(huesped); // IMPORTANTE: Mantenemos la relación
+
+        PersonaFisica guardada = personaFisicaRepository.save(nuevaPf);
+
+        if (huesped.getDireccion() != null) {
+            Direccion dir = Direccion.builder()
+                    .calle(huesped.getDireccion().getCalle())
+                    .numero(huesped.getDireccion().getNumero())
+                    .piso(huesped.getDireccion().getPiso())
+                    .departamento(huesped.getDireccion().getDepartamento())
+                    .codigoPostal(huesped.getDireccion().getCodigoPostal())
+                    .ciudad(huesped.getDireccion().getCiudad())
+                    .provincia(huesped.getDireccion().getProvincia())
+                    .pais(huesped.getDireccion().getPais())
+                    .personaFisica(guardada)
+                    .build();
+            direccionRepository.save(dir);
+        }
+
+        return guardada;
     }
 
 }
